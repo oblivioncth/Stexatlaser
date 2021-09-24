@@ -13,6 +13,8 @@
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QtEndian>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #include <QSet>
 #include <QDateTime>
@@ -27,30 +29,77 @@ const T qAsConstR(T &&t) { return std::move(t); }
 
 namespace Qx
 {
-//-Class Forward Declarations---------------------------------------------------------------------------------------------
-template <typename T, ENABLE_IF(std::is_arithmetic<T>)>
-class NII;
+//-std::functional Extensions-----------------------------------------------------------------------------------
+struct left_shift {
+
+    template <typename L, typename R>
+    constexpr auto operator()(L&& l, R&& r) const
+    noexcept(noexcept(std::forward<L>(l) << std::forward<R>(r)))
+    -> decltype(std::forward<L>(l) << std::forward<R>(r))
+    {
+        return std::forward<L>(l) << std::forward<R>(r);
+    }
+};
+
+struct right_shift {
+
+    template <typename L, typename R>
+    constexpr auto operator()(L&& l, R&& r) const
+    noexcept(noexcept(std::forward<L>(l) >> std::forward<R>(r)))
+    -> decltype(std::forward<L>(l) >> std::forward<R>(r))
+    {
+        return std::forward<L>(l) >> std::forward<R>(r);
+    }
+};
 
 //-Traits-------------------------------------------------------------------------------------------------------
 // TODO: Get these working where they make sense
-template <class T, template <class...> class Template>
-struct is_specialization : std::false_type {};
+//template <class T, template <class...> class Template>
+//struct is_specialization : std::false_type {};
 
-template <template <class...> class Template, class... Args>
-struct is_specialization<Template<Args...>, Template> : std::true_type {};
+//template <template <class...> class Template, class... Args>
+//struct is_specialization<Template<Args...>, Template> : std::true_type {};
 
 template<typename T, typename... Others>
 struct is_any : std::disjunction<std::is_same<T, Others>...>
 {};
 
-template<typename T, typename... Others>
-bool is_any_v = is_any<T, Others...>::value;
+template<typename X, typename Y, typename Op>
+struct defines_op_impl
+{
+    template<typename U, typename L, typename R>
+    static auto test(int) -> decltype(std::declval<U>()(std::declval<L>(), std::declval<R>()),
+                                      void(), std::true_type());
+
+    template<typename U, typename L, typename R>
+    static auto test(...) -> std::false_type;
+
+    using type = decltype(test<Op, X, Y>(0));
+
+};
+
+template<typename X, typename Y, typename Op> using defines_op = typename defines_op_impl<X, Y, Op>::type;
+
+template<class X, class Y> using defines_equality = defines_op<X, Y, std::equal_to<>>;
+template<class X, class Y> using defines_inequality = defines_op<X, Y, std::not_equal_to<>>;
+template<class X, class Y> using defines_less_than = defines_op<X, Y, std::less<>>;
+template<class X, class Y> using defines_less_equal = defines_op<X, Y, std::less_equal<>>;
+template<class X, class Y> using defines_greater_than = defines_op<X, Y, std::greater<>>;
+template<class X, class Y> using defines_greater_equal = defines_op<X, Y, std::greater_equal<>>;
+template<class X, class Y> using defines_bit_xor = defines_op<X, Y, std::bit_xor<>>;
+template<class X, class Y> using defines_bit_or = defines_op<X, Y, std::bit_or<>>;
+template<class X, class Y> using defines_left_shift = defines_op<X, Y, left_shift>;
+template<class X, class Y> using defines_right_shift = defines_op<X, Y, right_shift>;
 
 template<typename T>
 using is_json_type = std::bool_constant<is_any<T, bool, double, QString, QJsonArray, QJsonObject>::value>;
 
 template<typename T>
-bool is_json_type_v = is_json_type<T>::value;
+using is_datastream_type = std::bool_constant<is_any<T, bool, double, QString, QJsonArray, QJsonObject>::value>;
+
+//-Class Forward Declarations---------------------------------------------------------------------------------------------
+template <typename T, ENABLE_IF(std::is_arithmetic<T>)>
+class NII;
 
 //-Functions----------------------------------------------------------------------------------------------------
 template <typename T>
@@ -271,22 +320,22 @@ public:
     static QByteArray RAWFromStringHex(QString str);
 };
 
-class BitArrayX : public QBitArray
+class BitArray : public QBitArray
 {
 //-Constructor--------------------------------------------------------------------------------------------------
 public:
-    BitArrayX();
-    BitArrayX(int size, bool value = false);
+    BitArray();
+    BitArray(int size, bool value = false);
 
 //-Class Functions----------------------------------------------------------------------------------------------
 public:
     template<typename T, ENABLE_IF(std::is_integral<T>)>
-    static BitArrayX fromInteger(T integer, Endian::Endianness endianness = Endian::LE)
+    static BitArray fromInteger(const T& integer, Endian::Endianness endianness = Endian::LE)
     {
         //QByteArray byteRep = ByteArray::RAWFromPrimitive(integer, endianness);
         int bitCount = sizeof(T)*8;
 
-        BitArrayX bitRep(bitCount);
+        BitArray bitRep(bitCount);
 
         for(int i = 0; i < bitCount; ++i)
             if(integer & 0b1 << i)
@@ -298,19 +347,34 @@ public:
 //-Instance Functions-------------------------------------------------------------------------------------------
 public:
     template<typename T, ENABLE_IF(std::is_integral<T>)>
-    T toInteger(Endian::Endianness endianness = Endian::LE, int lsbIndex = 0)
+    T toInteger(Endian::Endianness endianness = Endian::LE)
     {
-        if(lsbIndex < 0 || lsbIndex >= count())
-            throw std::out_of_range("Least significant bit index was outside BitArrayX contents");
-
         int bitCount = sizeof(T)*8;
         T integer = 0;
 
-        for(int i = 0; i < bitCount && i + lsbIndex < count(); ++i)
-            integer |= (testBit(lsbIndex + (endianness == Endian::LE ? bitCount - (8*(i/8 + 1)) + i % 8 : i)) ? 0b1 : 0b0) << i;
+        for(int i = 0; i < bitCount && i < count(); ++i)
+            integer |= (testBit(endianness == Endian::LE ? bitCount - (8*(i/8 + 1)) + i % 8 : i) ? 0b1 : 0b0) << i;
 
         return integer;
     }
+
+    void replace(const BitArray& bits, int start = 0, int length = -1);
+
+    template<typename T, ENABLE_IF(std::is_integral<T>)>
+    void replace(T integer, Endian::Endianness endianness = Endian::LE, int start = 0, int length = -1)
+    {
+        BitArray converted = BitArray::fromInteger(integer, endianness);
+        replace(converted, start, length);
+    }
+
+    BitArray extract(int start, int length = -1);
+
+    BitArray operator<<(int n);
+    void operator<<=(int n);
+    BitArray operator>>(int n);
+    void operator>>=(int n);
+    BitArray operator+(BitArray rhs);
+    void operator+=(const BitArray& rhs);
 };
 
 class Char
@@ -557,11 +621,38 @@ private:
 
 //-Class Functions-----------------------------------------------------------------------------------------------
 public:
-    static Qx::GenericError checkedKeyRetrieval(bool& valueBuffer, QJsonObject jObject, QString key);
-    static Qx::GenericError checkedKeyRetrieval(double& valueBuffer, QJsonObject jObject, QString key);
-    static Qx::GenericError checkedKeyRetrieval(QString& valueBuffer, QJsonObject jObject, QString key);
-    static Qx::GenericError checkedKeyRetrieval(QJsonArray& valueBuffer, QJsonObject jObject, QString key);
-    static Qx::GenericError checkedKeyRetrieval(QJsonObject& valueBuffer, QJsonObject jObject, QString key);
+    template <typename T, ENABLE_IF(is_json_type<T>)>
+    static Qx::GenericError checkedKeyRetrieval(T& valueBuffer, QJsonObject jObject, QString key)
+    {
+        // Reset buffer
+        valueBuffer = T();
+
+        QJsonValue potentialT;
+
+        if((potentialT = jObject.value(key)).isUndefined())
+            return GenericError(GenericError::Undefined, ERR_RETRIEVING_VALUE.arg(JSON_TYPE_STRING, key), ERR_KEY_DOESNT_EXIST.arg(key));
+
+        if((std::is_same_v<T, bool> && !potentialT.isBool()) ||
+           (std::is_same_v<T, double> && !potentialT.isDouble()) ||
+           (std::is_same_v<T, QString> && !potentialT.isString()) ||
+           (std::is_same_v<T, QJsonArray> && !potentialT.isArray()) ||
+           (std::is_same_v<T, QJsonObject> && !potentialT.isObject()))
+            return GenericError(GenericError::Undefined, ERR_RETRIEVING_VALUE.arg(JSON_TYPE_STRING, key), ERR_KEY_TYPE_MISMATCH.arg(key, JSON_TYPE_STRING));
+        else if(std::is_same_v<T, bool>)
+            valueBuffer = potentialT.toBool();
+        else if(std::is_same_v<T, double>)
+            valueBuffer = potentialT.toDouble();
+        else if(std::is_same_v<T, QString>)
+            valueBuffer = potentialT.toString();
+        else if(std::is_same_v<T, QJsonArray>)
+            valueBuffer = potentialT.toArray();
+        else if(std::is_same_v<T, QJsonObject>)
+            valueBuffer = potentialT.toObject();
+        else
+            assert(true); // No other types should be possible
+
+        return GenericError();
+    }
 };
 
 template <typename T, ENABLE_IF2(std::is_arithmetic<T>)>
@@ -879,7 +970,7 @@ public:
     {
         QString conjuction;
 
-        QSet<T>::const_iterator i = set.constBegin(); // With some compilers this shows as a syntax error, but will still compile
+        typename QSet<T>::const_iterator i = set.constBegin();
         while(i != set.constEnd())
         {
             conjuction += prefix;

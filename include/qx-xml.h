@@ -1,7 +1,8 @@
 #ifndef QXXML_H
 #define QXXML_H
 
-#include <QtXml>
+#include <QXmlStreamReader>
+#include <QHash>
 
 namespace Qx
 {

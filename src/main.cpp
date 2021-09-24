@@ -6,8 +6,8 @@
 #include <QImageWriter>
 
 #include "qx-io.h"
-#include "atlas.h"
-#include "k_atlaskey.h"
+#include "klei/k-atlas.h"
+#include "klei/k-atlaskey.h"
 
 
 int main(int argc, char *argv[])
@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     }
 
     // Generate atlas
-    Atlaser atlaser(namedImages);
-    Atlas atlas = atlaser.process();
+    KAtlaser atlaser(namedImages);
+    KAtlas atlas = atlaser.process();
 
     // Generate atals key
     KAtlasKeyGenerator keyGenerator(atlas, atlasName);
