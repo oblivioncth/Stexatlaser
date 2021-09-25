@@ -6,6 +6,8 @@
 #include <QImageWriter>
 
 #include "qx-io.h"
+#include "ImageMagick/Magick++.h"
+
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"
 
@@ -14,7 +16,11 @@
 
 int main(int argc, char *argv[])
 {
+    // Initialize Qt application
     QCoreApplication app(argc, argv);
+
+    // Initialize ImageMagick
+    Magick::InitializeMagick(argv[0]);
 
     QString hardCode = "C:/Users/Player/Desktop/test";
     QDir inputFolder(hardCode);
