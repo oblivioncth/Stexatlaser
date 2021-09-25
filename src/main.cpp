@@ -9,6 +9,8 @@
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"
 
+// Required for use of static IM lib
+#define STATIC_MAGICK
 
 int main(int argc, char *argv[])
 {
