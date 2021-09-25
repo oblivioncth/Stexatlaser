@@ -119,7 +119,7 @@ else:win32:!win32-g++:CONFIG(debug, debug|release): \
     $$PWD/lib/ImageMagick/CORE_DB_raqm_.lib \
     $$PWD/lib/ImageMagick/CORE_DB_tiff_.lib \
     $$PWD/lib/ImageMagick/CORE_DB_webp_.lib \
-    $$PWD/lib/ImageMagick/CORE_DB_zlib_.lib \
+    $$PWD/lib/ImageMagick/CORE_DB_zlib_.lib
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
