@@ -17,8 +17,8 @@ HEADERS += \
     src/klei/k-tex-io.h \
     src/klei/k-tex.h
 
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
+INCLUDEPATH += $$PWD/include $$PWD/include/ImageMagick $$PWD/include/Squish
+DEPENDPATH += $$PWD/include $$PWD/include/ImageMagick $$PWD/include/Squish
 
 # Qx Lib
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lQxC_static64_0-0-7-2_Qt_5-15-2

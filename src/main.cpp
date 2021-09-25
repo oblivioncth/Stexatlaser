@@ -6,7 +6,7 @@
 #include <QImageWriter>
 
 #include "qx-io.h"
-#include "ImageMagick/Magick++.h"
+#include "Magick++.h"
 
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"

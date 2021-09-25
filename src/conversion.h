@@ -3,6 +3,8 @@
 
 #include <QImage>
 
+#include "Magick++.h"
+
 #include "klei/k-tex.h"
 
 class ToTexConverter
@@ -33,7 +35,7 @@ public:
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    //Type convertMainImage();
+    Magick::Image convertToProcessingFormat();
 
 public:
     KTex convert();
