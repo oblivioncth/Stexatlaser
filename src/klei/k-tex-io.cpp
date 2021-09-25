@@ -243,6 +243,9 @@ Qx::IOOpReport KTexReader::readHeader()
     else
         parsePostCavesSpecs(specifcationBits);
 
+    // Reserve space for known mipmap count
+    mTargetTex.mipMaps().reserve(mMipMapCount);
+
     // Return status
     return mStreamReader.status();
 }
