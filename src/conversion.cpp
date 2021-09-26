@@ -12,10 +12,7 @@ ToTexConverter::ToTexConverter(const QImage& sourceImage, const Options& options
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
-Magick::Image ToTexConverter::convertToProcessingFormat()
-{
-    return Magick::Image();
-}
+
 
 //Public:
 KTex ToTexConverter::convert()

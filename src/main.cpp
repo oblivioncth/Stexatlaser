@@ -5,11 +5,7 @@
 #include <QImageReader>
 #include <QImageWriter>
 
-// Required for use of static IM lib
-#define STATIC_MAGICK // MUST COME BEFORE IMAGE MAGIC INCLUDES
-
 #include "qx-io.h"
-#include "Magick++.h"
 
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"
@@ -20,9 +16,6 @@ int main(int argc, char *argv[])
 {
     // Initialize Qt application
     QCoreApplication app(argc, argv);
-
-    // Initialize ImageMagick
-    Magick::InitializeMagick(argv[0]);
 
     QString hardCode = "C:/Users/Player/Desktop/test";
     QDir inputFolder(hardCode);

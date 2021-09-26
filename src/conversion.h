@@ -3,8 +3,6 @@
 
 #include <QImage>
 
-#include "Magick++.h"
-
 #include "klei/k-tex.h"
 
 class ToTexConverter
@@ -18,7 +16,6 @@ public:
         KTex::Header::PixelFormat pixelType = KTex::Header::PixelFormat::DXT5;
         bool generateMipMaps = true;
         bool premultiplyAlpha = true;
-        //Type resampleFilter = default;
     };
 
 //-Class Members----------------------------------------------------------------------------------------------------
@@ -35,7 +32,6 @@ public:
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    Magick::Image convertToProcessingFormat();
 
 public:
     KTex convert();
