@@ -13,7 +13,7 @@ public:
     {
         KTex::Header::Platform platform = KTex::Header::Platform::PC;
         KTex::Header::TextureType textureType = KTex::Header::TextureType::TwoD;
-        KTex::Header::PixelFormat pixelType = KTex::Header::PixelFormat::DXT5;
+        KTex::Header::PixelFormat pixelFormat = KTex::Header::PixelFormat::DXT5;
         bool generateMipMaps = true;
         bool premultiplyAlpha = true;
     };
@@ -32,6 +32,10 @@ public:
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
+    QImage convertToBasePixelFormat();
+    QVector<QImage> generateMipMaps(const QImage& baseImage);
+    int getSquishCompressionFlag(KTex::Header::PixelFormat pixelFormat);
+    QVector<KTex::MipMapImage> convertToTargetFormat(const QVector<QImage>& images);
 
 public:
     KTex convert();
