@@ -34,12 +34,30 @@ public:
 private:
     QImage convertToBasePixelFormat();
     QVector<QImage> generateMipMaps(const QImage& baseImage);
-    int getSquishCompressionFlag(KTex::Header::PixelFormat pixelFormat);
     QVector<KTex::MipMapImage> convertToTargetFormat(const QVector<QImage>& images);
 
 public:
     KTex convert();
+};
 
+class FromTexConverter
+{
+//-Class Members----------------------------------------------------------------------------------------------------
+private:
+
+//-Instance Members-------------------------------------------------------------------------------------------------
+private:
+    const KTex& mSourceTex;
+
+//-Constructor-------------------------------------------------------------------------------------------------------
+public:
+    FromTexConverter(const KTex& sourceTex);
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+private:
+
+public:
+    QImage convert();
 };
 
 #endif // CONVERSION_H

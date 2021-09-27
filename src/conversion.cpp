@@ -2,6 +2,30 @@
 #include "Squish/squish.h"
 
 //===============================================================================================================
+// UNIT ONLY
+//===============================================================================================================
+namespace
+{
+    int getSquishCompressionFlag(KTex::Header::PixelFormat pixelFormat)
+    {
+        switch(pixelFormat)
+        {
+            case KTex::Header::PixelFormat::DXT5:
+                return squish::kDxt5;
+
+            case KTex::Header::PixelFormat::DXT3:
+                return squish::kDxt3;
+
+            case KTex::Header::PixelFormat::DXT1:
+                return squish::kDxt1;
+
+            default:
+                return -1; // Should never occur
+        }
+    }
+}
+
+//===============================================================================================================
 // TO_TEX_CONVERTER
 //===============================================================================================================
 
@@ -42,24 +66,6 @@ QVector<QImage> ToTexConverter::generateMipMaps(const QImage& baseImage)
         mipMaps.append(baseImage.scaled(mipMapSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     return mipMaps;
-}
-
-int ToTexConverter::getSquishCompressionFlag(KTex::Header::PixelFormat pixelFormat)
-{
-    switch(pixelFormat)
-    {
-        case KTex::Header::PixelFormat::DXT5:
-            return squish::kDxt5;
-
-        case KTex::Header::PixelFormat::DXT3:
-            return squish::kDxt3;
-
-        case KTex::Header::PixelFormat::DXT1:
-            return squish::kDxt1;
-
-        default:
-            return -1; // Should never occur
-    }
 }
 
 QVector<KTex::MipMapImage> ToTexConverter::convertToTargetFormat(const QVector<QImage>& images)
@@ -125,4 +131,22 @@ KTex ToTexConverter::convert()
 
     // Return finished tex
     return tex;
+}
+
+//===============================================================================================================
+// FROM_TEX_CONVERTER
+//===============================================================================================================
+
+//-Constructor-------------------------------------------------------------------------------------------------
+FromTexConverter::FromTexConverter(const KTex& sourceTex) :
+    mSourceTex(sourceTex)
+{}
+
+//-Instance Functions--------------------------------------------------------------------------------------------
+//Private:
+
+//Public:
+QImage FromTexConverter::convert()
+{
+    return QImage();
 }
