@@ -17,14 +17,13 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     QMap<QString, QRect>::const_iterator i;
     for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
     {
-        // K TEX Atlas Keys use inverted Y-Axis
         QPointF topLeft{
             static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(mAtlas.image.width()),
-            1.0 - static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height())
+            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height())
         };
         QPointF bottomRight{
             static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(mAtlas.image.width()),
-            1.0 - static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height())
+            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height())
         };
         translatedElements[i.key()] = {topLeft, bottomRight};
     }

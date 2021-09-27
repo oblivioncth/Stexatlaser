@@ -217,8 +217,8 @@ KAtlas KAtlaser::process() const
     for (i = mNamedImages.constBegin(); i != mNamedImages.constEnd(); i++)
     {
         QSize boundingBox;
-        boundingBox.setWidth(i->width() + 1);
-        boundingBox.setHeight(i->height() + 1);
+        boundingBox.setWidth(i->width() + 1); // Slight safety margin
+        boundingBox.setHeight(i->height() + 1); // Slight safety margin
 
         elementBoundingBoxes[i.key()] = boundingBox;
 
@@ -250,9 +250,17 @@ KAtlas KAtlaser::process() const
         QPainter elementPainter(&atlasImage);
         elementPainter.drawImage(imagePos, image);
 
-        // Add to element list
-        atlasElements[iMappedBoxes.key()] = {imagePos, image.size()};
+        // Correct for atlas being stored bottom up.
+        // The new top left corner will be the old bottom left corner after a simulated flip
+        QRect topUpRect = {imagePos, image.size()};
+        QRect bottomUpRect = {QPoint(topUpRect.x(), (atlasSize.height() - 1) - topUpRect.bottom()), topUpRect.size()};
+
+        // Add to element list, accounting for atlas being stored bottom up
+        atlasElements[iMappedBoxes.key()] = bottomUpRect;
     }
+
+    // Flip image to be stored bottom up
+    atlasImage = atlasImage.mirrored();
 
     return KAtlas{atlasImage, atlasElements};
 }
