@@ -315,9 +315,6 @@ public:
             return(*out);
         }
     }
-
-    static QByteArray RAWFromString(QString str);
-    static QByteArray RAWFromStringHex(QString str);
 };
 
 class BitArray : public QBitArray
@@ -943,8 +940,7 @@ public:
     static bool isHexNumber(QString hexNum);
     static bool isValidChecksum(QString checksum, QCryptographicHash::Algorithm hashAlgorithm);
     static QString fromByteArrayDirectly(QByteArray data);
-    static QString fromByteArrayHex(QByteArray data);
-    static QString fromByteArrayHex(QByteArray data, QChar separator, Endian::Endianness endianness);
+    static QString formattedHex(QByteArray data, QChar separator, Endian::Endianness endianness);
     static QString stripToHexOnly(QString string);
 
     template<typename T, typename F>

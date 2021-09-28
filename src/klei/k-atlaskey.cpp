@@ -1,12 +1,58 @@
 #include "k-atlaskey.h"
 #include <QXmlStreamWriter>
+#include "k-tex.h"
+
+//===============================================================================================================
+// UNIT ONLY
+//===============================================================================================================
+namespace
+{
+    namespace Xml
+    {
+        const QString ELEMENT_ATLAS = "Atlas";
+        const QString ELEMENT_ELEMENTS = "Elements";
+        const QString ELEMENT_ELEMENT = "Element";
+        const QString ELEMENT_TEXTURE = "Texture";
+        const QString ATTRIBUTE_FILENAME = "filename";
+        const QString ATTRIBUTE_ELEMENT_NAME = "name";
+        const QString ATTRIBUTE_TOP_LEFT_X = "u1";
+        const QString ATTRIBUTE_TOP_LEFT_Y = "v1";
+        const QString ATTRIBUTE_BOTTOM_RIGHT_X = "u2";
+        const QString ATTRIBUTE_BOTTOM_RIGHT_Y = "v2";
+    }
+}
+
+//===============================================================================================================
+// K_ATLAS_KEY
+//===============================================================================================================
+
+//-Constructor-------------------------------------------------------------------------------------------------
+KAtlasKey::KAtlasKey() :
+    mAtlasFilename(),
+    mRelativeElements()
+{}
+
+//-Instance Functions--------------------------------------------------------------------------------------------
+//Public:
+QString KAtlasKey::atlasFilename() const { return mAtlasFilename; }
+void KAtlasKey::setAtlasFilename(QString atlasFilename) { mAtlasFilename = atlasFilename; }
+int KAtlasKey::elementCount() const { return mRelativeElements.count(); }
+
+QMap<QString, QRectF>& KAtlasKey::elements() { return mRelativeElements; }
+const QMap<QString, QRectF>& KAtlasKey::elements() const { return mRelativeElements; }
+
+void KAtlasKey::insertElement(QString elementName, QRectF element) { mRelativeElements[elementName] = element; }
+
 
 //===============================================================================================================
 // K_ATLAS_KEY_GENERATOR
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, QString atlasName) : mAtlas(atlas), mAtlasName(atlasName) {}
+KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName) :
+    mAtlas(atlas),
+    mAtlasName(atlasName)
+{}
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
@@ -31,55 +77,60 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     return translatedElements;
 }
 
-QString KAtlasKeyGenerator::produceXml(const QMap<QString, QRectF>& kElements) const
+
+//Public:
+KAtlasKey KAtlasKeyGenerator::process() const
 {
-    // Setup Writer
-    QString xmlOut;
-    QXmlStreamWriter streamWriter(&xmlOut);
-    streamWriter.setAutoFormatting(true);
+    // Create atlas key
+    KAtlasKey atlasKey;
+    atlasKey.setAtlasFilename(mAtlasName + "." + KTex::FILE_EXT);
+    atlasKey.elements() = translateElements();
 
-    // Write header
-    streamWriter.writeStartDocument();
+    return atlasKey;
+}
 
-    // Start atlas element
-    streamWriter.writeStartElement(ELEMENT_ATLAS);
+//===============================================================================================================
+// K_ATLAS_KEY_PARSER
+//===============================================================================================================
 
-    // Write texture element
-    streamWriter.writeEmptyElement(ELEMENT_TEXTURE);
-    streamWriter.writeAttribute(ATTRIBUTE_FILENAME, mAtlasName + ".tex"); // TODO: Get this extension from eventual TEX class
+//-Constructor-------------------------------------------------------------------------------------------------
+KAtlasKeyParser::KAtlasKeyParser(const KAtlasKey& atlasKey, const QImage& atlasImage) :
+    mAtlasKey(atlasKey),
+    mAtlasImage(atlasImage)
+{}
 
-    // Write elements
-    streamWriter.writeStartElement(ELEMENT_ELEMENTS);
+//-Instance Functions--------------------------------------------------------------------------------------------
+//Private:
+QMap<QString, QRect> KAtlasKeyParser::translateElements() const
+{
+    QMap<QString, QRect> translatedElements;
 
     QMap<QString, QRectF>::const_iterator i;
-    for(i = kElements.constBegin(); i != kElements.constEnd(); i++)
+    for(i = mAtlasKey.elements().constBegin(); i != mAtlasKey.elements().constEnd(); i++)
     {
-        streamWriter.writeEmptyElement(ELEMENT_ELEMENT);
-        streamWriter.writeAttribute(ATTRIBUTE_ELEMENT_NAME, i.key());
-        streamWriter.writeAttribute(ATTRIBUTE_TOP_LEFT_X, QString::number(i->left()));
-        streamWriter.writeAttribute(ATTRIBUTE_BOTTOM_RIGHT_X, QString::number(i->right()));
-        streamWriter.writeAttribute(ATTRIBUTE_TOP_LEFT_Y, QString::number(i->top()));
-        streamWriter.writeAttribute(ATTRIBUTE_BOTTOM_RIGHT_Y, QString::number(i->bottom()));
+        QPoint topLeft{
+            static_cast<int>(std::round(i->topLeft().x() * mAtlasImage.width())),
+            static_cast<int>(std::round(i->topLeft().y() * mAtlasImage.height()))
+        };
+        QPoint bottomRight{
+            static_cast<int>(std::round(i->bottomRight().x() * mAtlasImage.width())),
+            static_cast<int>(std::round(i->bottomRight().y() * mAtlasImage.height()))
+        };
+        translatedElements[i.key()] = {topLeft, bottomRight};
     }
 
-    streamWriter.writeEndElement();
-
-    // End atlas element
-    streamWriter.writeEndDocument();
-
-    // Complete document
-    streamWriter.writeEndDocument();
-
-    // Return as string
-    return xmlOut;
+    return translatedElements;
 }
 
 //Public:
-QString KAtlasKeyGenerator::process() const
+KAtlas KAtlasKeyParser::process()
 {
-    // Translate to proportional coordinates
-    QMap<QString, QRectF> translatedElements = translateElements();
+    KAtlas atlas;
+    atlas.image = mAtlasImage;
+    atlas.elements = translateElements();
 
-    // Create XML key
-    return produceXml(translatedElements);
+    return atlas;
 }
+
+
+

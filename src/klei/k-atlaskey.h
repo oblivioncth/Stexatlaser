@@ -2,38 +2,68 @@
 #define KATLASKEY_H
 
 #include "k-atlas.h"
+#include "qx.h"
+#include "qx-xml.h"
 
-class KAtlasKeyGenerator
+class KAtlasKey
 {
-//-Class Members-------------------------------------------------------------------------------------------------
-private:
-    static inline const QString ELEMENT_ATLAS = "Atlas";
-    static inline const QString ELEMENT_ELEMENTS = "Elements";
-    static inline const QString ELEMENT_ELEMENT = "Element";
-    static inline const QString ELEMENT_TEXTURE = "Texture";
-    static inline const QString ATTRIBUTE_FILENAME = "filename";
-    static inline const QString ATTRIBUTE_ELEMENT_NAME = "name";
-    static inline const QString ATTRIBUTE_TOP_LEFT_X = "u1";
-    static inline const QString ATTRIBUTE_TOP_LEFT_Y = "v1";
-    static inline const QString ATTRIBUTE_BOTTOM_RIGHT_X = "u2";
-    static inline const QString ATTRIBUTE_BOTTOM_RIGHT_Y = "v2";
-
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
-    const KAtlas& mAtlas;
-    QString mAtlasName;
+    QString mAtlasFilename;
+    QMap<QString, QRectF> mRelativeElements;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KAtlasKeyGenerator(const KAtlas& atlas, QString atlasName);
+    KAtlasKey();
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+public:
+    QString atlasFilename() const;
+    void setAtlasFilename(QString atlasFilename);
+    int elementCount() const;
+
+    QMap<QString, QRectF>& elements();
+    const QMap<QString, QRectF>& elements() const;
+
+    void insertElement(QString elementName, QRectF element);
+};
+
+class KAtlasKeyGenerator
+{
+//-Instance Members-------------------------------------------------------------------------------------------------
+private:
+    const KAtlas& mAtlas;
+    const QString& mAtlasName;
+
+//-Constructor-------------------------------------------------------------------------------------------------------
+public:
+    KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
     QMap<QString, QRectF> translateElements() const;
-    QString produceXml(const QMap<QString, QRectF>& kElements) const;
 
 public:
-    QString process() const;
+    KAtlasKey process() const;
+};
+
+class KAtlasKeyParser
+{
+//-Instance Members-------------------------------------------------------------------------------------------------
+private:
+    const KAtlasKey& mAtlasKey;
+    const QImage& mAtlasImage;
+
+//-Constructor-------------------------------------------------------------------------------------------------------
+public:
+    KAtlasKeyParser(const KAtlasKey& atlasKey, const QImage& atlasImage);
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+private:
+    QMap<QString, QRect> translateElements() const;
+
+public:
+    KAtlas process();
 };
 
 #endif // KATLASKEY_H
