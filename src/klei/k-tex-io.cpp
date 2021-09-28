@@ -161,7 +161,6 @@ Qx::IOOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
     quint8 mipMapCountRaw = specifcationBits.extract(startBit, KTex::Header::BL_MIP_MAP_COUNT_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_MIP_MAP_COUNT_BC;
     quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_BC).toInteger<quint8>();
-    startBit += KTex::Header::BL_FLAG_BC;
 
     // Check if file is unsupported
     Qx::IOOpReport specsCheck;
@@ -196,7 +195,6 @@ Qx::IOOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
     quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_FLAG_AC;
     quint8 flagTwoRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
-    startBit += KTex::Header::BL_FLAG_AC;
 
     // Check if file is unsupported
     Qx::IOOpReport specsCheck;
@@ -319,6 +317,9 @@ Qx::IOOpReport KTexReader::read(bool& supported)
         if(!(status = readMipMapData(i)).wasSuccessful())
             return status;
     }
+
+    // TODO: Implement check/warning for if after reading known data, there is still data leftover
+    // i.e. mStreamReader.atEnd(), may need to advance one byte first
 
     // Close file
     mStreamReader.closeFile();
