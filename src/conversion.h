@@ -44,17 +44,23 @@ class FromTexConverter
 {
 //-Class Members----------------------------------------------------------------------------------------------------
 private:
-
+    struct Options
+    {
+        bool demultiplyAlpha = true;
+    };
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
     const KTex& mSourceTex;
+    const Options& mOptions;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    FromTexConverter(const KTex& sourceTex);
+    FromTexConverter(const KTex& sourceTex, const Options& options);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
+    const KTex::MipMapImage& getMainImage();
+    QImage convertToStandardFormat(const KTex::MipMapImage& mainImage);
 
 public:
     QImage convert();

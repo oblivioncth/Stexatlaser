@@ -1,6 +1,10 @@
 #include "conversion.h"
 #include "Squish/squish.h"
 
+// The Qt image formats (QImage::Format) used here are all byte ordered based on the host system, yet squish (and DST?)
+// expect the input data to always be RGB(A), which means these won't work on Big Endian ordered systems;
+// however this is considered acceptible given the target system is x86 based (LE)
+
 //===============================================================================================================
 // UNIT ONLY
 //===============================================================================================================
@@ -138,15 +142,59 @@ KTex ToTexConverter::convert()
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-FromTexConverter::FromTexConverter(const KTex& sourceTex) :
-    mSourceTex(sourceTex)
+FromTexConverter::FromTexConverter(const KTex& sourceTex, const Options& options) :
+    mSourceTex(sourceTex),
+    mOptions(options)
 {}
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
+const KTex::MipMapImage& FromTexConverter::getMainImage() { return mSourceTex.mipMaps().at(0); } //TODO: Check if mipmap actually exists
+
+QImage FromTexConverter::convertToStandardFormat(const KTex::MipMapImage& mainImage)
+{
+    QByteArray rawData;
+    quint16 pitch;
+    QImage::Format rawFormat = mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB ?
+                               QImage::Format_RGB888 : mOptions.demultiplyAlpha ?
+                                                       QImage::Format_RGBA8888_Premultiplied :
+                                                       QImage::Format_RGBA8888;
+
+    // Uncompressed steps
+    if(mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGBA ||
+       mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB)
+    {
+        rawData.resize(mainImage.imageDataSize());
+        pitch = mainImage.pitch();
+        std::memcpy(rawData.data(), mainImage.imageData().data(), mainImage.imageDataSize());
+    }
+    else // Compressed steps
+    {
+        // Always outputs in RGBA
+        int squishFlag = getSquishCompressionFlag(mSourceTex.header().pixelFormat());
+        pitch = mainImage.width() * 4;
+        rawData.resize(mainImage.width() * mainImage.height() * 4);
+        squish::DecompressImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), mainImage.pitch(),
+                                mainImage.imageData().data(), squishFlag);
+
+    }
+
+    // Create QImage from buffer
+    QImage bufferedImage = QImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), pitch, rawFormat);
+
+    // Copy and detach image so it isn't reliant on buffer that will be destroyed
+    QImage standaloneImage = bufferedImage.copy();
+    standaloneImage.detach();
+
+    return standaloneImage;
+}
 
 //Public:
 QImage FromTexConverter::convert()
 {
-    return QImage();
+    // Get primariy image
+    const KTex::MipMapImage& mainImage = getMainImage();
+
+    // Convert to QImage
+    return convertToStandardFormat(mainImage);
 }

@@ -28,10 +28,10 @@ win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC_static64_0-0-7-2_Qt_5-15-2d.lib
 
 # Squish Lib
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Squish -lsquishd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Squish -lsquishd #EDIT
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Squish -lsquishd
 
-win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/squishd.lib
+win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/squishd.lib #EDIT
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/squishd.lib
 
 # Default rules for deployment.
