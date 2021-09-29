@@ -52,43 +52,4 @@ int main(int argc, char *argv[])
 
     // Process command
     return commandProcessor->process(clArgs);
-
-
-//    QString hardCode = "C:/Users/Player/Desktop/test";
-//    QDir inputFolder(hardCode);
-//    QString atlasName = inputFolder.dirName();
-
-//    QStringList fileList;
-//    Qx::IOOpReport dirQuery = Qx::getDirFileList(fileList, inputFolder, {"png"});
-
-//    // Generate named image map
-//    QImageReader imageReader;
-//    QMap<QString, QImage> namedImages;
-
-//    for(const QString& filePath : qAsConst(fileList))
-//    {
-//        QString elementName = QFileInfo(filePath).baseName();
-//        imageReader.setFileName(filePath);
-//        namedImages[elementName] = imageReader.read();
-//    }
-
-//    // Generate atlas
-//    KAtlaser atlaser(namedImages);
-//    KAtlas atlas = atlaser.process();
-
-//    // Generate atals key
-//    KAtlasKeyGenerator keyGenerator(atlas, atlasName);
-//    QString key = keyGenerator.process();
-
-//    // Save image (scope, because QImageWriter holds lock on output during its lifetime)
-//    {
-//        // Check for error, maybe make this a function
-//        QImageWriter writer(atlasName + ".png");
-//        qDebug() << writer.write(atlas.image);
-//    }
-
-//    // Save key
-//    QFile keyFile(atlasName + ".xml");
-//    Qx::IOOpReport writeReport = Qx::writeStringAsFile(keyFile, key, true);
-//    qDebug() << writeReport.getOutcome();
 }
