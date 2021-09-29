@@ -48,7 +48,15 @@ ErrorCode CPack::process(const QStringList& commandLine)
         return ErrorCodes::NO_OUTPUT;
     }
 
+    // Make sure output pixel format is valid if provided
+    if(mParser.isSet(CL_OPTION_FORMAT) && !PIXEL_FORMAT_MAP.contains(mParser.value(CL_OPTION_FORMAT)))
+    {
+        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_INVALID_FORMAT));
+        return ErrorCodes::INVALID_FORMAT;
+    }
+
     // Get input and output
+    mCore.printMessage(NAME, MSG_INPUT_VALIDATION);
     QDir inputDir(mParser.value(CL_OPTION_INPUT));
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
@@ -67,17 +75,11 @@ ErrorCode CPack::process(const QStringList& commandLine)
         }
     }
 
-    // Make sure output pixel format is valid
-    if(!PIXEL_FORMAT_MAP.contains(mParser.value(CL_OPTION_FORMAT)))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_INVALID_FORMAT));
-        return ErrorCodes::INVALID_FORMAT;
-    }
-
     // Get output pixel format
     KTex::Header::PixelFormat outputPixelFormat = PIXEL_FORMAT_MAP[mParser.value(CL_OPTION_FORMAT)];
 
     // Get source images
+    mCore.printMessage(NAME, MSG_READ_IMAGES);
     QFileInfoList imageFiles = inputDir.entryInfoList(IMAGE_FORMATS);
 
     // Make sure there is at least one image
@@ -107,14 +109,17 @@ ErrorCode CPack::process(const QStringList& commandLine)
     }
 
     // Create atlas
+    mCore.printMessage(NAME, MSG_CREATE_ATLAS);
     KAtlaser atlaser(namedImages);
     KAtlas atlas = atlaser.process();
 
     // Create atlas key
+    mCore.printMessage(NAME, MSG_CREATE_KEY);
     KAtlasKeyGenerator akg(atlas, inputDir.dirName());
     KAtlasKey atlasKey = akg.process();
 
     // Create TEX
+    mCore.printMessage(NAME, MSG_CREATE_TEX);
     ToTexConverter::Options ttco;
     ttco.generateMipMaps = !mParser.isSet(CL_OPTION_UNOPT);
     ttco.premultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT);
@@ -124,6 +129,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
     KTex tex = ttc.convert();
 
     // Write TEX file
+    mCore.printMessage(NAME, MSG_WRITE_TEX);
     QFile outputTexFile(outputDir.absoluteFilePath(atlasKey.atlasFilename()));
     KTexWriter texWriter(tex, outputTexFile);
     Qx::IOOpReport texWriteReport;
@@ -135,6 +141,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
     }
 
     // Write atlas key
+    mCore.printMessage(NAME, MSG_WRITE_KEY);
     QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + ".xml"));
     KAtlasKeyWriter keyWriter(outputKeyFile, atlasKey);
     Qx::XmlStreamWriterError keyWriteReport;

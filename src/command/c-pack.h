@@ -35,6 +35,15 @@ private:
         {"rgba", KTex::Header::PixelFormat::RGBA},
     };
 
+    // Messages
+    static inline const QString MSG_INPUT_VALIDATION = "Validating input...";
+    static inline const QString MSG_READ_IMAGES = "Reading input images...";
+    static inline const QString MSG_CREATE_ATLAS = "Creating atlas...";
+    static inline const QString MSG_CREATE_KEY = "Creating atlas key...";
+    static inline const QString MSG_CREATE_TEX = "Creating TEX...";
+    static inline const QString MSG_WRITE_TEX = "Writing TEX...";
+    static inline const QString MSG_WRITE_KEY = "Writing atlas key...";
+
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
     static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";

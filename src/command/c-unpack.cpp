@@ -49,6 +49,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     }
 
     // Get input and output
+    mCore.printMessage(NAME, MSG_INPUT_VALIDATION);
     QFileInfo inputKey(mParser.value(CL_OPTION_INPUT));
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
@@ -68,6 +69,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     }
 
     // Read atlas key
+    mCore.printMessage(NAME, MSG_READ_KEY);
     QFile atlasKeyFile(inputKey.absoluteFilePath());
     KAtlasKey atlasKey;
     KAtlasKeyReader keyReader(atlasKey, atlasKeyFile);
@@ -97,6 +99,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     QDir finalOutputDir(outputDir.absoluteFilePath(texFileInfo.baseName()));
 
     // Read TEX atlas
+    mCore.printMessage(NAME, MSG_READ_TEX);
     QFile texFile(texFileInfo.absoluteFilePath());
     KTex tex;
     KTexReader texReader(texFile, tex);
@@ -116,19 +119,24 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     }
 
     // Extract atlas image from TEX
+    mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
     FromTexConverter::Options ftco;
     ftco.demultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT);
     FromTexConverter ftc(tex, ftco);
     QImage atlasImage = ftc.convert();
 
     // Create atlas
+    mCore.printMessage(NAME, MSG_FORM_ATLAS);
     KAtlasKeyParser akp(atlasKey, atlasImage);
     KAtlas atlas = akp.process();
 
     // Deatlas
+    mCore.printMessage(NAME, MSG_DEATLAS);
     KDeatlaser deatlaser(atlas);
     QMap<QString, QImage> namedImages = deatlaser.process();
 
+    // Write images
+    mCore.printMessage(NAME, MSG_WRITE_IMAGES);
     QMap<QString, QImage>::const_iterator i;
     for(i = namedImages.constBegin(); i != namedImages.constEnd(); i++)
     {

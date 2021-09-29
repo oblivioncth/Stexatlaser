@@ -26,6 +26,15 @@ private:
 
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
+    // Messages
+    static inline const QString MSG_INPUT_VALIDATION = "Validating input...";
+    static inline const QString MSG_READ_KEY = "Reading input atlas key...";
+    static inline const QString MSG_READ_TEX = "Reading TEX...";
+    static inline const QString MSG_EXTRACT_IMAGE = "Extracing primary TEX image...";
+    static inline const QString MSG_FORM_ATLAS = "Forming atlas...";
+    static inline const QString MSG_DEATLAS = "Deatlasing...";
+    static inline const QString MSG_WRITE_IMAGES = "Writing output images...";
+
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
     static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";
