@@ -30,4 +30,23 @@ public:
     KAtlas process() const;
 };
 
+class KDeatlaser
+{
+//-Instance Members-------------------------------------------------------------------------------------------------
+private:
+    const KAtlas& mAtlas;
+
+//-Constructor-------------------------------------------------------------------------------------------------------
+public:
+    KDeatlaser(const KAtlas& atlas);
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+private:
+    QMap<QString, QRect> flipElements() const;
+    QMap<QString, QImage> extractElements(const QImage& normalizedAtlas, const QMap<QString, QRect> normalizedElements) const;
+
+public:
+    QMap<QString, QImage> process() const;
+};
+
 #endif // ATLAS_H

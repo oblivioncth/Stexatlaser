@@ -264,3 +264,52 @@ KAtlas KAtlaser::process() const
 
     return KAtlas{atlasImage, atlasElements};
 }
+
+
+//===============================================================================================================
+// K_DEATLASER
+//===============================================================================================================
+
+//-Constructor-------------------------------------------------------------------------------------------------
+KDeatlaser::KDeatlaser(const KAtlas& atlas) : mAtlas(atlas) {}
+
+//-Instance Functions--------------------------------------------------------------------------------------------
+//Private:
+QMap<QString, QRect> KDeatlaser::flipElements() const
+{
+    QMap<QString, QRect> flippedElements;
+
+    QMap<QString, QRect>::const_iterator i;
+    for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
+        flippedElements[i.key()] = {QPoint(i->x(), (i->height() - 1) - i->bottom()), i->size()};
+
+    return flippedElements;
+}
+
+QMap<QString, QImage> KDeatlaser::extractElements(const QImage& normalizedAtlas, const QMap<QString, QRect> normalizedElements) const
+{
+    QMap<QString, QImage> namedImages;
+
+    QMap<QString, QRect>::const_iterator i;
+    for(i = normalizedElements.constBegin(); i != normalizedElements.constEnd(); i++)
+        namedImages[i.key()] = normalizedAtlas.copy(i.value());
+
+    return namedImages;
+}
+
+//Public:
+QMap<QString, QImage> KDeatlaser::process() const
+{
+    // Flip atlas
+    QImage standardImage = mAtlas.image.mirrored();
+
+    // Convert to "standard" format;
+    standardImage = standardImage.convertToFormat(QImage::Format_ARGB32);
+
+    // Flip elements
+    QMap<QString, QRect> flippedElements = flipElements();
+
+    // Extract
+    return extractElements(standardImage, flippedElements);
+
+}
