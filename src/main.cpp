@@ -7,65 +7,88 @@
 
 #include "qx-io.h"
 
-#include "klei/k-atlas.h"
-#include "klei/k-atlaskey.h"
+#include "version.h"
+#include "stex.h"
+#include "command.h"
 
+// Error Messages
+const QString ERR_INVALID_COMMAND = R"("%1" is not a valid command)";
 
+// Meta
+const QString NAME = "main";
 
 int main(int argc, char *argv[])
 {
     // Initialize Qt application
     QCoreApplication app(argc, argv);
 
-    QString hardCode = "C:/Users/Player/Desktop/test";
-    QDir inputFolder(hardCode);
-    QString atlasName = inputFolder.dirName();
+    // Set application name
+    QCoreApplication::setApplicationName(VER_PRODUCTNAME_STR);
+    QCoreApplication::setApplicationVersion(VER_FILEVERSION_STR);
 
-    QStringList fileList;
-    Qx::IOOpReport dirQuery = Qx::getDirFileList(fileList, inputFolder, {"png"});
+    // Error status tracker
+    ErrorCode errorStatus = Stex::ErrorCodes::NO_ERR;
 
-    // Generate named image map
-    QImageReader imageReader;
-    QMap<QString, QImage> namedImages;
+    // Create Core instance
+    Stex coreCLI;
 
-    for(const QString& filePath : qAsConst(fileList))
+    //-Setup Core--------------------------------------------------------------------------
+    QStringList clArgs = app.arguments();
+    if((errorStatus = coreCLI.initialize(clArgs)) || clArgs.empty()) // Terminate if error or no command
+        return errorStatus;
+
+    //-Handle Command and Command Options----------------------------------------------------------
+    QString commandStr = clArgs.first().toLower();
+
+    // Check for valid command
+    if(!Command::isRegistered(commandStr))
     {
-        QString elementName = QFileInfo(filePath).baseName();
-        imageReader.setFileName(filePath);
-        namedImages[elementName] = imageReader.read();
+        coreCLI.printError(NAME, Qx::GenericError(Qx::GenericError::Critical, ERR_INVALID_COMMAND.arg(commandStr)));
+        return Stex::ErrorCodes::INVALID_ARGS;
     }
 
-    // Generate atlas
-    KAtlaser atlaser(namedImages);
-    KAtlas atlas = atlaser.process();
+    // Create command instance
+    std::unique_ptr<Command> commandProcessor = Command::acquire(commandStr, coreCLI);
 
-    // Generate atals key
-    KAtlasKeyGenerator keyGenerator(atlas, atlasName);
-    QString key = keyGenerator.process();
+    // Process command
+    return commandProcessor->process(clArgs);
 
-    // TEST
-//    QImage testImage(QSize(128,128), QImage::Format_ARGB32);
-//    testImage.fill(Qt::transparent);
 
-//    Atlas testAtlas;
-//    testAtlas.image = testImage;
-//    testAtlas.elements.insert("ear-0.tex", QRect(0,0, 84, 128));
-//    KAtlasKeyGenerator keyGen(testAtlas, "test");
-//    QString keyTest = keyGen.process();
+//    QString hardCode = "C:/Users/Player/Desktop/test";
+//    QDir inputFolder(hardCode);
+//    QString atlasName = inputFolder.dirName();
 
-//    QFile testFile("experiment.xml");
-//    Qx::writeStringAsFile(testFile, keyTest, true);
-    // TEST
+//    QStringList fileList;
+//    Qx::IOOpReport dirQuery = Qx::getDirFileList(fileList, inputFolder, {"png"});
 
-    // Save image (scope, because QImageWriter holds lock on output during its lifetime)
-    {
-        // Check for error, maybe make this a function
-        QImageWriter writer(atlasName + ".png");
-        qDebug() << writer.write(atlas.image);
-    }
+//    // Generate named image map
+//    QImageReader imageReader;
+//    QMap<QString, QImage> namedImages;
 
-    // Save key
-    QFile keyFile(atlasName + ".xml");
-    Qx::IOOpReport writeReport = Qx::writeStringAsFile(keyFile, key, true);
-    qDebug() << writeReport.getOutcome();
+//    for(const QString& filePath : qAsConst(fileList))
+//    {
+//        QString elementName = QFileInfo(filePath).baseName();
+//        imageReader.setFileName(filePath);
+//        namedImages[elementName] = imageReader.read();
+//    }
+
+//    // Generate atlas
+//    KAtlaser atlaser(namedImages);
+//    KAtlas atlas = atlaser.process();
+
+//    // Generate atals key
+//    KAtlasKeyGenerator keyGenerator(atlas, atlasName);
+//    QString key = keyGenerator.process();
+
+//    // Save image (scope, because QImageWriter holds lock on output during its lifetime)
+//    {
+//        // Check for error, maybe make this a function
+//        QImageWriter writer(atlasName + ".png");
+//        qDebug() << writer.write(atlas.image);
+//    }
+
+//    // Save key
+//    QFile keyFile(atlasName + ".xml");
+//    Qx::IOOpReport writeReport = Qx::writeStringAsFile(keyFile, key, true);
+//    qDebug() << writeReport.getOutcome();
 }

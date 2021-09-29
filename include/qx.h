@@ -558,6 +558,12 @@ public:
     enum ErrorLevel { Undefined, Warning, Error, Critical };
 
 //-Class Members---------------------------------------------------------------------------------------------
+private:
+    static inline const QString ERR_LVL_UNDEF = "Undefined Severity";
+    static inline const QString ERR_LVL_WARN = "Warning";
+    static inline const QString ERR_LVL_ERR = "Error";
+    static inline const QString ERR_LVL_CRIT = "Critical";
+
 public:
     static const GenericError UNKNOWN_ERROR;
 
@@ -577,17 +583,18 @@ public:
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 public:
-    bool isValid();
-    ErrorLevel errorLevel();
-    QString caption();
-    QString primaryInfo();
-    QString secondaryInfo();
-    QString detailedInfo();
+    bool isValid() const;
+    ErrorLevel errorLevel() const;
+    QString errorLevelString(bool caps = true) const;
+    QString caption() const;
+    QString primaryInfo() const;
+    QString secondaryInfo() const;
+    QString detailedInfo() const;
 
     Qx::GenericError& setErrorLevel(ErrorLevel errorLevel);
 
 #ifdef QT_WIDGETS_LIB // Only enabled for Widget applications
-    int exec(QMessageBox::StandardButtons choices, QMessageBox::StandardButton defChoice = QMessageBox::NoButton);
+    int exec(QMessageBox::StandardButtons choices, QMessageBox::StandardButton defChoice = QMessageBox::NoButton) const;
 #endif
 };
 
