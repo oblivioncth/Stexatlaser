@@ -20,11 +20,11 @@ Qx::IOOpReport KTexWriter::writeHeader()
     Qx::BitArray platformBits = Qx::BitArray::fromInteger(static_cast<int>(mSourceTex.header().platform()));
     platformBits.resize(KTex::Header::BL_PLATFORM_AC);
     Qx::BitArray pixelFormatBits = Qx::BitArray::fromInteger(static_cast<int>(mSourceTex.header().pixelFormat()));
-    platformBits.resize(KTex::Header::BL_PLATFORM_AC);
+    pixelFormatBits.resize(KTex::Header::BL_PIXEL_FORMAT_AC);
     Qx::BitArray textureTypeBits = Qx::BitArray::fromInteger(static_cast<int>(mSourceTex.header().textureType()));
-    platformBits.resize(KTex::Header::BL_PLATFORM_AC);
+    textureTypeBits.resize(KTex::Header::BL_TEXTURE_TYPE_AC);
     Qx::BitArray mipMapCountBits = Qx::BitArray::fromInteger(mSourceTex.mipMapCount());
-    platformBits.resize(KTex::Header::BL_MIP_MAP_COUNT_AC);
+    mipMapCountBits.resize(KTex::Header::BL_MIP_MAP_COUNT_AC);
 
     Qx::BitArray flagOneBit(KTex::Header::BL_FLAG_AC, mSourceTex.header().flagOne());
     Qx::BitArray flagTwoBit(KTex::Header::BL_FLAG_AC, mSourceTex.header().flagTwo());

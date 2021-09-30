@@ -327,16 +327,15 @@ public:
 //-Class Functions----------------------------------------------------------------------------------------------
 public:
     template<typename T, ENABLE_IF(std::is_integral<T>)>
-    static BitArray fromInteger(const T& integer, Endian::Endianness endianness = Endian::LE)
+    static BitArray fromInteger(const T& integer)
     {
-        //QByteArray byteRep = ByteArray::RAWFromPrimitive(integer, endianness);
         int bitCount = sizeof(T)*8;
 
         BitArray bitRep(bitCount);
 
         for(int i = 0; i < bitCount; ++i)
             if(integer & 0b1 << i)
-                bitRep.setBit(endianness == Endian::LE ? bitCount - (8*(i/8 + 1)) + i % 8 : i);
+                bitRep.setBit(i);
 
         return bitRep;
     }
@@ -344,23 +343,26 @@ public:
 //-Instance Functions-------------------------------------------------------------------------------------------
 public:
     template<typename T, ENABLE_IF(std::is_integral<T>)>
-    T toInteger(Endian::Endianness endianness = Endian::LE)
+    T toInteger()
     {
         int bitCount = sizeof(T)*8;
         T integer = 0;
 
         for(int i = 0; i < bitCount && i < count(); ++i)
-            integer |= (testBit(endianness == Endian::LE ? bitCount - (8*(i/8 + 1)) + i % 8 : i) ? 0b1 : 0b0) << i;
+            integer |= (testBit(i) ? 0b1 : 0b0) << i;
 
         return integer;
     }
 
+    QByteArray toByteArray(Endian::Endianness endianness = Endian::BE);
+
+    void append(bool bit = false);
     void replace(const BitArray& bits, int start = 0, int length = -1);
 
     template<typename T, ENABLE_IF(std::is_integral<T>)>
-    void replace(T integer, Endian::Endianness endianness = Endian::LE, int start = 0, int length = -1)
+    void replace(T integer, int start = 0, int length = -1)
     {
-        BitArray converted = BitArray::fromInteger(integer, endianness);
+        BitArray converted = BitArray::fromInteger(integer);
         replace(converted, start, length);
     }
 
@@ -559,10 +561,12 @@ public:
 
 //-Class Members---------------------------------------------------------------------------------------------
 private:
-    static inline const QString ERR_LVL_UNDEF = "Undefined Severity";
-    static inline const QString ERR_LVL_WARN = "Warning";
-    static inline const QString ERR_LVL_ERR = "Error";
-    static inline const QString ERR_LVL_CRIT = "Critical";
+    static inline const QHash<ErrorLevel, QString> ERR_LVL_STRING_MAP = {
+        {ErrorLevel::Undefined, "Undefined Severity"},
+        {ErrorLevel::Warning, "Warning"},
+        {ErrorLevel::Error, "Error"},
+        {ErrorLevel::Critical, "Critical"},
+    };
 
 public:
     static const GenericError UNKNOWN_ERROR;
