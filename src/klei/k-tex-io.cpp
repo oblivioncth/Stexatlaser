@@ -154,10 +154,10 @@ Qx::IOOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
 
     quint8 platformRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_PLATFORM_BC;
-    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_BC).toInteger<quint8>();
-    startBit += KTex::Header::BL_PLATFORM_BC;
-    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_BC).toInteger<quint8>();
-    startBit += KTex::Header::BL_PLATFORM_BC;
+    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PIXEL_FORMAT_BC).toInteger<quint8>();
+    startBit += KTex::Header::BL_PIXEL_FORMAT_BC;
+    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_TEXTURE_TYPE_BC).toInteger<quint8>();
+    startBit += KTex::Header::BL_TEXTURE_TYPE_BC;
     quint8 mipMapCountRaw = specifcationBits.extract(startBit, KTex::Header::BL_MIP_MAP_COUNT_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_MIP_MAP_COUNT_BC;
     quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_BC).toInteger<quint8>();
@@ -186,10 +186,10 @@ Qx::IOOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
 
     quint8 platformRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_PLATFORM_AC;
-    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
-    startBit += KTex::Header::BL_PLATFORM_AC;
-    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
-    startBit += KTex::Header::BL_PLATFORM_AC;
+    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PIXEL_FORMAT_AC).toInteger<quint8>();
+    startBit += KTex::Header::BL_PIXEL_FORMAT_AC;
+    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_TEXTURE_TYPE_AC).toInteger<quint8>();
+    startBit += KTex::Header::BL_TEXTURE_TYPE_AC;
     quint8 mipMapCountRaw = specifcationBits.extract(startBit, KTex::Header::BL_MIP_MAP_COUNT_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_MIP_MAP_COUNT_AC;
     quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
