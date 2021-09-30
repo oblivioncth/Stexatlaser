@@ -140,7 +140,7 @@ bool KAtlasKeyReader::readAtlasKey()
         mStreamReader.raiseError(ERR_NO_ELMENTS);
 
     // Return status
-    return mStreamReader.hasError();
+    return !mStreamReader.hasError();
 }
 
 bool KAtlasKeyReader::readElements()
@@ -162,7 +162,7 @@ bool KAtlasKeyReader::readElements()
         mStreamReader.raiseError(ERR_NO_ELMENTS);
 
     // Return status
-    return mStreamReader.hasError();
+    return !mStreamReader.hasError();
 }
 
 void KAtlasKeyReader::parseTexture()
@@ -175,6 +175,9 @@ void KAtlasKeyReader::parseTexture()
 
     // Read attributes
     mTargetAtlasKey.setAtlasFilename(textureAttrib.value("", Xml::ATTRIBUTE_FILENAME).toString());
+
+    // Go to end of element
+    mStreamReader.skipCurrentElement();
 }
 
 void KAtlasKeyReader::parseElement()
@@ -197,11 +200,14 @@ void KAtlasKeyReader::parseElement()
                                    elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_Y).toDouble()));
 
     mTargetAtlasKey.insertElement(elementName, element);
+
+    // Go to end of element
+    mStreamReader.skipCurrentElement();
 }
 
 void KAtlasKeyReader::parseStraightAlpha()
 {
-    QString text = mStreamReader.readElementText();
+    QString text = mStreamReader.readElementText(); // Already goes to end of element
     bool straightAlpha = false;
 
     if(text == "true")
