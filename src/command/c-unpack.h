@@ -34,6 +34,7 @@ private:
     static inline const QString MSG_FORM_ATLAS = "Forming atlas...";
     static inline const QString MSG_DEATLAS = "Deatlasing...";
     static inline const QString MSG_WRITE_IMAGES = "Writing output images...";
+    static inline const QString MSG_SUCCESS = "Successfully unpacked %1 images";
 
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
@@ -64,7 +65,8 @@ private:
     static inline const QCommandLineOption CL_OPTION_STRAIGHT{{CL_OPT_STRAIGHT_S_NAME, CL_OPT_STRAIGHT_L_NAME}, CL_OPT_STRAIGHT_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, "input"}; // Takes value
     static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, "output"}; // Takes value
-    static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_STRAIGHT, &CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
+    static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT, &CL_OPTION_STRAIGHT};
+    static inline const QSet<const QCommandLineOption*> CL_OPTIONS_REQUIRED{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
 
 public:
     // Meta
@@ -78,6 +80,7 @@ public:
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
     const QList<const QCommandLineOption*> options();
+    const QSet<const QCommandLineOption*> requiredOptions();
     const QString name();
 
 public:

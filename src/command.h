@@ -32,11 +32,15 @@ protected:
 //-Class Variables--------------------------------------------------------------------------------------------------------
 protected:
     // Help template
-    static inline const QString HELP_TEMPL = "<u>Usage:</u><br>"
-                                             "%1 &lt;options&gt;<br>"
-                                             "<br>"
-                                             "<u>Options:</u>%2";
-    static inline const QString HELP_OPT_TEMPL = "<br><b>%1:</b> &nbsp;%2";
+    static inline const QString HELP_TEMPL = "Usage:\n"
+                                             "------\n"
+                                             "%1 <options>\n"
+                                             "\n"
+                                             "Options:\n"
+                                             "--------%2\n"
+                                             "\n"
+                                             "*Required Option\n";
+    static inline const QString HELP_OPT_TEMPL = "\n%1%2: %3";
 
     // Standard command line option strings
     static inline const QString CL_OPT_HELP_S_NAME = "h";
@@ -77,6 +81,7 @@ public:
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
     virtual const QList<const QCommandLineOption*> options() = 0;
+    virtual const QSet<const QCommandLineOption*> requiredOptions() = 0;
     virtual const QString name() = 0;
     ErrorCode parse(const QStringList& commandLine);
     bool checkStandardOptions();

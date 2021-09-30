@@ -49,16 +49,18 @@ public:
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_ALL{&CL_OPTION_HELP, &CL_OPTION_VERSION};
 
     // Help template
-    static inline const QString HELP_TEMPL = "<u>Usage:</u><br>"
-                                             VER_INTERNALNAME_STR "&lt;global options&gt; <i>command</i> &lt;command options&gt;<br>"
-                                             "<br>"
-                                             "<u>Global Options:</u>%1<br>"
-                                             "<br>"
-                                             "<u>Commands:</u>%2<br>"
-                                             "<br>"
-                                             "Use the <b>-h</b> switch after a command to it's specific usage notes";
-    static inline const QString HELP_OPT_TEMPL = "<br><b>%1:</b> &nbsp;%2";
-    static inline const QString HELP_COMMAND_TEMPL = "<br><b>%1:</b> &nbsp;%2";
+    static inline const QString HELP_TEMPL = "Usage:\n"
+                                             "------\n"
+                                             VER_INTERNALNAME_STR " <global options> [command] <command options>\n"
+                                             "\n"
+                                             "Global Options:\n"
+                                             "---------------%1\n"
+                                             "\n"
+                                             "Commands:\n"
+                                             "---------%2\n"
+                                             "Use the '-h' switch after a command to see it's specific usage notes\n";
+    static inline const QString HELP_OPT_TEMPL = "\n%1: %2";
+    static inline const QString HELP_COMMAND_TEMPL = "\n[%1]: %2\n";
 
     // Command line messages
     static inline const QString CL_VERSION_MESSAGE = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR;
@@ -67,7 +69,7 @@ public:
     static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
 
     // Meta
-    static inline const QString NAME = "core";
+    static inline const QString NAME = "stex";
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:
@@ -86,6 +88,7 @@ public:
 
     void printError(QString src, Qx::GenericError error);
     void printMessage(QString src, QString message);
+    void printVerbatim(QString text);
 };
 
 

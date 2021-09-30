@@ -44,11 +44,11 @@ void Stex::showHelp()
     }
 
     // Show help
-    printMessage(NAME, helpStr);
+    printVerbatim(helpStr);
 }
 
 
-void Stex::showVersion() { printMessage(NAME, CL_VERSION_MESSAGE); }
+void Stex::showVersion() { printVerbatim(CL_VERSION_MESSAGE); }
 
 //Public:
 ErrorCode Stex::initialize(QStringList& commandLine)
@@ -108,6 +108,12 @@ void Stex::printError(QString src, Qx::GenericError error)
 
 void Stex::printMessage(QString src, QString message)
 {
-    qcout << "[" + src + "] " + message;
+    QString text =  "[" + src + "] " + message + "\n";
+    printVerbatim(text);
+}
+
+void Stex::printVerbatim(QString text)
+{
+    qcout << text;
     qcout.flush();
 }

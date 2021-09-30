@@ -26,7 +26,7 @@ private:
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
     // Processing
-    static inline const QStringList IMAGE_FORMATS = {".png"};
+    static inline const QStringList IMAGE_FORMATS = {"*.png"};
     static inline const QMap<QString, KTex::Header::PixelFormat> PIXEL_FORMAT_MAP = {
         {"dxt1", KTex::Header::PixelFormat::DXT1},
         {"dxt3", KTex::Header::PixelFormat::DXT3},
@@ -43,6 +43,7 @@ private:
     static inline const QString MSG_CREATE_TEX = "Creating TEX...";
     static inline const QString MSG_WRITE_TEX = "Writing TEX...";
     static inline const QString MSG_WRITE_KEY = "Writing atlas key...";
+    static inline const QString MSG_SUCCESS = "Successfully packed %1 images";
 
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
@@ -67,7 +68,7 @@ private:
     static inline const QString CL_OPT_FORMAT_S_NAME = "f";
     static inline const QString CL_OPT_FORMAT_L_NAME = "format";
     static inline const QString CL_OPT_FORMAT_DESC = "Pixel format to use when encoding to TEX. <" +
-                                                     PIXEL_FORMAT_MAP.keys().join(" | ") + ">." +
+                                                     PIXEL_FORMAT_MAP.keys().join(" | ") + ">. " +
                                                      "Defaults to DXT5.";
 
     static inline const QString CL_OPT_INPUT_S_NAME = "i";
@@ -84,8 +85,9 @@ private:
     static inline const QCommandLineOption CL_OPTION_FORMAT{{CL_OPT_FORMAT_S_NAME, CL_OPT_FORMAT_L_NAME}, CL_OPT_FORMAT_DESC, "format"}; // Takes value
     static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, "input"}; // Takes value
     static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, "output"}; // Takes value
-    static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_STRAIGHT, &CL_OPTION_UNOPT, &CL_OPTION_FORMAT,
-                                                                             &CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
+    static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT, &CL_OPTION_STRAIGHT,
+                                                                             &CL_OPTION_UNOPT, &CL_OPTION_FORMAT};
+    static inline const QSet<const QCommandLineOption*> CL_OPTIONS_REQUIRED{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
 
 public:
     // Meta
@@ -100,6 +102,7 @@ public:
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
     const QList<const QCommandLineOption*> options();
+    const QSet<const QCommandLineOption*> requiredOptions();
     const QString name();
 
 public:

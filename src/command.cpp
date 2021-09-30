@@ -68,10 +68,11 @@ void Command::showHelp()
             // Handle names
             QStringList dashedNames;
             for(const QString& name :  qAsConstR(clOption->names()))
-                dashedNames << (name.length() > 1 ? "--" : "-" + name);
+                dashedNames << ((name.length() > 1 ? "--" : "-") + name);
 
             // Add option
-            optStr += HELP_OPT_TEMPL.arg(dashedNames.join(" | "), clOption->description());
+            QString marker = requiredOptions().contains(clOption) ? "*" : "";
+            optStr += HELP_OPT_TEMPL.arg(marker, dashedNames.join(" | "), clOption->description());
         }
 
         // Complete string
@@ -79,5 +80,5 @@ void Command::showHelp()
     }
 
     // Show help
-    mCore.printMessage(NAME, helpStr);
+    mCore.printVerbatim(helpStr);
 }
