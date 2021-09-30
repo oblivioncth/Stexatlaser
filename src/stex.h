@@ -63,7 +63,7 @@ public:
     static inline const QString HELP_COMMAND_TEMPL = "\n[%1]: %2\n";
 
     // Command line messages
-    static inline const QString CL_VERSION_MESSAGE = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR;
+    static inline const QString CL_VERSION_MESSAGE = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR "\n";
 
     // Stream
     static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
