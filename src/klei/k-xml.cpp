@@ -12,6 +12,7 @@ namespace
         const QString ELEMENT_ELEMENTS = "Elements";
         const QString ELEMENT_ELEMENT = "Element";
         const QString ELEMENT_TEXTURE = "Texture";
+        const QString ELEMENT_STR_ALPHA = "StraightAlpha";
         const QString ATTRIBUTE_FILENAME = "filename";
         const QString ATTRIBUTE_ELEMENT_NAME = "name";
         const QString ATTRIBUTE_TOP_LEFT_X = "u1";
@@ -49,6 +50,10 @@ bool KAtlasKeyWriter::writeElement(const QString& elementName, const QRectF& ele
 //Public:
 Qx::XmlStreamWriterError KAtlasKeyWriter::write()
 {
+    // Open file
+    if(!mTargetFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return Qx::XmlStreamWriterError(mTargetFile.errorString());
+
     // Setup Writer
     mStreamWriter.setDevice(&mTargetFile);
     mStreamWriter.setAutoFormatting(true);
@@ -75,11 +80,17 @@ Qx::XmlStreamWriterError KAtlasKeyWriter::write()
 
     mStreamWriter.writeEndElement();
 
+    // Write straight alpha
+    mStreamWriter.writeTextElement(Xml::ELEMENT_STR_ALPHA, mSourceAtlasKey.straightAlpha() ? "true" : "false");
+
     // End atlas element
     mStreamWriter.writeEndDocument();
 
     // Complete document
     mStreamWriter.writeEndDocument();
+
+    // Close file
+    mTargetFile.close();
 
     // Return writer status
     return mStreamWriter.hasError() ? Qx::XmlStreamWriterError(mStreamWriter.device()->errorString()) :
@@ -117,6 +128,8 @@ bool KAtlasKeyReader::readAtlasKey()
 
             hasElements = true;
         }
+        else if(mStreamReader.name() == Xml::ELEMENT_STR_ALPHA)
+            parseStraightAlpha();
         else
             mStreamReader.skipCurrentElement();
     }
@@ -186,6 +199,21 @@ void KAtlasKeyReader::parseElement()
     mTargetAtlasKey.insertElement(elementName, element);
 }
 
+void KAtlasKeyReader::parseStraightAlpha()
+{
+    QString text = mStreamReader.readElementText();
+    bool straightAlpha = false;
+
+    if(text == "true")
+        straightAlpha = true;
+    else if(text == "false")
+        straightAlpha = false;
+    else
+        mStreamReader.raiseError(ERR_INVALID_STR_ALPHA);
+
+    mTargetAtlasKey.setStraightAlpha(straightAlpha);
+}
+
 bool KAtlasKeyReader::hasAttributes(const QXmlStreamAttributes& attributes, const QStringList& checkList)
 {
     for(const QString& attrib : checkList)
@@ -203,6 +231,10 @@ bool KAtlasKeyReader::hasAttributes(const QXmlStreamAttributes& attributes, cons
 //Public:
 Qx::XmlStreamReaderError KAtlasKeyReader::read()
 {
+    // Open file
+    if(!mSourceFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return Qx::XmlStreamReaderError(mSourceFile.errorString());
+
     // Setup reader
     mStreamReader.setDevice(&mSourceFile);
 
@@ -229,6 +261,9 @@ Qx::XmlStreamReaderError KAtlasKeyReader::read()
     }
     else
         readError = Qx::XmlStreamReaderError(mStreamReader.error());
+
+    // Close file
+    mSourceFile.close();
 
     // Return status
     return readError;

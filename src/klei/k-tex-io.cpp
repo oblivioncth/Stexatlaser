@@ -232,10 +232,8 @@ Qx::IOOpReport KTexReader::readHeader()
     Qx::BitArray specifcationBits = Qx::BitArray::fromInteger<quint32>(specifications);
 
     // This test has a false positive (for pre-caves update) if the input TEX is of the post-caves update variety,
-    // has both flags set to high, and has at least 30 mipmaps. This is considered unlikely enough (and perhaps
-    // even impossible if the purpose of the second flag in the newer format is to always be 0 so that one can
-    // simply check bit 19 of the header specs for 0 -> post-caves, and 1 -> pre-caves, though this would require
-    // inspection of a large sample size of files) to be reasonable since there is no other way to check
+    // has both flags set to high, and has at least 30 mipmaps. This is considered unlikely enough to be reasonable
+    // (as it would likely result from an image with an initial size of 73,728 x 73,728) since there is no other way to check
     if(specifcationBits.extract(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC)
         parsePreCavesSpecs(specifcationBits);
     else

@@ -10,6 +10,7 @@ class KAtlasKey
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
     QString mAtlasFilename;
+    bool mStraightAlpha; // Custom entry from this program for recording if alpha was premultiplied during creation
     QMap<QString, QRectF> mRelativeElements;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
@@ -20,6 +21,8 @@ public:
 public:
     QString atlasFilename() const;
     void setAtlasFilename(QString atlasFilename);
+    bool straightAlpha() const;
+    void setStraightAlpha(bool straightAlpha);
     int elementCount() const;
 
     QMap<QString, QRectF>& elements();
@@ -33,11 +36,12 @@ class KAtlasKeyGenerator
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
     const KAtlas& mAtlas;
-    const QString& mAtlasName;
+    const QString mAtlasName;
+    const bool mStraightAlpha;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName);
+    KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName, bool straightAlpha);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:

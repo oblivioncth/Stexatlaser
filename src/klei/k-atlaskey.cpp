@@ -29,6 +29,7 @@ namespace
 //-Constructor-------------------------------------------------------------------------------------------------
 KAtlasKey::KAtlasKey() :
     mAtlasFilename(),
+    mStraightAlpha(false), // Assume premultiplied by default
     mRelativeElements()
 {}
 
@@ -36,6 +37,8 @@ KAtlasKey::KAtlasKey() :
 //Public:
 QString KAtlasKey::atlasFilename() const { return mAtlasFilename; }
 void KAtlasKey::setAtlasFilename(QString atlasFilename) { mAtlasFilename = atlasFilename; }
+bool KAtlasKey::straightAlpha() const { return mStraightAlpha; }
+void KAtlasKey::setStraightAlpha(bool straightAlpha) { mStraightAlpha = straightAlpha; }
 int KAtlasKey::elementCount() const { return mRelativeElements.count(); }
 
 QMap<QString, QRectF>& KAtlasKey::elements() { return mRelativeElements; }
@@ -49,9 +52,10 @@ void KAtlasKey::insertElement(QString elementName, QRectF element) { mRelativeEl
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName) :
+KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName, bool straightAlpha) :
     mAtlas(atlas),
-    mAtlasName(atlasName)
+    mAtlasName(atlasName),
+    mStraightAlpha(straightAlpha)
 {}
 
 //-Instance Functions--------------------------------------------------------------------------------------------
@@ -84,6 +88,7 @@ KAtlasKey KAtlasKeyGenerator::process() const
     // Create atlas key
     KAtlasKey atlasKey;
     atlasKey.setAtlasFilename(mAtlasName + "." + KTex::FILE_EXT);
+    atlasKey.setStraightAlpha(mStraightAlpha);
     atlasKey.elements() = translateElements();
 
     return atlasKey;
