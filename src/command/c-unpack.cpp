@@ -143,9 +143,9 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     {
         QString filename = finalOutputDir.absoluteFilePath(i.key() + ".png");
         QImageWriter writer(filename);
-        if(writer.write(i.value()))
+        if(!writer.write(i.value()))
         {
-            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_IMAGE.arg(filename)));
+            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_IMAGE.arg(filename), writer.errorString()));
             return ErrorCodes::CANT_WRITE_IMAGE;
         }
     }
