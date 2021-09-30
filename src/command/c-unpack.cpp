@@ -92,12 +92,12 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     }
 
     // Create final output directory
+    QDir finalOutputDir(outputDir.absoluteFilePath(texFileInfo.baseName()));
     if(outputDir.mkdir(texFileInfo.baseName()))
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_CREATE_DIR));
+        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_CREATE_DIR.arg(finalOutputDir.absolutePath())));
         return ErrorCodes::CANT_CREATE_DIR;
     }
-    QDir finalOutputDir(outputDir.absoluteFilePath(texFileInfo.baseName()));
 
     // Read TEX atlas
     mCore.printMessage(NAME, MSG_READ_TEX);

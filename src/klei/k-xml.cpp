@@ -232,7 +232,7 @@ bool KAtlasKeyReader::hasAttributes(const QXmlStreamAttributes& attributes, cons
 Qx::XmlStreamReaderError KAtlasKeyReader::read()
 {
     // Open file
-    if(!mSourceFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    if(!mSourceFile.open(QIODevice::ReadOnly))
         return Qx::XmlStreamReaderError(mSourceFile.errorString());
 
     // Setup reader
