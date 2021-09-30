@@ -66,8 +66,13 @@ QVector<QImage> ToTexConverter::generateMipMaps(const QImage& baseImage)
     // Ideally this would perform a bit more image processing but Qt doesn't have much
     // and for now the priority is to keep lib dependency low (ImageMagick feature disabling
     // on Windows in particular is really troublesome and it has a conflict with harfbuzz in Qt)
-    while(mipMapSize.isValid())
+    while(mipMapSize.width() > 0 && mipMapSize.height() > 0)
+    {
         mipMaps.append(baseImage.scaled(mipMapSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        mipMapSize.setWidth(mipMapSize.width()/2);
+        mipMapSize.setHeight(mipMapSize.height()/2);
+        // Can't use QSize::operator/() directly because it rounds up to nearest integer and won't reach 0
+    }
 
     return mipMaps;
 }
