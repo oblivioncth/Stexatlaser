@@ -21,6 +21,7 @@ CPack::CPack(Stex& coreRef) : Command(coreRef) {}
 //-Instance Functions-------------------------------------------------------------
 //Protected:
 const QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+const QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
 const QString CPack::name() { return NAME; }
 
 //Public:
@@ -76,7 +77,8 @@ ErrorCode CPack::process(const QStringList& commandLine)
     }
 
     // Get output pixel format
-    KTex::Header::PixelFormat outputPixelFormat = PIXEL_FORMAT_MAP[mParser.value(CL_OPTION_FORMAT)];
+    KTex::Header::PixelFormat outputPixelFormat = mParser.isSet(CL_OPTION_FORMAT) ? PIXEL_FORMAT_MAP[mParser.value(CL_OPTION_FORMAT)] :
+                                                                                    KTex::Header::PixelFormat::DXT5;
 
     // Get source images
     mCore.printMessage(NAME, MSG_READ_IMAGES);
@@ -115,7 +117,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
 
     // Create atlas key
     mCore.printMessage(NAME, MSG_CREATE_KEY);
-    KAtlasKeyGenerator akg(atlas, inputDir.dirName());
+    KAtlasKeyGenerator akg(atlas, inputDir.dirName(), mParser.isSet(CL_OPTION_STRAIGHT));
     KAtlasKey atlasKey = akg.process();
 
     // Create TEX
@@ -145,7 +147,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
     QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + ".xml"));
     KAtlasKeyWriter keyWriter(outputKeyFile, atlasKey);
     Qx::XmlStreamWriterError keyWriteReport;
-    if(!(keyWriteReport = keyWriter.write()).isValid())
+    if((keyWriteReport = keyWriter.write()).isValid())
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_KEY.arg(outputKeyFile.fileName()),
                                                 keyWriteReport.getText()));
@@ -153,5 +155,6 @@ ErrorCode CPack::process(const QStringList& commandLine)
     }
 
     // Return success
+    mCore.printMessage(NAME, MSG_SUCCESS.arg(namedImages.count()));
     return Stex::ErrorCodes::NO_ERR;
 }

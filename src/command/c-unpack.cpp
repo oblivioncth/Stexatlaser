@@ -21,6 +21,7 @@ CUnpack::CUnpack(Stex& coreRef) : Command(coreRef) {}
 //-Instance Functions-------------------------------------------------------------
 //Protected:
 const QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+const QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
 const QString CUnpack::name() { return NAME; }
 
 //Public:
@@ -121,7 +122,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     // Extract atlas image from TEX
     mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
     FromTexConverter::Options ftco;
-    ftco.demultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT);
+    ftco.demultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT) && !atlasKey.straightAlpha();
     FromTexConverter ftc(tex, ftco);
     QImage atlasImage = ftc.convert();
 
@@ -150,5 +151,6 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     }
 
     // Return success
+    mCore.printMessage(NAME, MSG_SUCCESS.arg(namedImages.count()));
     return Stex::ErrorCodes::NO_ERR;
 }
