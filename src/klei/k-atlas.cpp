@@ -281,7 +281,7 @@ QMap<QString, QRect> KDeatlaser::flipElements() const
 
     QMap<QString, QRect>::const_iterator i;
     for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
-        flippedElements[i.key()] = {QPoint(i->x(), (i->height() - 1) - i->bottom()), i->size()};
+        flippedElements[i.key()] = {QPoint(i->x(), (mAtlas.image.height() - 1) - i->bottom()), i->size()};
 
     return flippedElements;
 }
@@ -303,7 +303,7 @@ QMap<QString, QImage> KDeatlaser::process() const
     // Flip atlas
     QImage standardImage = mAtlas.image.mirrored();
 
-    // Convert to "standard" format;
+    // Convert to "standard" format (not needed, but hey)
     standardImage = standardImage.convertToFormat(QImage::Format_ARGB32);
 
     // Flip elements
