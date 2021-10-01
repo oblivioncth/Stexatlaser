@@ -63,7 +63,7 @@ private:
 
     static inline const QString CL_OPT_UNOPT_S_NAME = "u";
     static inline const QString CL_OPT_UNOPT_L_NAME = "unoptimized";
-    static inline const QString CL_OPT_UNOPT_DESC = "Do not generate smoothed mip-maps.";
+    static inline const QString CL_OPT_UNOPT_DESC = "Do not generate smoothed mipmaps.";
 
     static inline const QString CL_OPT_FORMAT_S_NAME = "f";
     static inline const QString CL_OPT_FORMAT_L_NAME = "format";
