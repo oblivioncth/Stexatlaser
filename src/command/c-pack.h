@@ -59,7 +59,7 @@ private:
     // Command line option strings
     static inline const QString CL_OPT_STRAIGHT_S_NAME = "s";
     static inline const QString CL_OPT_STRAIGHT_L_NAME = "straight";
-    static inline const QString CL_OPT_STRAIGHT_DESC = "Keep straight alpha channel, do not premultiply.";
+    static inline const QString CL_OPT_STRAIGHT_DESC = "Keep straight alpha channel, do not pre-multiply.";
 
     static inline const QString CL_OPT_UNOPT_S_NAME = "u";
     static inline const QString CL_OPT_UNOPT_L_NAME = "unoptimized";
