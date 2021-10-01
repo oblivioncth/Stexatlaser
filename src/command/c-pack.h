@@ -12,15 +12,11 @@ private:
     {
     //-Class Variables--------------------------------------------------------------------------------------------------
     public:
-        static const ErrorCode NO_INPUT = 101;
-        static const ErrorCode NO_OUTPUT = 102;
-        static const ErrorCode INVALID_INPUT = 103;
-        static const ErrorCode INVALID_OUTPUT = 104;
-        static const ErrorCode INVALID_FORMAT = 105;
-        static const ErrorCode NO_IMAGES = 106;
-        static const ErrorCode CANT_READ_IMAGE = 107;
-        static const ErrorCode CANT_WRITE_ATLAS = 108;
-        static const ErrorCode CANT_WRITE_KEY = 109;
+        static const ErrorCode INVALID_FORMAT = 101;
+        static const ErrorCode NO_IMAGES = 102;
+        static const ErrorCode CANT_READ_IMAGE = 103;
+        static const ErrorCode CANT_WRITE_ATLAS = 104;
+        static const ErrorCode CANT_WRITE_KEY = 105;
     };
 
 //-Class Variables------------------------------------------------------------------------------------------------------

@@ -25,6 +25,10 @@ public:
     public:
         static const ErrorCode NO_ERR = 0;
         static const ErrorCode INVALID_ARGS = 1;
+        static const ErrorCode NO_INPUT = 2;
+        static const ErrorCode NO_OUTPUT = 3;
+        static const ErrorCode INVALID_INPUT = 4;
+        static const ErrorCode INVALID_OUTPUT = 5;
     };
 
 //-Class Variables------------------------------------------------------------------------------------------------------

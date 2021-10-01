@@ -41,12 +41,12 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     if(!mParser.isSet(CL_OPTION_INPUT))
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_INPUT));
-        return ErrorCodes::NO_INPUT;
+        return Stex::ErrorCodes::NO_INPUT;
     }
     if(!mParser.isSet(CL_OPTION_OUTPUT))
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_OUTPUT));
-        return ErrorCodes::NO_OUTPUT;
+        return Stex::ErrorCodes::NO_OUTPUT;
     }
 
     // Get input and output
@@ -58,14 +58,14 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != "xml")
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_INPUT));
-        return ErrorCodes::INVALID_INPUT;
+        return Stex::ErrorCodes::INVALID_INPUT;
     }
     if(!outputDir.exists())
     {
         if(!outputDir.mkpath(outputDir.absolutePath()))
         {
             mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_OUTPUT));
-            return ErrorCodes::INVALID_OUTPUT;
+            return Stex::ErrorCodes::INVALID_OUTPUT;
         }
     }
 

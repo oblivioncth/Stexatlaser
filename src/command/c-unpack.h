@@ -12,16 +12,12 @@ private:
     {
     //-Class Variables--------------------------------------------------------------------------------------------------
     public:
-        static const ErrorCode NO_INPUT = 201;
-        static const ErrorCode NO_OUTPUT = 202;
-        static const ErrorCode INVALID_INPUT = 203;
-        static const ErrorCode INVALID_OUTPUT = 204;
-        static const ErrorCode CANT_READ_KEY = 205;
-        static const ErrorCode ATLAS_DOESNT_EXIST = 206;
-        static const ErrorCode CANT_READ_ATALAS = 207;
-        static const ErrorCode ATLAS_UNSUPPORTED = 208;
-        static const ErrorCode CANT_CREATE_DIR = 209;
-        static const ErrorCode CANT_WRITE_IMAGE = 210;
+        static const ErrorCode CANT_READ_KEY = 201;
+        static const ErrorCode ATLAS_DOESNT_EXIST = 202;
+        static const ErrorCode CANT_READ_ATALAS = 203;
+        static const ErrorCode ATLAS_UNSUPPORTED = 204;
+        static const ErrorCode CANT_CREATE_DIR = 205;
+        static const ErrorCode CANT_WRITE_IMAGE = 206;
     };
 
 //-Class Variables------------------------------------------------------------------------------------------------------
