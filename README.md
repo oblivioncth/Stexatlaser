@@ -1,4 +1,6 @@
 # Stexatlaser (Stex)
+<img align="left" src="https://i.imgur.com/LCBz647.png" width=35%>
+
 Stexatlaser (a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
 
 It uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
@@ -9,11 +11,13 @@ It can also reverse the process and extract element images from an atlas using i
 ## Compatibility
 While this tool was written with Don't Starve Together in mind, it should work with any Klei TEX file as long as the format is not significantly different. There are still a few unknowns concerning format interpretation with even DST, but they do not impact the performance of this tool and will be addressed in the event they're determined to be relevant.
 
+
 ## Usage
 Stex uses the following syntax scheme:
 
     stex <global options> [command] <command options>
 The order of switches within each options section does not matter.
+
 
 ### Basic Usage
 *NOTE:* For technical reasons, Stex currently only supports PNG for input/output images
@@ -45,9 +49,11 @@ The key's corresponding atlas, which must be located alongside it, will be read 
 
 When finished, a subfolder with the name of the atlas will be created within the specified output directory that contains each individual element as a separate image. This results in the same structure used as input when packing an atlas.
 
+
 ### Advance Usage
 - If the alpha channel was pre-multiplied when a given TEX atlas was created, the **-s** switch must be passed to **unpack** for the images to be recovered correctly. This is handled automatically for atlas/key pairs that were generated with Stex's pack command, as detailed in the "Additional Features" section 
 - See the following section for more detailed options/modes.
+
 
 ## All Commands/Options
 The recommended way to use all switches is to use their short form when the value for the switch has no spaces:
@@ -59,9 +65,11 @@ and the long form when the value does have spaces
     --input="C:/Textures/Don't Starve Together/input.xml"
 though this isn't required as long as quotation and space use is carefully employed.
 
+
 ### Global Options:
  -  **-h | --help | -?:** Prints usage information
  -  **-v | --version:** Prints the current version of the tool
+ 
  
 ### Commands:
 **pack** - Pack  a  folder  of  images  (PNG)  into  a  TEX  atlas.  The  input  directory  will  be  used  as  the  name  for  the  atlas/key, while  the  image  names  will  be  used  as  the  element  names
@@ -108,6 +116,7 @@ Still, for this reason it is recommended to keep original copies of your texture
 
 --------------------------------------------------------------------------------
 
+
 ## Exit Codes
 Once stex has finished executing an exit code is reported that indicates the "error status" of the program, which can be useful for recording/determining issues. The exit code can be obtained by running the application in the following manner:
 
@@ -134,12 +143,14 @@ Once stex has finished executing an exit code is reported that indicates the "er
 | 205   | CANT_CREATE_DIR    | Failed to create the element output directory                            |
 | 206   | CANT_WRITE_IMAGE   | Failed to write an output image                                          |
 
+
 ## Additional Features
 A small shortcoming of the TEX format is that it doesn't store whether or not its image data is using pre-multiplied alpha (unless that's the purpose of one of the two unknown flags), and so one needs to somehow otherwise know if this is the case and manually specify that the alpha needs to be de-multiplied when using tools that handle TEX files (they often just assume they need to). To circumvent this, any TEX atlases created with Stex's **pack** command will have an extra entry in their key that records this property. This value is then subsequently read and utilized when extracting that same TEX using Stex's **unpack** command. If the value isn't present within a key then an input atlas is assumed to be using pre-multiplied alpha unless the **-s** switch is used with the unpack command/
 
 Simply put, if you always pack and unpack your multi-image atlases with Stex you will never have to worry about this.
 
 Although this breaks the "standard" for atlas keys, since they are just XML files the games parser will simply ignore this extra element and it therefore causes no issues and maintains compatibility.
+
 
 ## Source
 This tool was written in C++ 17 targeting Windows and has the following dependencies:
@@ -155,6 +166,7 @@ Because of the allowances by various licenses and overall small footprints, this
 This project is configured for the qmake build system and can be built using it directly or through Qt Creator via the included .pro file.
 
 Other platforms are possible to compile for with some modifications.
+
 
 ## Klei TEX Format
 When creating this tool I couldn't find any documentation on the Klei TEX format and had to use other existing tools' code as reference. I have provided by interpretation here for convivence:
