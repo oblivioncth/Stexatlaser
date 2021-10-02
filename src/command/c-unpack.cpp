@@ -93,7 +93,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
 
     // Create final output directory
     QDir finalOutputDir(outputDir.absoluteFilePath(texFileInfo.baseName()));
-    if(!outputDir.mkdir(texFileInfo.baseName()))
+    if(!finalOutputDir.exists() && !outputDir.mkpath(finalOutputDir.absolutePath()))
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_CREATE_DIR.arg(finalOutputDir.absolutePath())));
         return ErrorCodes::CANT_CREATE_DIR;
