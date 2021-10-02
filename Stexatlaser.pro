@@ -28,6 +28,8 @@ HEADERS += \
     src/klei/k-xml.h \
     src/version.h
 
+RC_FILE = resources.rc
+
 INCLUDEPATH += $$PWD/include $$PWD/include/Squish
 DEPENDPATH += $$PWD/include $$PWD/include/Squish
 
