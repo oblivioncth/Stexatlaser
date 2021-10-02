@@ -262,7 +262,8 @@ Qx::IOOpReport KTexReader::readMipMapMetadata()
 
     quint16 mipMapPitch;
     mStreamReader >> mipMapPitch;
-    mipMap.setPitch(mipMapPitch);
+    // Manually correct non-compliant mipmaps that report 0 pitch (*cough* matt's tools *cough*)
+    mipMap.setPitch(mipMapPitch != 0 ? mipMapPitch : mipMapWidth * 4); // width x 4 is from libsquish
 
     quint32 mipMapDataSize;
     mStreamReader >> mipMapDataSize;
