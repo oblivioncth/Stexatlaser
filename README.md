@@ -1,5 +1,5 @@
 # Stexatlaser (Stex)
-<img align="left" src="https://i.imgur.com/LCBz647.png" width=35%>
+<img align="left" src="https://i.imgur.com/LCBz647.png" width=25%>
 
 Stexatlaser (a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
 
