@@ -1,7 +1,7 @@
 # Stexatlaser (Stex)
 <img align="left" src="https://i.imgur.com/LCBz647.png" width=25%>
 
-Stexatlaser (a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
+Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
 
 It uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
 
