@@ -6,7 +6,7 @@
 
 //-Constructor-------------------------------------------------------------------------------------------------
 KTex::Header::Header() :
-    mPlatform(KTex::Header::Platform::PC),
+    mPlatform(KTex::Header::Platform::Default),
     mPixelFormat(KTex::Header::PixelFormat::DXT5),
     mTextureType(KTex::Header::TextureType::TwoD),
     mFlagOne(true),

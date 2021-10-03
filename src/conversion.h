@@ -11,7 +11,7 @@ class ToTexConverter
 public:
     struct Options
     {
-        KTex::Header::Platform platform = KTex::Header::Platform::PC;
+        KTex::Header::Platform platform = KTex::Header::Platform::Default;
         KTex::Header::TextureType textureType = KTex::Header::TextureType::TwoD;
         KTex::Header::PixelFormat pixelFormat = KTex::Header::PixelFormat::DXT5;
         bool generateMipMaps = true;
