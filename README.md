@@ -96,26 +96,13 @@ Options:
 Requires:
 **-i** and **-o** 
 
---------------------------------------------------------------------------------
- 
- **prepare** - Initializes  Flashpoint  for  playing  the  provided  Data  Pack  based  title  by  UUID.  If  the  title  does  not  use  a  Data  Pack  this  command  has  no  effect.
-
-Options:
-
- -  **-i | --id:** UUID  of  title  to  prepare
- -  **-t | --title:** Title  to  prepare
- -  **-h | --help | -?:** Prints command specific usage information
-
-Requires:
-**-i** or **-t** 
-
 Notes: 
 Because Klei TEX atlas keys use relative coordinates and converting to/from them incurs floating-point inaccuracies, there are some edge cases where the dimensions of unpacked images may differ very slightly from the originals used to create the TEX; however, this is generally not the case.
 
 Still, for this reason it is recommended to keep original copies of your textures and not rely on the TEX version as your only copy.
 
 --------------------------------------------------------------------------------
-
+ 
 
 ## Exit Codes
 Once stex has finished executing an exit code is reported that indicates the "error status" of the program, which can be useful for recording/determining issues. The exit code can be obtained by running the application in the following manner:
