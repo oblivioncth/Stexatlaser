@@ -156,7 +156,7 @@ Other platforms are possible to compile for with some modifications.
 
 
 ## Klei TEX Format
-When creating this tool I couldn't find any documentation on the Klei TEX format and had to use other existing tools' code as reference. I have provided by interpretation here for convivence:
+When creating this tool I couldn't find any documentation on the Klei TEX format and had to use other existing tools' code as reference. I have provided my interpretation here for convivence:
 
     KTEX FORMAT
     ============
