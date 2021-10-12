@@ -59,7 +59,7 @@ Qx::XmlStreamWriterError KAtlasKeyWriter::write()
     mStreamWriter.setAutoFormatting(true);
 
     // Write header
-    mStreamWriter.writeStartDocument("1.0", true);
+    mStreamWriter.writeStartDocument();
 
     // Start atlas element
     mStreamWriter.writeStartElement(Xml::ELEMENT_ATLAS);
