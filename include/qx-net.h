@@ -14,6 +14,9 @@ struct DownloadTask
 {
     QUrl target;
     QFile* dest;
+
+    friend bool operator== (const DownloadTask& lhs, const DownloadTask& rhs) noexcept;
+    friend uint qHash(const DownloadTask& key, uint seed) noexcept;
 };
 
 //-Classes------------------------------------------------------------------------------------------------------------
@@ -38,14 +41,38 @@ public:
     QString getText();
 };
 
+//TODO: Add AsyncDownloadManager using a finished signal instead and a dynamically managed progress output
+//TODO: Potentially implement a full DownloadOpReport class similar to IOOpReport that is good for info on
+//      success and fail
 class SyncDownloadManager: public QObject
 {
 //-QObject Macro (Required for all QObject Derived Classes)-----------------------------------------------------------
     Q_OBJECT
 
 //-Class Enums--------------------------------------------------------------------------------------------------------
-private:
-    enum class FinishStatus {SUCCESS, USER_ABORT, AUTO_ABORT, OTHER};
+public:
+    enum class FinishStatus {Success, UserAbort, AutoAbort, Error};
+
+//-Inner Classes------------------------------------------------------------------------------------------------------
+public:
+    class Report
+    {
+    //-Instance Variables---------------------------------------------------------------------------------------------
+    private:
+        FinishStatus mFinishStatus;
+        GenericError mErrorInfo;
+
+    //-Constructor-------------------------------------------------------------------------------------------------------
+    public:
+        Report();
+        Report(FinishStatus finishStatus, GenericError errorInfo);
+
+    //-Instance Functions----------------------------------------------------------------------------------------------
+    public:
+        FinishStatus finishStatus() const;
+        GenericError errorInfo() const;
+        bool wasSuccessful() const;
+    };
 
 //-Class Members------------------------------------------------------------------------------------------------------
 private:
@@ -84,25 +111,28 @@ private:
     bool mOverwrite = false;
     bool mAutoAbort = false;
 
+    // Task tracking
+    QHash<QNetworkReply*, DownloadTask> mReplyTaskMap;
+
     // Downloads
     QList<DownloadTask> mPendingDownloads;
     QHash<QNetworkReply*, std::shared_ptr<FileStreamWriter>> mActiveDownloads;
 
     // Progress
-    quint64 mTotalBytes = 0;
-    quint64 mCurrentBytes = 0;
-    QHash<QNetworkReply*, quint64> mInvididualBytes;
+    bool mDownloading = false;
+    Cumulation<DownloadTask, quint64> mTotalBytes;
+    Cumulation<QNetworkReply*, quint64> mCurrentBytes;
 
     // Synchronus elements
     QEventLoop mDownloadWait;
     QStringList mErrorList;
 
     // Status tracking
-    FinishStatus mFinishStatus = FinishStatus::SUCCESS;
+    FinishStatus mFinishStatus = FinishStatus::Success;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    SyncDownloadManager();
+    SyncDownloadManager(QObject* parent = nullptr);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
@@ -110,6 +140,7 @@ private:
     NetworkReplyError getFileSize(quint64& returnBuffer, QUrl target);
     IOOpReport startDownload(DownloadTask task);
     void cancelAll();
+    void reset();
 
 public:
     void appendTask(DownloadTask task);
@@ -117,7 +148,7 @@ public:
     void setRedirectPolicy(QNetworkRequest::RedirectPolicy redirectPolicy);
     void setOverwrite(bool overwrite);
     void setAutoAbort(bool autoAbort);
-    GenericError processQueue();
+    Report processQueue();
 
 //-Slots------------------------------------------------------------------------------------------------------------
 private slots:

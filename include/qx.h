@@ -392,6 +392,42 @@ public:
 };
 #endif
 
+template <typename K, typename V, ENABLE_IF(std::is_arithmetic<V>)>
+class Cumulation
+{
+//-Instance Variables----------------------------------------------------------------------------------------------
+private:
+    QHash<K, V> mComponents;
+    V mTotal;
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+public:
+    void clear()
+    {
+        mComponents.clear();
+        mTotal = 0;
+    }
+
+    void remove(K component)
+    {
+        if(mComponents.contains(component))
+        {
+            mTotal -= mComponents.value(component);
+            mComponents.remove(component);
+        }
+    }
+
+    void setValue(K component, V value)
+    {
+        mTotal += value - (mComponents.contains(component) ? mComponents.value(component) : 0);
+        mComponents[component] = value;
+    }
+
+    bool contains(K component) { return mComponents.contains(component); }
+    V value(K component) { return mComponents.value(component); }
+    V total() { return mTotal; }
+};
+
 class DateTime
 {
 //-Class Variables----------------------------------------------------------------------------------------------
@@ -629,38 +665,11 @@ private:
 
 //-Class Functions-----------------------------------------------------------------------------------------------
 public:
-    template <typename T, ENABLE_IF(is_json_type<T>)>
-    static Qx::GenericError checkedKeyRetrieval(T& valueBuffer, QJsonObject jObject, QString key)
-    {
-        // Reset buffer
-        valueBuffer = T();
-
-        QJsonValue potentialT;
-
-        if((potentialT = jObject.value(key)).isUndefined())
-            return GenericError(GenericError::Undefined, ERR_RETRIEVING_VALUE.arg(JSON_TYPE_STRING, key), ERR_KEY_DOESNT_EXIST.arg(key));
-
-        if((std::is_same_v<T, bool> && !potentialT.isBool()) ||
-           (std::is_same_v<T, double> && !potentialT.isDouble()) ||
-           (std::is_same_v<T, QString> && !potentialT.isString()) ||
-           (std::is_same_v<T, QJsonArray> && !potentialT.isArray()) ||
-           (std::is_same_v<T, QJsonObject> && !potentialT.isObject()))
-            return GenericError(GenericError::Undefined, ERR_RETRIEVING_VALUE.arg(JSON_TYPE_STRING, key), ERR_KEY_TYPE_MISMATCH.arg(key, JSON_TYPE_STRING));
-        else if(std::is_same_v<T, bool>)
-            valueBuffer = potentialT.toBool();
-        else if(std::is_same_v<T, double>)
-            valueBuffer = potentialT.toDouble();
-        else if(std::is_same_v<T, QString>)
-            valueBuffer = potentialT.toString();
-        else if(std::is_same_v<T, QJsonArray>)
-            valueBuffer = potentialT.toArray();
-        else if(std::is_same_v<T, QJsonObject>)
-            valueBuffer = potentialT.toObject();
-        else
-            assert(true); // No other types should be possible
-
-        return GenericError();
-    }
+    static Qx::GenericError checkedKeyRetrieval(bool& valueBuffer, QJsonObject jObject, QString key);
+    static Qx::GenericError checkedKeyRetrieval(double& valueBuffer, QJsonObject jObject, QString key);
+    static Qx::GenericError checkedKeyRetrieval(QString& valueBuffer, QJsonObject jObject, QString key);
+    static Qx::GenericError checkedKeyRetrieval(QJsonArray& valueBuffer, QJsonObject jObject, QString key);
+    static Qx::GenericError checkedKeyRetrieval(QJsonObject& valueBuffer, QJsonObject jObject, QString key);
 };
 
 template <typename T, ENABLE_IF2(std::is_arithmetic<T>)>
@@ -1009,7 +1018,7 @@ public:
     void advance(int count = 1);
 
     QChar currentChar();
-    QChar currentIndex();
+    int currentIndex();
     QChar lookAhead(int posOffset = 1);
     bool atEnd();
 };

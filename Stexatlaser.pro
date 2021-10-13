@@ -35,17 +35,17 @@ DEPENDPATH += $$PWD/include $$PWD/include/Squish
 
 # Qx Lib
 contains(QT_ARCH, i386) {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lQxC_static32_0-0-7-7_Qt_5-15-2
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lQxC_static32_0-0-7-7_Qt_5-15-2d
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2d
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC_static32_0-0-7-7_Qt_5-15-2.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC_static32_0-0-7-7_Qt_5-15-2d.lib
+    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2d.lib
 } else {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lQxC_static64_0-0-7-7_Qt_5-15-2
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lQxC_static64_0-0-7-7_Qt_5-15-2d
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2d
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC_static64_0-0-7-7_Qt_5-15-2.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/QxC_static64_0-0-7-7_Qt_5-15-2d.lib
+    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2d.lib
 }
 
 
