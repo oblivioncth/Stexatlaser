@@ -25,6 +25,8 @@ public:
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
     QMap<QString, QPoint> packMap(const QMap<QString, QSize>& boxesToPack, QSize& size) const;
+    KAtlas processSingleImage() const;
+    KAtlas processMultiImage() const;
 
 public:
     KAtlas process() const;

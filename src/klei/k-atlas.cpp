@@ -203,8 +203,36 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
     return packedMap;
 }
 
-//Public:
-KAtlas KAtlaser::process() const
+KAtlas KAtlaser::processSingleImage() const
+{
+    // Get single image
+    QString imageName = mNamedImages.firstKey();
+    QImage image = mNamedImages.first();
+
+    // Get next power of 2 size
+    QSize atlasSize(Qx::Number::ceilPowOfTwo(image.width()),
+                    Qx::Number::ceilPowOfTwo(image.height()));
+
+    // Create atlas canvas
+    QImage atlasImage(atlasSize.width(), atlasSize.height(), QImage::Format_ARGB32);
+    atlasImage.fill(Qt::transparent);
+
+    // Paint image on atlas
+    QPainter elementPainter(&atlasImage);
+    elementPainter.drawImage(QPoint(0, 0), image);
+
+    // Create element key (correct for atlas being stored buttom up)
+    QRect topUpRect = {QPoint(0, 0), image.size()};
+    QRect bottomUpRect = {QPoint(topUpRect.x(), (atlasSize.height() - 1) - topUpRect.bottom()), topUpRect.size()};
+    QMap<QString, QRect> atlasElements = {{imageName, bottomUpRect}};
+
+    // Flip image to be stored bottom up
+    QImage atlasMirrored = atlasImage.mirrored();
+
+    return KAtlas{atlasMirrored, atlasElements};
+}
+
+KAtlas KAtlaser::processMultiImage() const
 {
     // Element Image Maps
     QMap<QString, QSize> elementBoundingBoxes;
@@ -260,9 +288,20 @@ KAtlas KAtlaser::process() const
     }
 
     // Flip image to be stored bottom up
-    atlasImage = atlasImage.mirrored();
+    QImage atlasMirrored = atlasImage.mirrored();
 
-    return KAtlas{atlasImage, atlasElements};
+    return KAtlas{atlasMirrored, atlasElements};
+}
+
+//Public:
+KAtlas KAtlaser::process() const
+{
+    assert(mNamedImages.size() > 0);
+
+    if(mNamedImages.size() == 1)
+        return processSingleImage();
+    else
+        return processMultiImage();
 }
 
 
