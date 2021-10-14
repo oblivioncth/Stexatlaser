@@ -68,12 +68,12 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
     {
         QPointF topLeft{
-            static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(mAtlas.image.width()),
-            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height())
+            static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(mAtlas.image.width() - 1),
+            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height() - 1)
         };
         QPointF bottomRight{
-            static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(mAtlas.image.width()),
-            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height())
+            static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(mAtlas.image.width() - 1),
+            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height() - 1)
         };
         translatedElements[i.key()] = {topLeft, bottomRight};
     }
