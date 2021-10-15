@@ -80,10 +80,13 @@ win32 {
 
 ################# Linux Build #################
 unix:!macx {
+    QMAKE_CXXFLAGS+= -fopenmp
+    QMAKE_LFLAGS +=  -fopenmp
+
     CONFIG(release, debug|release) {
         LIBS += \
-            -L$$PWD/lib/Qx/x64 -llibQxC_static64_0-0-7-10_Qt_5-15-2 \
-            -L$$PWD/lib/Squish/x64 -llibsquish
+            -L$$PWD/lib/Qx/x64 -l:libQxC_static64_0-0-7-10_Qt_5-15-2.a \
+            -L$$PWD/lib/Squish/x64 -l:libsquish.a
 
         !win32-g++: PRE_TARGETDEPS += \
             $$PWD/lib/Qx/x64/libQxC_static64_0-0-7-10_Qt_5-15-2.a \
@@ -91,8 +94,8 @@ unix:!macx {
 
     } else:CONFIG(debug, debug|release) {
         LIBS += \
-            -L$$PWD/lib/Qx/x64 -llibQxC_static64_0-0-7-10_Qt_5-15-2d \
-            -L$$PWD/lib/Squish/x64 -llibsquishd
+            -L$$PWD/lib/Qx/x64 -l:libQxC_static64_0-0-7-10_Qt_5-15-2d.a \
+            -L$$PWD/lib/Squish/x64 -l:libsquishd.a
 
         !win32-g++: PRE_TARGETDEPS += \
             $$PWD/lib/Qx/x64/libQxC_static64_0-0-7-10_Qt_5-15-2d.a \
