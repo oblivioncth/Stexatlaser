@@ -1,3 +1,5 @@
+################# Common #################
+
 CONFIG += c++17 console
 
 TARGET = stex
@@ -28,44 +30,77 @@ HEADERS += \
     src/klei/k-xml.h \
     src/version.h
 
-RC_FILE = resources.rc
-
 INCLUDEPATH += $$PWD/include $$PWD/include/Squish
 DEPENDPATH += $$PWD/include $$PWD/include/Squish
 
-# Qx Lib
-contains(QT_ARCH, i386) {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2d
+################# Windows Build #################
+win32 {
+    RC_FILE = resources.rc
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2d.lib
-} else {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2d
+    contains(QT_ARCH, i386) {
+        CONFIG(release, debug|release) {
+            LIBS += \
+                -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2 \
+                -L$$PWD/lib/Squish/x32 -lsquish
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2d.lib
+            !win32-g++: PRE_TARGETDEPS += \
+                $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2.lib \
+                $$PWD/lib/Squish/x32/squish.lib
+
+        } else:CONFIG(debug, debug|release) {
+            LIBS += \
+                -L$$PWD/lib/Qx/x32 -lQxC_static32_0-0-7-10_Qt_5-15-2d \
+                -L$$PWD/lib/Squish/x32 -lsquishd
+
+            !win32-g++: PRE_TARGETDEPS += \
+                $$PWD/lib/Qx/x32/QxC_static32_0-0-7-10_Qt_5-15-2d.lib \
+                $$PWD/lib/Squish/x32/squishd.lib
+        }
+    } else {
+        CONFIG(release, debug|release) {
+            LIBS += \
+                -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2 \
+                -L$$PWD/lib/Squish/x64 -lsquish
+
+            !win32-g++: PRE_TARGETDEPS += \
+                $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2.lib \
+                $$PWD/lib/Squish/x64/squish.lib
+
+        } else:CONFIG(debug, debug|release) {
+            LIBS += \
+                -L$$PWD/lib/Qx/x64 -lQxC_static64_0-0-7-10_Qt_5-15-2d \
+                -L$$PWD/lib/Squish/x64 -lsquishd
+
+            !win32-g++: PRE_TARGETDEPS += \
+                $$PWD/lib/Qx/x64/QxC_static64_0-0-7-10_Qt_5-15-2d.lib \
+                $$PWD/lib/Squish/x64/squishd.lib
+        }
+    }
 }
 
+################# Linux Build #################
+unix:!macx {
+    CONFIG(release, debug|release) {
+        LIBS += \
+            -L$$PWD/lib/Qx/x64 -llibQxC_static64_0-0-7-10_Qt_5-15-2 \
+            -L$$PWD/lib/Squish/x64 -llibsquish
 
-# Squish Lib
-contains(QT_ARCH, i386) {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Squish/x32 -lsquish
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Squish/x32 -lsquishd
+        !win32-g++: PRE_TARGETDEPS += \
+            $$PWD/lib/Qx/x64/libQxC_static64_0-0-7-10_Qt_5-15-2.a \
+            $$PWD/lib/Squish/x64/libsquish.a
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/x32/squish.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/x32/squishd.lib
-} else {
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Squish/x64 -lsquish
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Squish/x64 -lsquishd
+    } else:CONFIG(debug, debug|release) {
+        LIBS += \
+            -L$$PWD/lib/Qx/x64 -llibQxC_static64_0-0-7-10_Qt_5-15-2d \
+            -L$$PWD/lib/Squish/x64 -llibsquishd
 
-    win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/x64/squish.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/Squish/x64/squishd.lib
+        !win32-g++: PRE_TARGETDEPS += \
+            $$PWD/lib/Qx/x64/libQxC_static64_0-0-7-10_Qt_5-15-2d.a \
+            $$PWD/lib/Squish/x64/libsquishd.a
+    }
 }
-
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
