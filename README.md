@@ -1,7 +1,7 @@
 # Stexatlaser (Stex)
 <img align="left" src="https://i.imgur.com/LCBz647.png" width=25%>
 
-Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
+Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
 
 It uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
 
@@ -131,12 +131,24 @@ Once stex has finished executing an exit code is reported that indicates the "er
 | 206   | CANT_WRITE_IMAGE   | Failed to write an output image                                          |
 
 
-## Additional Features
+## Additional Information
+**Automatic Pre-multiplied Alpha Handling**
 A small shortcoming of the TEX format is that it doesn't store whether or not its image data is using pre-multiplied alpha (unless that's the purpose of one of the two unknown flags), and so one needs to somehow otherwise know if this is the case and manually specify that the alpha needs to be de-multiplied when using tools that handle TEX files (they often just assume they need to). To circumvent this, any TEX atlases created with Stex's **pack** command will have an extra entry in their key that records this property. This value is then subsequently read and utilized when extracting that same TEX using Stex's **unpack** command. If the value isn't present within a key then an input atlas is assumed to be using pre-multiplied alpha unless the **-s** switch is used with the unpack command/
 
 Simply put, if you always pack and unpack your multi-image atlases with Stex you will never have to worry about this.
 
 Although this breaks the "standard" for atlas keys, since they are just XML files the games parser will simply ignore this extra element and it therefore causes no issues and maintains compatibility.
+
+**Atlas Key Element Extensions**
+Although in a practical sense they shouldn't be needed, some atlas elements require the extension ".tex" to function properly due to the exact implementation of some Klei scripts. The elements themselves don't actually refer to files and instead are just labels for the images within a TEX file, which makes this requirement a bit award and sometimes confusing, but nonetheless Stex ensures compliance with this annoyance. Any input images that don't already end with ".tex" (before their actual extension) will have the extension appended to the element name that their filename becomes.
+
+*Example:*
+| Image Filename    | Resultant Element Name |
+|-------------------|------------------------|
+| texture01.tex.png | texture01.tex          |
+| texture02.png     | texture02.tex          |
+
+This extension will be removed during filename assignment when unpacking an atlas.
 
 
 ## Source
