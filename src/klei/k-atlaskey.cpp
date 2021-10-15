@@ -1,5 +1,8 @@
 #include "k-atlaskey.h"
+
 #include <QXmlStreamWriter>
+#include <cmath>
+
 #include "k-tex.h"
 
 //===============================================================================================================

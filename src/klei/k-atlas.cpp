@@ -254,8 +254,8 @@ KAtlas KAtlaser::processMultiImage() const
     }
 
     // Estimate final atlas size, preferring a rectangular shape
-    int longSide = Qx::Number::ceilPowOfTwo(static_cast<int>(sqrt(totalArea)));
-    int shortSide = Qx::Number::roundPowOfTwo(static_cast<int>(sqrt(totalArea)));
+    int longSide = Qx::Number::ceilPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
+    int shortSide = Qx::Number::roundPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
     QSize atlasSize(longSide, shortSide);
 
     // Map element images to final atlas
