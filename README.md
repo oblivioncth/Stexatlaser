@@ -30,7 +30,7 @@ To create an atlas/key, start by setting up an input folder with the following s
     |-- element2_name.png
     |-- element3_name.png
     |-- ...
-As implied by the above, the folder name will be used as the atlas/key name, and the file names (without extension) of each image will be used as their respective element names. All sub-folders and other files will be ignored.
+As implied by the above, the folder name will be used as the atlas/key name, and the file names (**with the extension ".tex"**, see "Additional Information") of each image will be used as their respective element names. All sub-folders and other files will be ignored.
 
 Then run Stex with the **pack** command:
 
