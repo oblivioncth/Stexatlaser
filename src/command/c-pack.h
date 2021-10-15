@@ -1,6 +1,8 @@
 #ifndef CPACK_H
 #define CPACK_H
 
+#include <QFileInfo>
+
 #include "../command.h"
 #include "../klei/k-tex.h"
 
@@ -14,15 +16,15 @@ private:
     public:
         static const ErrorCode INVALID_FORMAT = 101;
         static const ErrorCode NO_IMAGES = 102;
-        static const ErrorCode CANT_READ_IMAGE = 103;
-        static const ErrorCode CANT_WRITE_ATLAS = 104;
-        static const ErrorCode CANT_WRITE_KEY = 105;
+        static const ErrorCode DUPLICATE_NAME = 103;
+        static const ErrorCode CANT_READ_IMAGE = 104;
+        static const ErrorCode CANT_WRITE_ATLAS = 105;
+        static const ErrorCode CANT_WRITE_KEY = 106;
     };
 
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
     // Processing
-    static inline const QStringList IMAGE_FORMATS = {"*.png"};
     static inline const QMap<QString, KTex::Header::PixelFormat> PIXEL_FORMAT_MAP = {
         {"dxt1", KTex::Header::PixelFormat::DXT1},
         {"dxt3", KTex::Header::PixelFormat::DXT3},
@@ -48,6 +50,7 @@ private:
     static inline const QString ERR_INVALID_OUTPUT = "The provided output directory was invalid.";
     static inline const QString ERR_INVALID_FORMAT = "The provided output pixel format was invalid.";
     static inline const QString ERR_NO_IMAGES = "The provided input directory contained no images.";
+    static inline const QString ERR_DUPE_BASENAME = "The provided input directory contained images with the same basename (name without extension).";
     static inline const QString ERR_CANT_READ_IMAGE = "Failed to read image %1";
     static inline const QString ERR_CANT_WRITE_ATLAS = "Failed to write output atlas %1";
     static inline const QString ERR_CANT_WRITE_KEY = "Failed to write output atlas key %1";
@@ -94,6 +97,10 @@ public:
 //-Constructor----------------------------------------------------------------------------------------------------------
 public:
     CPack(Stex& coreRef);
+
+//-Class Functions-------------------------------------------------------------------------------------------------------
+private:
+    static bool hasBasenameCollision(const QFileInfoList& imageFiles);
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:

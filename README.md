@@ -20,7 +20,6 @@ The order of switches within each options section does not matter.
 
 
 ### Basic Usage
-*NOTE:* For technical reasons, Stex currently only supports PNG for input/output images
 
 **Creating an Atlas**
 To create an atlas/key, start by setting up an input folder with the following structure:
@@ -30,6 +29,8 @@ To create an atlas/key, start by setting up an input folder with the following s
     |-- element2_name.png
     |-- element3_name.png
     |-- ...
+The available input formats can vary between systems, but most common formats are supported. See **All Commands/Options** for more information.
+
 As implied by the above, the folder name will be used as the atlas/key name, and the file names (**with the extension ".tex"**, see "Additional Information") of each image will be used as their respective element names. All sub-folders and other files will be ignored.
 
 Then run Stex with the **pack** command:
@@ -47,7 +48,7 @@ To extract an atlas, run Stex with the **unpack** command:
 
 The key's corresponding atlas, which must be located alongside it, will be read automatically using the name specified within the key.
 
-When finished, a subfolder with the name of the atlas will be created within the specified output directory that contains each individual element as a separate image. This results in the same structure used as input when packing an atlas.
+When finished, a subfolder with the name of the atlas will be created within the specified output directory that contains each individual element as a separate PNG image. This results in the same structure used as input when packing an atlas.
 
 
 ### Advance Usage
@@ -69,10 +70,11 @@ though this isn't required as long as quotation and space use is carefully emplo
 ### Global Options:
  -  **-h | --help | -?:** Prints usage information
  -  **-v | --version:** Prints the current version of the tool
+ - **-f | --formats:** Prints the image formats supported by the tool (input only)
  
  
 ### Commands:
-**pack** - Pack  a  folder  of  images  (PNG)  into  a  TEX  atlas.  The  input  directory  will  be  used  as  the  name  for  the  atlas/key, while  the  image  names  will  be  used  as  the  element  names
+**pack** - Pack  a  folder  of  images  into  a  TEX  atlas.  The  input  directory  will  be  used  as  the  name  for  the  atlas/key, while  the  image  names  will  be  used  as  the  element  names
 
 Options:
  -  **-i | --input:** Directory  containing  images  to  pack
@@ -84,9 +86,12 @@ Options:
 Requires:
 **-i** and **-o** 
 
+Notes: 
+Use `stex -f` to see the supported image formats.
+
 --------------------------------------------------------------------------------
 
-**unpack** - Unpack  a  TEX  atlas  into  its  component  images
+**unpack** - Unpack  a  TEX  atlas  into  its  component  images in PNG format
 
 Options:
  -  **-i | --input:** Key  of  the  atlas  to  unpack.  Must  be  in  the  same  directory  as  its  atlas

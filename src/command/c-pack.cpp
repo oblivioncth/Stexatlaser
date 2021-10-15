@@ -1,7 +1,6 @@
 #include "c-pack.h"
 
 #include <QDir>
-#include <QFileInfo>
 #include <QImageReader>
 
 #include "../conversion.h"
@@ -16,7 +15,28 @@
 
 //-Constructor-------------------------------------------------------------
 //Public:
-CPack::CPack(Stex& coreRef) : Command(coreRef) {}
+CPack::CPack(Stex& coreRef) : Command(coreRef)
+{ }
+
+//-Class Functions----------------------------------------------------------------
+//Private:
+bool CPack::hasBasenameCollision(const QFileInfoList& imageFiles)
+{
+    QSet<QString> baseNames;
+
+    for(const QFileInfo& fileInfo : qAsConst(imageFiles))
+    {
+        QString baseName = fileInfo.baseName();
+
+        if(!baseNames.contains(baseName))
+            baseNames.insert(baseName);
+        else
+            return true;
+    }
+
+    // No collisons occured
+    return false;
+}
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
@@ -82,13 +102,20 @@ ErrorCode CPack::process(const QStringList& commandLine)
 
     // Get source images
     mCore.printMessage(NAME, MSG_READ_IMAGES);
-    QFileInfoList imageFiles = inputDir.entryInfoList(IMAGE_FORMATS);
+    QFileInfoList imageFiles = inputDir.entryInfoList(mCore.imageFormatFilter());
 
     // Make sure there is at least one image
     if(imageFiles.isEmpty())
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_IMAGES));
         return ErrorCodes::NO_IMAGES;
+    }
+
+    // Make sure there are no basename collisions
+    if(hasBasenameCollision(imageFiles))
+    {
+        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_DUPE_BASENAME));
+        return ErrorCodes::DUPLICATE_NAME;
     }
 
     // Generate named image map

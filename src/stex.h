@@ -46,11 +46,16 @@ public:
     static inline const QString CL_OPT_VERSION_L_NAME = "version";
     static inline const QString CL_OPT_VERSION_DESC = "Prints the current version of this tool.";
 
+    static inline const QString CL_OPT_FORMATS_S_NAME = "f";
+    static inline const QString CL_OPT_FORMATS_L_NAME = "formats";
+    static inline const QString CL_OPT_FORMATS_DESC = "Prints the image formats this tool supports.";
+
     // Global command line options
     static inline const QCommandLineOption CL_OPTION_HELP{{CL_OPT_HELP_S_NAME, CL_OPT_HELP_L_NAME, CL_OPT_HELP_E_NAME}, CL_OPT_HELP_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_VERSION{{CL_OPT_VERSION_S_NAME, CL_OPT_VERSION_L_NAME}, CL_OPT_VERSION_DESC}; // Boolean option
+    static inline const QCommandLineOption CL_OPTION_FORMATS{{CL_OPT_FORMATS_S_NAME, CL_OPT_FORMATS_L_NAME}, CL_OPT_FORMATS_DESC}; // Boolean option
 
-    static inline const QList<const QCommandLineOption*> CL_OPTIONS_ALL{&CL_OPTION_HELP, &CL_OPTION_VERSION};
+    static inline const QList<const QCommandLineOption*> CL_OPTIONS_ALL{&CL_OPTION_HELP, &CL_OPTION_VERSION, &CL_OPTION_FORMATS};
 
     // Help template
     static inline const QString HELP_TEMPL = "Usage:\n"
@@ -66,8 +71,9 @@ public:
     static inline const QString HELP_OPT_TEMPL = "\n%1: %2";
     static inline const QString HELP_COMMAND_TEMPL = "\n[%1]: %2\n";
 
-    // Command line messages
-    static inline const QString CL_VERSION_MESSAGE = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR "\n";
+    // Messages
+    static inline const QString MSG_VERSION = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR "\n";
+    static inline const QString MSG_FORMATS = VER_PRODUCTNAME_STR " supports the following image formats:\n%1\n";
 
     // Stream
     static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
@@ -77,6 +83,9 @@ public:
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:
+    QStringList mImageFormats;
+    QStringList mImageFormatFilter;
+
 
 //-Constructor----------------------------------------------------------------------------------------------------------
 public:
@@ -86,9 +95,13 @@ public:
 private:
     void showHelp();
     void showVersion();
+    void showFormats();
 
 public:
     ErrorCode initialize(QStringList& commandLine);
+
+    QStringList imageFormatFilter() const;
+    QStringList supportedImageFormats() const;
 
     void printError(QString src, Qx::GenericError error);
     void printMessage(QString src, QString message);

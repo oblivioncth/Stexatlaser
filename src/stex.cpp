@@ -1,5 +1,6 @@
 #include "stex.h"
 
+#include <QImageReader>
 #include <iostream>
 
 #include "command.h"
@@ -9,7 +10,15 @@
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------
-Stex::Stex() {}
+Stex::Stex()
+{
+    for(const QByteArray& format : qAsConstR(QImageReader::supportedImageFormats()))
+    {
+        QString formatExt = QString::fromUtf8(format);
+        mImageFormats.append(formatExt);
+        mImageFormatFilter.append("*." + formatExt);
+    }
+}
 
 //-Instance Functions-------------------------------------------------------------
 //Private:
@@ -48,7 +57,8 @@ void Stex::showHelp()
 }
 
 
-void Stex::showVersion() { printVerbatim(CL_VERSION_MESSAGE); }
+void Stex::showVersion() { printVerbatim(MSG_VERSION); }
+void Stex::showFormats() { printVerbatim(MSG_FORMATS.arg(mImageFormats.join('n'))); }
 
 //Public:
 ErrorCode Stex::initialize(QStringList& commandLine)
@@ -73,6 +83,11 @@ ErrorCode Stex::initialize(QStringList& commandLine)
             showVersion();
             commandLine.clear(); // Clear args so application terminates after core setup
         }
+        else if(clParser.isSet(CL_OPTION_FORMATS))
+        {
+            showFormats();
+            commandLine.clear(); // Clear args so application terminates after core setup
+        }
         else if(clParser.isSet(CL_OPTION_HELP) || clParser.positionalArguments().count() == 0) // Also when no parameters
         {
             showHelp();
@@ -92,6 +107,9 @@ ErrorCode Stex::initialize(QStringList& commandLine)
     }
 
 }
+
+QStringList Stex::imageFormatFilter() const { return mImageFormatFilter; }
+QStringList Stex::supportedImageFormats() const { return mImageFormats; }
 
 void Stex::printError(QString src, Qx::GenericError error)
 {
