@@ -58,7 +58,7 @@ void Stex::showHelp()
 
 
 void Stex::showVersion() { printVerbatim(MSG_VERSION); }
-void Stex::showFormats() { printVerbatim(MSG_FORMATS.arg(mImageFormats.join('n'))); }
+void Stex::showFormats() { printVerbatim(MSG_FORMATS.arg(mImageFormats.join('\n'))); }
 
 //Public:
 ErrorCode Stex::initialize(QStringList& commandLine)

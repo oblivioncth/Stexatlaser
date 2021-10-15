@@ -73,7 +73,7 @@ public:
 
     // Messages
     static inline const QString MSG_VERSION = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR "\n";
-    static inline const QString MSG_FORMATS = VER_PRODUCTNAME_STR " supports the following image formats:\n%1\n";
+    static inline const QString MSG_FORMATS = VER_INTERNALNAME_STR " supports the following image formats:\n%1\n";
 
     // Stream
     static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
