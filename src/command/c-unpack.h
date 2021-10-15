@@ -35,8 +35,8 @@ private:
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
     static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";
-    static inline const QString ERR_INVALID_INPUT = "The provided input atlas key was invalid.";
-    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory was invalid.";
+    static inline const QString ERR_INVALID_INPUT = "The provided input atlas key is invalid.";
+    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory is invalid.";
     static inline const QString ERR_CANT_READ_KEY = "Failed to read atlas key %1";
     static inline const QString ERR_ATLAS_DNE = "The atlas specified by the provided atlas key does not exist (%1)";
     static inline const QString ERR_CANT_READ_ATLAS = "Failed to read atlas %1";

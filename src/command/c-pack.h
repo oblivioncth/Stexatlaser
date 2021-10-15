@@ -46,11 +46,11 @@ private:
     // Error Messages
     static inline const QString ERR_NO_INPUT = "No input directory was provided.";
     static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";
-    static inline const QString ERR_INVALID_INPUT = "The provided input directory was invalid.";
-    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory was invalid.";
-    static inline const QString ERR_INVALID_FORMAT = "The provided output pixel format was invalid.";
-    static inline const QString ERR_NO_IMAGES = "The provided input directory contained no images.";
-    static inline const QString ERR_DUPE_BASENAME = "The provided input directory contained images with the same basename (name without extension).";
+    static inline const QString ERR_INVALID_INPUT = "The provided input directory is invalid.";
+    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory is invalid.";
+    static inline const QString ERR_INVALID_FORMAT = "The provided output pixel format is invalid.";
+    static inline const QString ERR_NO_IMAGES = "The provided input directory contains no images.";
+    static inline const QString ERR_DUPE_BASENAME = "The provided input directory contains images with the same basename (name without extension).";
     static inline const QString ERR_CANT_READ_IMAGE = "Failed to read image %1";
     static inline const QString ERR_CANT_WRITE_ATLAS = "Failed to write output atlas %1";
     static inline const QString ERR_CANT_WRITE_KEY = "Failed to write output atlas key %1";
