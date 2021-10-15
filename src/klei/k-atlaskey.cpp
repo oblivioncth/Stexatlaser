@@ -1,6 +1,7 @@
 #include "k-atlaskey.h"
 
 #include <QXmlStreamWriter>
+#include <QFileInfo>
 #include <cmath>
 
 #include "k-tex.h"
@@ -70,6 +71,7 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     QMap<QString, QRect>::const_iterator i;
     for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
     {
+        // Convert coordinates to relative
         QPointF topLeft{
             static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(mAtlas.image.width() - 1),
             static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height() - 1)
@@ -78,10 +80,21 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
             static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(mAtlas.image.width() - 1),
             static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height() - 1)
         };
-        translatedElements[i.key()] = {topLeft, bottomRight};
+
+        // Convert name if needed
+        QString elementName = ensureElementExtension(i.key());
+
+        // Add translated element
+        translatedElements[elementName] = {topLeft, bottomRight};
     }
 
     return translatedElements;
+}
+
+QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName) const
+{
+    QFileInfo nameInfo(elementName);
+    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + "." + KTex::FILE_EXT;
 }
 
 
@@ -116,6 +129,7 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
     QMap<QString, QRectF>::const_iterator i;
     for(i = mAtlasKey.elements().constBegin(); i != mAtlasKey.elements().constEnd(); i++)
     {
+        // Convert to coordinates to absolute
         QPoint topLeft{
             static_cast<int>(std::round(i->topLeft().x() * mAtlasImage.width())),
             static_cast<int>(std::round(i->topLeft().y() * mAtlasImage.height()))
@@ -124,10 +138,21 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
             static_cast<int>(std::round(i->bottomRight().x() * mAtlasImage.width())),
             static_cast<int>(std::round(i->bottomRight().y() * mAtlasImage.height()))
         };
-        translatedElements[i.key()] = {topLeft, bottomRight};
+
+        // Convert name if needed
+        QString elementName = peelElementExtension(i.key());
+
+        // Add translated element
+        translatedElements[elementName] = {topLeft, bottomRight};
     }
 
     return translatedElements;
+}
+
+QString KAtlasKeyParser::peelElementExtension(const QString& elementName) const
+{
+    QFileInfo nameInfo(elementName);
+    return nameInfo.suffix() == KTex::FILE_EXT ? elementName.chopped(KTex::FILE_EXT.length() + 1) : elementName;
 }
 
 //Public:

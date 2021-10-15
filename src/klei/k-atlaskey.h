@@ -46,6 +46,7 @@ public:
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
     QMap<QString, QRectF> translateElements() const;
+    QString ensureElementExtension(const QString& elementName) const;
 
 public:
     KAtlasKey process() const;
@@ -65,6 +66,7 @@ public:
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
     QMap<QString, QRect> translateElements() const;
+    QString peelElementExtension(const QString& elementName) const;
 
 public:
     KAtlas process();
