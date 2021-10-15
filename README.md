@@ -152,13 +152,22 @@ This extension will be removed during filename assignment when unpacking an atla
 
 
 ## Source
-This tool was written in C++ 17 targeting Windows and has the following dependencies:
+This tool was written in C++ 17 targeting Windows/Debian and has the following dependencies:
 
+**Common:**
  - Qt 5.15.2
- - Windows 10 SDK 10.0.19041.0 or later
- - MSVC2019 v142 or later
  - Qxtended (my own personal Qt based library, see below)
  - libsquish 1.15
+
+**Windows:**
+ - Windows 10 SDK 10.0.19041.0 or later
+ - MSVC2019 v142 or later
+
+**Debian:**
+- g++ 10.3.0 or later
+- libgomp1
+
+Builds have been tested on Windows 10 21H1 and Ubuntu 21.04.
 
 Because of the allowances by various licenses and overall small footprints, this repository comes with everything needed to build for the target platform, other than a build of Qt itself. This includes pre-built static libs of Qxtended (source code available upon request), and libquish for Debug/Release and x86/x64.
 
