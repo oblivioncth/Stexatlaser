@@ -1,4 +1,7 @@
 #include "conversion.h"
+
+#include <cstring>
+
 #include "Squish/squish.h"
 
 // The Qt image formats (QImage::Format) used here are all byte ordered based on the host system, yet squish (and DST?)
