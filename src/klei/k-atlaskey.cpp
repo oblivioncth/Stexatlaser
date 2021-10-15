@@ -7,26 +7,6 @@
 #include "k-tex.h"
 
 //===============================================================================================================
-// UNIT ONLY
-//===============================================================================================================
-namespace
-{
-    namespace Xml
-    {
-        const QString ELEMENT_ATLAS = "Atlas";
-        const QString ELEMENT_ELEMENTS = "Elements";
-        const QString ELEMENT_ELEMENT = "Element";
-        const QString ELEMENT_TEXTURE = "Texture";
-        const QString ATTRIBUTE_FILENAME = "filename";
-        const QString ATTRIBUTE_ELEMENT_NAME = "name";
-        const QString ATTRIBUTE_TOP_LEFT_X = "u1";
-        const QString ATTRIBUTE_TOP_LEFT_Y = "v1";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_X = "u2";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_Y = "v2";
-    }
-}
-
-//===============================================================================================================
 // K_ATLAS_KEY
 //===============================================================================================================
 
