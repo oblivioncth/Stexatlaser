@@ -170,10 +170,10 @@ This tool was written in C++ 17 targeting Windows/Debian and has the following d
  - MSVC2019 v142 or later
 
 **Debian:**
-- g++ 10.3.0 or later
+- g++ 9.3.0 or later
 - libgomp1
 
-Builds have been tested on Windows 10 21H1 and Ubuntu 21.04.
+Builds have been tested on Windows 10 21H1 and Ubuntu 20.04
 
 Because of the allowances by various licenses and overall small footprints, this repository comes with everything needed to build for the target platform, other than a build of Qt itself. This includes pre-built static libs of Qxtended (source code available upon request), and libquish for Debug/Release and x86/x64.
 
