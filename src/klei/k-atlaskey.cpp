@@ -46,6 +46,10 @@ KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlas
 //Private:
 QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 {
+    // Determine largest coordinate
+    QPoint imageMaxCoord = {mAtlas.image.width() - 1, mAtlas.image.height() - 1};
+
+    // Translate
     QMap<QString, QRectF> translatedElements;
 
     QMap<QString, QRect>::const_iterator i;
@@ -53,12 +57,12 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     {
         // Convert coordinates to relative
         QPointF topLeft{
-            static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(mAtlas.image.width() - 1),
-            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(mAtlas.image.height() - 1)
+            static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(imageMaxCoord.x()),
+            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(imageMaxCoord.y())
         };
         QPointF bottomRight{
-            static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(mAtlas.image.width() - 1),
-            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(mAtlas.image.height() - 1)
+            static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(imageMaxCoord.x()),
+            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(imageMaxCoord.y())
         };
 
         // Convert name if needed
@@ -104,6 +108,10 @@ KAtlasKeyParser::KAtlasKeyParser(const KAtlasKey& atlasKey, const QImage& atlasI
 //Private:
 QMap<QString, QRect> KAtlasKeyParser::translateElements() const
 {
+    // Determine largest coordinate
+    QPoint imageMaxCoord = {mAtlasImage.width() - 1, mAtlasImage.height() - 1};
+
+    // Translate
     QMap<QString, QRect> translatedElements;
 
     QMap<QString, QRectF>::const_iterator i;
@@ -111,12 +119,12 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
     {
         // Convert to coordinates to absolute
         QPoint topLeft{
-            static_cast<int>(std::round(i->topLeft().x() * mAtlasImage.width())),
-            static_cast<int>(std::round(i->topLeft().y() * mAtlasImage.height()))
+            static_cast<int>(std::round(i->topLeft().x() * imageMaxCoord.x())),
+            static_cast<int>(std::round(i->topLeft().y() * imageMaxCoord.y()))
         };
         QPoint bottomRight{
-            static_cast<int>(std::round(i->bottomRight().x() * mAtlasImage.width())),
-            static_cast<int>(std::round(i->bottomRight().y() * mAtlasImage.height()))
+            static_cast<int>(std::round(i->bottomRight().x() * imageMaxCoord.x())),
+            static_cast<int>(std::round(i->bottomRight().y() * imageMaxCoord.y()))
         };
 
         // Convert name if needed
