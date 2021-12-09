@@ -17,10 +17,11 @@ class KAtlaser
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
     const QMap<QString, QImage>& mNamedImages;
+    bool mUseMargin;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KAtlaser(const QMap<QString, QImage>& namedImages);
+    KAtlaser(const QMap<QString, QImage>& namedImages, bool useMargin);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:

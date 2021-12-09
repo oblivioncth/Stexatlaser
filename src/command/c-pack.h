@@ -70,6 +70,10 @@ private:
                                                      PIXEL_FORMAT_MAP.keys().join(" | ") + ">. " +
                                                      "Defaults to DXT5.";
 
+    static inline const QString CL_OPT_MARGIN_S_NAME = "m";
+    static inline const QString CL_OPT_MARGIN_L_NAME = "margin";
+    static inline const QString CL_OPT_MARGIN_DESC = "Add a 1-px transparent margin to each input image (when more than one). Useful for rare cases of element bleed-over.";
+
     static inline const QString CL_OPT_INPUT_S_NAME = "i";
     static inline const QString CL_OPT_INPUT_L_NAME = "input";
     static inline const QString CL_OPT_INPUT_DESC = "Directory containing images to pack.";
@@ -82,10 +86,11 @@ private:
     static inline const QCommandLineOption CL_OPTION_STRAIGHT{{CL_OPT_STRAIGHT_S_NAME, CL_OPT_STRAIGHT_L_NAME}, CL_OPT_STRAIGHT_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_UNOPT{{CL_OPT_UNOPT_S_NAME, CL_OPT_UNOPT_L_NAME}, CL_OPT_UNOPT_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_FORMAT{{CL_OPT_FORMAT_S_NAME, CL_OPT_FORMAT_L_NAME}, CL_OPT_FORMAT_DESC, "format"}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_MARGIN{{CL_OPT_MARGIN_S_NAME, CL_OPT_MARGIN_L_NAME}, CL_OPT_MARGIN_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, "input"}; // Takes value
     static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, "output"}; // Takes value
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT, &CL_OPTION_STRAIGHT,
-                                                                             &CL_OPTION_UNOPT, &CL_OPTION_FORMAT};
+                                                                             &CL_OPTION_UNOPT, &CL_OPTION_FORMAT, &CL_OPTION_MARGIN};
     static inline const QSet<const QCommandLineOption*> CL_OPTIONS_REQUIRED{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
 
 public:

@@ -82,12 +82,13 @@ Options:
  -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba>. Defaults  to  DXT5
  -  **-u | --unoptimized:** Do  not  generate  smoothed  mipmaps
  -  **-s | --straight:** Keep  straight  alpha  channel,  do  not  pre-multiply
+ - **-m | --margin:** Add  a  1-px  transparent  margin  to  each  input  image  (when  more  than  one).  Useful  for  rare  cases  of  element  bleed-over
 
 Requires:
 **-i** and **-o** 
 
 Notes: 
-Use `stex -f` to see the supported image formats.
+Use `stex -f` to see the supported image formats. The **margin** switch is generally never required and is only available for extremely specific and unlikely cases in which floating point inaccuracies or rounding cause 1 row/column of pixels from one element to be marked as part of another during atlas key generation. 
 
 --------------------------------------------------------------------------------
 

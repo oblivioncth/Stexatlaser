@@ -139,7 +139,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
 
     // Create atlas
     mCore.printMessage(NAME, MSG_CREATE_ATLAS);
-    KAtlaser atlaser(namedImages);
+    KAtlaser atlaser(namedImages, mParser.isSet(CL_OPTION_MARGIN));
     KAtlas atlas = atlaser.process();
 
     // Create atlas key

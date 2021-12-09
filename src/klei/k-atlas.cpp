@@ -11,7 +11,10 @@
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KAtlaser::KAtlaser(const QMap<QString, QImage>& namedImages) : mNamedImages(namedImages) {}
+KAtlaser::KAtlaser(const QMap<QString, QImage>& namedImages, bool useMargin) :
+    mNamedImages(namedImages),
+    mUseMargin(useMargin)
+{}
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
@@ -247,9 +250,17 @@ KAtlas KAtlaser::processMultiImage() const
     for (i = mNamedImages.constBegin(); i != mNamedImages.constEnd(); i++)
     {
         QSize boundingBox;
-        boundingBox.setWidth(i->width() + 1); // Slight safety margin
-        boundingBox.setHeight(i->height() + 1); // Slight safety margin
+        boundingBox.setWidth(i->width());
+        boundingBox.setHeight(i->height());
 
+        // Apply safety margin if requested
+        if(mUseMargin)
+        {
+            boundingBox.rwidth()++;
+            boundingBox.rheight()++;
+        }
+
+        // Add element box
         elementBoundingBoxes[i.key()] = boundingBox;
 
         totalArea += boundingBox.height() * boundingBox.width();
