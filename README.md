@@ -52,7 +52,7 @@ When finished, a subfolder with the name of the atlas will be created within the
 
 
 ### Advance Usage
-- If the alpha channel was pre-multiplied when a given TEX atlas was created, the **-s** switch must be passed to **unpack** for the images to be recovered correctly. This is handled automatically for atlas/key pairs that were generated with Stex's pack command, as detailed in the "Additional Features" section 
+- If the alpha channel was **not** pre-multiplied when a given TEX atlas was created, the **-s** switch must be passed to **unpack** for the images to be recovered correctly. This is handled automatically for atlas/key pairs that were generated with Stex's pack command, as detailed in the "Additional Features" section 
 - See the following section for more detailed options/modes.
 
 
@@ -145,7 +145,7 @@ A small shortcoming of the TEX format is that it doesn't store whether or not it
 
 Simply put, if you always pack and unpack your multi-image atlases with Stex you will never have to worry about this.
 
-Although this breaks the "standard" for atlas keys, since they are just XML files the games parser will simply ignore this extra element and it therefore causes no issues and maintains compatibility.
+Although this breaks the "standard" for atlas keys, since they are just XML files the game's parser will simply ignore this extra element and it therefore causes no issues and maintains compatibility.
 
 **Atlas Key Element Extensions**
 
