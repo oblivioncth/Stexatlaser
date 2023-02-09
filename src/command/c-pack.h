@@ -1,10 +1,12 @@
 #ifndef CPACK_H
 #define CPACK_H
 
+// Qt Includes
 #include <QFileInfo>
 
-#include "../command.h"
-#include "../klei/k-tex.h"
+// Project Includes
+#include "command.h"
+#include "klei/k-tex.h"
 
 class CPack : public Command
 {

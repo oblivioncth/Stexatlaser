@@ -1,9 +1,8 @@
 #ifndef KATLASKEY_H
 #define KATLASKEY_H
 
+// Project Includes
 #include "k-atlas.h"
-#include "qx.h"
-#include "qx-xml.h"
 
 class KAtlasKey
 {

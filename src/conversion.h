@@ -1,8 +1,10 @@
 #ifndef CONVERSION_H
 #define CONVERSION_H
 
+// Qt Includes
 #include <QImage>
 
+// Project Includes
 #include "klei/k-tex.h"
 
 class ToTexConverter

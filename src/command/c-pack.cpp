@@ -1,13 +1,16 @@
+// Unit Includes
 #include "c-pack.h"
 
+// Qt Includes
 #include <QDir>
 #include <QImageReader>
 
-#include "../conversion.h"
-#include "../klei/k-atlas.h"
-#include "../klei/k-atlaskey.h"
-#include "../klei/k-tex-io.h"
-#include "../klei/k-xml.h"
+// Project Includes
+#include "conversion.h"
+#include "klei/k-atlas.h"
+#include "klei/k-atlaskey.h"
+#include "klei/k-tex-io.h"
+#include "klei/k-xml.h"
 
 //===============================================================================================================
 // CPack
@@ -16,7 +19,7 @@
 //-Constructor-------------------------------------------------------------
 //Public:
 CPack::CPack(Stex& coreRef) : Command(coreRef)
-{ }
+{}
 
 //-Class Functions----------------------------------------------------------------
 //Private:
@@ -159,13 +162,13 @@ ErrorCode CPack::process(const QStringList& commandLine)
 
     // Write TEX file
     mCore.printMessage(NAME, MSG_WRITE_TEX);
-    QFile outputTexFile(outputDir.absoluteFilePath(atlasKey.atlasFilename()));
-    KTexWriter texWriter(tex, outputTexFile);
-    Qx::IOOpReport texWriteReport;
-    if(!(texWriteReport = texWriter.write()).wasSuccessful())
+    QString outputTexFilePath(outputDir.absoluteFilePath(atlasKey.atlasFilename()));
+    KTexWriter texWriter(tex, outputTexFilePath);
+    Qx::IoOpReport texWriteReport;
+    if((texWriteReport = texWriter.write()).isFailure())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_ATLAS.arg(outputTexFile.fileName()),
-                                                texWriteReport.getOutcomeInfo()));
+        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_ATLAS.arg(outputTexFilePath),
+                                                texWriteReport.outcomeInfo()));
         return ErrorCodes::CANT_WRITE_ATLAS;
     }
 
@@ -177,7 +180,7 @@ ErrorCode CPack::process(const QStringList& commandLine)
     if((keyWriteReport = keyWriter.write()).isValid())
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_KEY.arg(outputKeyFile.fileName()),
-                                                keyWriteReport.getText()));
+                                                keyWriteReport.text()));
         return ErrorCodes::CANT_WRITE_KEY;
     }
 

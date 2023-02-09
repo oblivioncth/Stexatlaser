@@ -1,6 +1,7 @@
 #ifndef KTEX_H
 #define KTEX_H
 
+// Qt Includes
 #include <QString>
 #include <QVector>
 

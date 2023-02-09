@@ -1,16 +1,18 @@
 #ifndef STEX_H
 #define STEX_H
 
+// Qt Includes
 #include <QString>
 #include <QSet>
 #include <QTextStream>
 #include <QIODevice>
 #include <QCommandLineOption>
 
-#include "qx.h"
+// Qx Includes
+#include <qx/core/qx-genericerror.h>
 
-#include "version.h"
-
+// Project Includes
+#include "project_vars.h"
 
 //-Typedef---------------------------------------------------------------------
 typedef int ErrorCode;
@@ -34,7 +36,7 @@ public:
 //-Class Variables------------------------------------------------------------------------------------------------------
 public:
     // Error Messages
-    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " VER_INTERNALNAME_STR " -h for help";
+    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " PROJECT_SHORT_NAME " -h for help";
 
     // Global command line option strings
     static inline const QString CL_OPT_HELP_S_NAME = "h";
@@ -60,7 +62,7 @@ public:
     // Help template
     static inline const QString HELP_TEMPL = "Usage:\n"
                                              "------\n"
-                                             VER_INTERNALNAME_STR " <global options> [command] <command options>\n"
+                                             PROJECT_SHORT_NAME " <global options> [command] <command options>\n"
                                              "\n"
                                              "Global Options:\n"
                                              "---------------%1\n"
@@ -72,8 +74,8 @@ public:
     static inline const QString HELP_COMMAND_TEMPL = "\n[%1]: %2\n";
 
     // Messages
-    static inline const QString MSG_VERSION = VER_PRODUCTNAME_STR " version " VER_FILEVERSION_STR "\n";
-    static inline const QString MSG_FORMATS = VER_INTERNALNAME_STR " supports the following image formats:\n%1\n";
+    static inline const QString MSG_VERSION = PROJECT_APP_NAME " version " PROJECT_VERSION_STR "\n";
+    static inline const QString MSG_FORMATS = PROJECT_SHORT_NAME " supports the following image formats:\n%1\n";
 
     // Stream
     static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
