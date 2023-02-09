@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.21.1)
 project(Stex
     VERSION 0.2.0.2
     LANGUAGES CXX
-    DESCRIPTION "Command-line Interface for Flashpoint"
+    DESCRIPTION "A tool to pack/unpack Klei TEX format atlases"
 )
 set(FORMAL_NAME "Stexatlaser")
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)

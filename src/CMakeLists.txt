@@ -78,11 +78,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     # Set target exe details
     include(OB/WinExecutableDetails)
     set_win_executable_details(${MAIN_TARGET_NAME}
-        ICON "${RESOURCE_PATH}/app/CLIFp.ico"
+        ICON "${RESOURCE_PATH}/icon/Stex.ico"
         FILE_VER ${PROJECT_VERSION}
         PRODUCT_VER ${PROJECT_VERSION}
         COMPANY_NAME "oblivioncth"
-        FILE_DESC "CLI for BlueMaxima's Flashpoint"
+        FILE_DESC "${PROJECT_DESCRIPTION}"
         INTERNAL_NAME ${PROJECT_NAME}
         COPYRIGHT "Open Source @ 2023 oblivioncth"
         TRADEMARKS_ONE "All Rights Reserved"
