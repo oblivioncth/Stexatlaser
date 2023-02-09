@@ -46,6 +46,7 @@ target_sources(${MAIN_TARGET_NAME}
 target_link_libraries(${MAIN_TARGET_NAME}
     PRIVATE
         Qt6::Core
+        Qt6::Gui
         Qx::Core
         Qx::Io
         Squish::Squish

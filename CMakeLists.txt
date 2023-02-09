@@ -81,6 +81,7 @@ setup_verbose_versioning(PROJECT_VERSION_VERBOSE)
 # Import Qt
 find_package(Qt6 REQUIRED COMPONENTS
     Core
+    Gui
 )
 
 # Disable deprecated code
