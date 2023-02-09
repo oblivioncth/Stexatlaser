@@ -1,0 +1,104 @@
+name: Build Stex - Linux
+on:
+  workflow_call:
+    secrets:
+      qt_ffynnon_cred:
+        description: 'Credentials for getting Qt from Ffynnon'
+        required: true
+env:
+  qt_install_dir: ${{ github.workspace }}/Qt/Install
+  stex_src_suffix: Stex/Source
+  stex_src_dir: ${{ github.workspace }}/Stex/Source
+  stex_build_dir: ${{ github.workspace }}/Stex/Build
+
+jobs:
+  build-stex:
+    name: Build Stex - Linux (Release)
+    strategy:
+      matrix:
+        qt_linkage: [static]
+        os: [ubuntu-20.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      cmake_gen: Ninja Multi-Config
+    steps:
+    - name: Set matrix derived variables
+      uses: kanga333/variable-mapper@v0.3.0
+      with:
+        key: ${{ matrix.os }}
+        map: |
+          {
+            "ubuntu-20.04": {
+              "c_comp": "clang-12",
+              "cxx_comp": "clang++-12",
+              "qt_version": "6.4.0",
+              "qt_compiler": "clang12"
+            },
+            "ubuntu-22.04": {
+              "c_comp": "clang-14",
+              "cxx_comp": "clang++-14",
+              "qt_version": "6.4.2",
+              "qt_compiler": "clang14"
+            }
+          }
+        export_to: env,log
+    - name: Set derived variables with shell because GitHub Actions env context sucks
+      run: |  
+        echo "stex_package_path=${{ env.stex_build_dir }}/out/dist" >> $GITHUB_ENV
+        stex_install_path="${{ env.stex_build_dir }}/out/install"
+        echo "stex_install_path=$stex_install_path" >> $GITHUB_ENV
+        echo "qt_cmake=$qt_install_dir/bin/qt-cmake" >> $GITHUB_ENV
+    - name: Install Qt (custom build)
+      uses: oblivioncth/actions/general/install-and-cache-qt-from-ffynnon@dev
+      with:
+        version: ${{ env.qt_version }}
+        os: linux
+        compiler: ${{ env.qt_compiler }}
+        linkage: ${{ matrix.qt_linkage }}
+        path: ${{ env.qt_install_dir }}
+        credentials: ${{ secrets.qt_ffynnon_cred }}
+    - name: Update package index
+      run: sudo apt-get update
+    - name: Install OpenGL lib
+      run: sudo apt-get install libglu1-mesa-dev
+    - name: Install XCB Related libs
+      run: sudo apt-get install libx11-xcb-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-*-dev
+    - name: Install libdrm
+      run: sudo apt-get install libdrm-dev
+    - name: Install Ninja
+      run: sudo apt-get install ninja-build
+    - name: Install Harfbuzz
+      run: sudo apt-get install libharfbuzz-dev
+    - name: Install EGL [22.04]
+      if: matrix.os == 'ubuntu-22.04'
+      run: sudo apt-get install libegl1-mesa-dev
+    - name: Checkout Stex
+      uses: actions/checkout@v3
+      with:
+        path: ${{ env.stex_src_suffix }}
+        fetch-depth: 0 # Required for verbose versioning to work correctly
+    - name: Build/Install Stex
+      working-directory: ${{ env.stex_src_dir }}
+      run: |
+        echo Configuring CMake...
+        "$qt_cmake" -G "$cmake_gen" -S "$stex_src_dir" -B "$stex_build_dir" -D CMAKE_CXX_COMPILER="$cxx_comp" -D CMAKE_C_COMPILER="$c_comp"
+        echo Changing to build directory...
+        cd "$stex_build_dir"
+        echo Building Stex Release...
+        cmake --build . --target all --config Release
+        echo Installing Stex Release
+        cmake --build . --target install --config Release
+        echo Packaging Stex...
+        cpack -C "Debug;Release"
+        echo Build complete.
+    - name: Get Stex artifact name
+      run: |
+        cpack_name=$(find "${{ env.stex_package_path }}" -type f -name "*.zip")
+        artifact_name="$(basename "$cpack_name" .zip) [${{ matrix.os }}]"
+        echo "current_artifact_name=$artifact_name" >> $GITHUB_ENV
+    - name: Upload Stex build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.current_artifact_name }}
+        path: ${{ env.stex_install_path }}
+        if-no-files-found: error
