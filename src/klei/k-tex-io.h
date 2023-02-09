@@ -4,7 +4,11 @@
 #include <QFile>
 
 #include "k-tex.h"
-#include "qx-io.h"
+
+// Qx Includes
+#include <qx/io/qx-filestreamwriter.h>
+#include <qx/io/qx-filestreamreader.h>
+#include <qx/core/qx-bitarray.h>
 
 class KTexWriter
 {
@@ -18,16 +22,16 @@ private:
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KTexWriter(const KTex& sourceTex, QFile& targetFile);
+    KTexWriter(const KTex& sourceTex, const QString& targetfilePath);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    Qx::IOOpReport writeHeader();
-    Qx::IOOpReport writeMipMapMetadata(const KTex::MipMapImage& mipMap);
-    Qx::IOOpReport writeMipMapData(const KTex::MipMapImage& mipMap);
+    Qx::IoOpReport writeHeader();
+    Qx::IoOpReport writeMipMapMetadata(const KTex::MipMapImage& mipMap);
+    Qx::IoOpReport writeMipMapData(const KTex::MipMapImage& mipMap);
 
 public:
-    Qx::IOOpReport write();
+    Qx::IoOpReport write();
 
 };
 
@@ -38,7 +42,6 @@ private:
 
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
-    QFile& mSourceFile;
     Qx::FileStreamReader mStreamReader;
     KTex& mTargetTex;
 
@@ -50,21 +53,21 @@ private:
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KTexReader(QFile& sourceFile, KTex& targetTex);
+    KTexReader(const QString& sourceFilePath, KTex& targetTex);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    Qx::IOOpReport checkFileSupport(QByteArray magicNumberRaw);
-    Qx::IOOpReport checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw);
+    Qx::IoOpReport checkFileSupport(QByteArray magicNumberRaw);
+    Qx::IoOpReport checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw);
 
-    Qx::IOOpReport parsePreCavesSpecs(Qx::BitArray specifcationBits);
-    Qx::IOOpReport parsePostCavesSpecs(Qx::BitArray specifcationBits);
-    Qx::IOOpReport readHeader();
-    Qx::IOOpReport readMipMapMetadata();
-    Qx::IOOpReport readMipMapData(int i);
+    Qx::IoOpReport parsePreCavesSpecs(Qx::BitArray specifcationBits);
+    Qx::IoOpReport parsePostCavesSpecs(Qx::BitArray specifcationBits);
+    Qx::IoOpReport readHeader();
+    Qx::IoOpReport readMipMapMetadata();
+    Qx::IoOpReport readMipMapData(int i);
 
 public:
-    Qx::IOOpReport read(bool& supported);
+    Qx::IoOpReport read(bool& supported);
 };
 
 #endif // K_TEX_IO_H

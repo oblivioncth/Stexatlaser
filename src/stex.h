@@ -7,7 +7,8 @@
 #include <QIODevice>
 #include <QCommandLineOption>
 
-#include "qx.h"
+// Qx Includes
+#include <qx/core/qx-genericerror.h>
 
 #include "version.h"
 

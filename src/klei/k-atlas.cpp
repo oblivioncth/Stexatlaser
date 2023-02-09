@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <cmath>
 
-#include "qx.h"
+#include <qx/core/qx-algorithm.h>
 
 //===============================================================================================================
 // K_ATLASER
@@ -215,8 +215,8 @@ KAtlas KAtlaser::processSingleImage() const
     QImage image = mNamedImages.first();
 
     // Get next power of 2 size
-    QSize atlasSize(Qx::Number::ceilPowOfTwo(image.width()),
-                    Qx::Number::ceilPowOfTwo(image.height()));
+    QSize atlasSize(Qx::ceilPowOfTwo(image.width()),
+                    Qx::ceilPowOfTwo(image.height()));
 
     // Create atlas canvas
     QImage atlasImage(atlasSize.width(), atlasSize.height(), QImage::Format_ARGB32);
@@ -267,8 +267,8 @@ KAtlas KAtlaser::processMultiImage() const
     }
 
     // Estimate final atlas size, preferring a rectangular shape
-    int longSide = Qx::Number::ceilPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
-    int shortSide = Qx::Number::roundPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
+    int longSide = Qx::ceilPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
+    int shortSide = Qx::roundPowOfTwo(static_cast<int>(std::sqrt(totalArea)));
     QSize atlasSize(longSide, shortSide);
 
     // Map element images to final atlas

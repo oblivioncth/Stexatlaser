@@ -5,8 +5,8 @@
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KTexWriter::KTexWriter(const KTex& sourceTex, QFile& targetFile) :
-    mStreamWriter(targetFile, Qx::WriteMode::Overwrite),
+KTexWriter::KTexWriter(const KTex& sourceTex, const QString& targetFilePath) :
+    mStreamWriter(targetFilePath, Qx::WriteMode::Overwrite),
     mSourceTex(sourceTex)
 {
      mStreamWriter.setByteOrder(QDataStream::LittleEndian);
@@ -14,7 +14,7 @@ KTexWriter::KTexWriter(const KTex& sourceTex, QFile& targetFile) :
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
-Qx::IOOpReport KTexWriter::writeHeader()
+Qx::IoOpReport KTexWriter::writeHeader()
 {
     // Create specifications integer
     Qx::BitArray platformBits = Qx::BitArray::fromInteger(static_cast<int>(mSourceTex.header().platform()));
@@ -50,7 +50,7 @@ Qx::IOOpReport KTexWriter::writeHeader()
     return mStreamWriter.status();
 }
 
-Qx::IOOpReport KTexWriter::writeMipMapMetadata(const KTex::MipMapImage& mipMap)
+Qx::IoOpReport KTexWriter::writeMipMapMetadata(const KTex::MipMapImage& mipMap)
 {
     // Write metadata fields
     mStreamWriter << mipMap.width();
@@ -62,7 +62,7 @@ Qx::IOOpReport KTexWriter::writeMipMapMetadata(const KTex::MipMapImage& mipMap)
     return mStreamWriter.status();
 }
 
-Qx::IOOpReport KTexWriter::writeMipMapData(const KTex::MipMapImage& mipMap)
+Qx::IoOpReport KTexWriter::writeMipMapData(const KTex::MipMapImage& mipMap)
 {
     // Write data
     mStreamWriter.writeRawData(mipMap.imageData());
@@ -72,30 +72,30 @@ Qx::IOOpReport KTexWriter::writeMipMapData(const KTex::MipMapImage& mipMap)
 }
 
 //Public:
-Qx::IOOpReport KTexWriter::write()
+Qx::IoOpReport KTexWriter::write()
 {
     // Track status
-    Qx::IOOpReport status;
+    Qx::IoOpReport status;
 
     // Open file
-    if(!(status = mStreamWriter.openFile()).wasSuccessful())
+    if((status = mStreamWriter.openFile()).isFailure())
         return status;
 
     // Write header
-    if(!(status = writeHeader()).wasSuccessful())
+    if((status = writeHeader()).isFailure())
         return status;
 
     // Write mip map metadata
     for(const KTex::MipMapImage& mipMap : mSourceTex.mipMaps())
     {
-        if(!(status = writeMipMapMetadata(mipMap)).wasSuccessful())
+        if((status = writeMipMapMetadata(mipMap)).isFailure())
             return status;
     }
 
     // Write mip map data
     for(const KTex::MipMapImage& mipMap : mSourceTex.mipMaps())
     {
-        if(!(status = writeMipMapData(mipMap)).wasSuccessful())
+        if((status = writeMipMapData(mipMap)).isFailure())
             return status;
     }
 
@@ -111,9 +111,8 @@ Qx::IOOpReport KTexWriter::write()
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KTexReader::KTexReader(QFile& sourceFile, KTex& targetTex) :
-    mSourceFile(sourceFile),
-    mStreamReader(sourceFile),
+KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex) :
+    mStreamReader(sourceFilePath),
     mTargetTex(targetTex),
     mMipMapCount(0),
     mSupported()
@@ -123,31 +122,31 @@ KTexReader::KTexReader(QFile& sourceFile, KTex& targetTex) :
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
-Qx::IOOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
+Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
 {
     if(QString::fromUtf8(magicNumberRaw) != KTex::Header::MAGIC_NUM)
     {
         *mSupported = false;
-        return Qx::IOOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mSourceFile);
+        return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw)
+Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw)
 {
     if(!KTex::supportedPlatform(platformRaw) ||
        !KTex::supportedPixelFormat(pixelFormatRaw)  ||
        !KTex::supportedTextureType(textureTypeRaw))
     {
         *mSupported = false;
-        return Qx::IOOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mSourceFile);
+        return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
 {
     // Split specificatons
     int startBit = 0;
@@ -163,8 +162,8 @@ Qx::IOOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
     quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_BC).toInteger<quint8>();
 
     // Check if file is unsupported
-    Qx::IOOpReport specsCheck;
-    if(!(specsCheck = checkFileSupport(platformRaw, pixelFormatRaw, textureTypeRaw)).wasSuccessful())
+    Qx::IoOpReport specsCheck;
+    if((specsCheck = checkFileSupport(platformRaw, pixelFormatRaw, textureTypeRaw)).isFailure())
         return specsCheck;
 
     // Assign values
@@ -179,7 +178,7 @@ Qx::IOOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
 {
     // Split specificatons
     int startBit = 0;
@@ -197,8 +196,8 @@ Qx::IOOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
     quint8 flagTwoRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
 
     // Check if file is unsupported
-    Qx::IOOpReport specsCheck;
-    if(!(specsCheck = checkFileSupport(platformRaw, pixelFormatRaw, textureTypeRaw)).wasSuccessful())
+    Qx::IoOpReport specsCheck;
+    if((specsCheck = checkFileSupport(platformRaw, pixelFormatRaw, textureTypeRaw)).isFailure())
         return specsCheck;
 
     // Assign values
@@ -213,15 +212,15 @@ Qx::IOOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::readHeader()
+Qx::IoOpReport KTexReader::readHeader()
 {
     // Read magic number
     QByteArray magicNumber;
     mStreamReader.readRawData(magicNumber, KTex::Header::MAGIC_NUM.size());
 
     // Make sure file is correct format
-    Qx::IOOpReport magicCheck;
-    if(!(magicCheck = checkFileSupport(magicNumber)).wasSuccessful())
+    Qx::IoOpReport magicCheck;
+    if((magicCheck = checkFileSupport(magicNumber)).isFailure())
         return magicCheck;
 
     // Read specifcation int
@@ -246,7 +245,7 @@ Qx::IOOpReport KTexReader::readHeader()
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::readMipMapMetadata()
+Qx::IoOpReport KTexReader::readMipMapMetadata()
 {
     // Mipmap to add
     KTex::MipMapImage mipMap;
@@ -276,7 +275,7 @@ Qx::IOOpReport KTexReader::readMipMapMetadata()
     return mStreamReader.status();
 }
 
-Qx::IOOpReport KTexReader::readMipMapData(int i)
+Qx::IoOpReport KTexReader::readMipMapData(int i)
 {
     // Read data chunk for given mipmap
     mStreamReader.readRawData(mTargetTex.mipMaps()[i].imageData(), mTargetTex.mipMaps()[i].imageDataSize());
@@ -286,34 +285,34 @@ Qx::IOOpReport KTexReader::readMipMapData(int i)
 }
 
 //Public:
-Qx::IOOpReport KTexReader::read(bool& supported)
+Qx::IoOpReport KTexReader::read(bool& supported)
 {
     // Initialize supported status flag
     mSupported = &supported;
     *mSupported = true;
 
     // Track status
-    Qx::IOOpReport status;
+    Qx::IoOpReport status;
 
     // Open file
-    if(!(status = mStreamReader.openFile()).wasSuccessful())
+    if((status = mStreamReader.openFile()).isFailure())
         return status;
 
     // Read header
-    if(!(status = readHeader()).wasSuccessful())
+    if((status = readHeader()).isFailure())
         return status;
 
     // Read mip map metadata
     for(int i = 0; i < mMipMapCount; i++)
     {
-        if(!(status = readMipMapMetadata()).wasSuccessful())
+        if((status = readMipMapMetadata()).isFailure())
             return status;
     }
 
     // Read mip map data
     for(int i = 0; i < mMipMapCount; i++)
     {
-        if(!(status = readMipMapData(i)).wasSuccessful())
+        if((status = readMipMapData(i)).isFailure())
             return status;
     }
 

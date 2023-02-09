@@ -2,8 +2,13 @@
 #define KXML_H
 
 #include <QFile>
+#include <QXmlStreamWriter>
 
 #include "k-atlaskey.h"
+
+// Qx Includes
+#include <qx/xml/qx-xmlstreamwritererror.h>
+#include <qx/xml/qx-xmlstreamreadererror.h>
 
 class KAtlasKeyWriter
 {

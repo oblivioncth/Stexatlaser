@@ -5,6 +5,9 @@
 
 #include "command.h"
 
+// Qx Includes
+#include <qx/utility/qx-helpers.h>
+
 //===============================================================================================================
 // Stex
 //===============================================================================================================
@@ -12,7 +15,7 @@
 //-Constructor-------------------------------------------------------------
 Stex::Stex()
 {
-    for(const QByteArray& format : qAsConstR(QImageReader::supportedImageFormats()))
+    for(const QByteArray& format : qxAsConst(QImageReader::supportedImageFormats()))
     {
         QString formatExt = QString::fromUtf8(format);
         mImageFormats.append(formatExt);
@@ -36,7 +39,7 @@ void Stex::showHelp()
         {
             // Handle names
             QStringList dashedNames;
-            for(const QString& name : qAsConstR(clOption->names()))
+            for(const QString& name : qxAsConst(clOption->names()))
                 dashedNames << ((name.length() > 1 ? "--" : "-") + name);
 
             // Add option
@@ -45,7 +48,7 @@ void Stex::showHelp()
 
         // Help commands
         QString commandStr;
-        for(const QString& command : qAsConstR(Command::registered()))
+        for(const QString& command : qxAsConst(Command::registered()))
             commandStr += HELP_COMMAND_TEMPL.arg(command, Command::describe(command));
 
         // Complete string

@@ -79,7 +79,7 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     if(keyReadReport.isValid())
     {
         mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_KEY.arg(atlasKeyFile.fileName()),
-                                                keyReadReport.getText()));
+                                                keyReadReport.text()));
         return ErrorCodes::CANT_READ_KEY;
     }
 
@@ -101,16 +101,15 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
 
     // Read TEX atlas
     mCore.printMessage(NAME, MSG_READ_TEX);
-    QFile texFile(texFileInfo.absoluteFilePath());
     KTex tex;
-    KTexReader texReader(texFile, tex);
+    KTexReader texReader(texFileInfo.absoluteFilePath(), tex);
     bool supported;
-    Qx::IOOpReport texReadReport = texReader.read(supported);
+    Qx::IoOpReport texReadReport = texReader.read(supported);
 
-    if(!texReadReport.wasSuccessful())
+    if(texReadReport.isFailure())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_ATLAS.arg(texFile.fileName()),
-                                                texReadReport.getOutcomeInfo()));
+        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_ATLAS.arg(texFileInfo.absoluteFilePath()),
+                                                texReadReport.outcomeInfo()));
         return ErrorCodes::CANT_READ_ATALAS;
     }
     else if(!supported)

@@ -5,8 +5,6 @@
 #include <QImageReader>
 #include <QImageWriter>
 
-#include "qx-io.h"
-
 #include "version.h"
 #include "stex.h"
 #include "command.h"

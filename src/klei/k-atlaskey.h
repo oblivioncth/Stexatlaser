@@ -2,8 +2,6 @@
 #define KATLASKEY_H
 
 #include "k-atlas.h"
-#include "qx.h"
-#include "qx-xml.h"
 
 class KAtlasKey
 {

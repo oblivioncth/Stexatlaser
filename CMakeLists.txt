@@ -90,10 +90,11 @@ add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x060000)
 # Fetch Qx
 include(OB/FetchQx)
 fetch_qx(
-    REF "v0.4.3"
+    REF "e2053af327e27c3f5a304539c4b1243fa3c44669"
     COMPONENTS
         Core
         Io
+        Xml
 )
 
 # Fetch libsquish

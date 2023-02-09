@@ -51,6 +51,7 @@ target_link_libraries(${MAIN_TARGET_NAME}
         Qt6::Gui
         Qx::Core
         Qx::Io
+        Qx::Xml
         Squish::Squish
 )
 
