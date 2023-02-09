@@ -12,7 +12,6 @@
 #include <qx/core/qx-genericerror.h>
 
 // Project Includes
-#include "version.h"
 
 //-Typedef---------------------------------------------------------------------
 typedef int ErrorCode;

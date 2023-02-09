@@ -7,7 +7,6 @@
 #include <QImageWriter>
 
 // Project Includes
-#include "version.h"
 #include "stex.h"
 #include "command.h"
 
