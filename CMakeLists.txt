@@ -32,7 +32,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJ_SCRIPTS_PATH}/module")
 
 # Get helper scripts
 include(Stex/FetchOBCMake)
-fetch_ob_cmake("v0.2")
+fetch_ob_cmake("9ccddf78d5eaa0d776cc55e9baabd294577808b1")
 
 # Architecture
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -98,7 +98,7 @@ fetch_qx(
 )
 
 # Fetch libsquish
-include(Stex/FetchLibSquish)
+include(OB/FetchLibSquish)
 fetch_libsquish("104") # v1.15 (tag)
 
 # Set main target name
