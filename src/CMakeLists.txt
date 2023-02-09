@@ -60,6 +60,17 @@ set_target_properties(${MAIN_TARGET_NAME} PROPERTIES
     EXPORT_NAME "${PROJECT_NAME}"
 )
 
+## Forward select project variables to C++ code
+include(OB/CppVars)
+add_cpp_vars(${MAIN_TARGET_NAME}
+    NAME "project_vars"
+    PREFIX "PROJECT_"
+    VARS
+        VERSION_STR "\"${PROJECT_VERSION}\""
+        SHORT_NAME "\"${PROJECT_NAME}\""
+        APP_NAME "\"${FORMAL_NAME}\""
+)
+
 ################# Windows Build #################
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     # Target properties
