@@ -113,7 +113,7 @@ Still, for this reason it is recommended to keep original copies of your texture
 ## Exit Codes
 Once stex has finished executing an exit code is reported that indicates the "error status" of the program, which can be useful for recording/determining issues. The exit code can be obtained by running the application in the following manner:
 
-    start /wait CLIFp.exe [parameters]
+    start /wait Stex [parameters]
     echo %errorlevel%
 
 | Value | Code               | Description                                                              |
@@ -159,30 +159,31 @@ Although in a practical sense they shouldn't be needed, some atlas elements requ
 
 This extension will be removed during filename assignment when unpacking an atlas.
 
-
 ## Source
-This tool was written in C++ 17 targeting Windows/Debian and has the following dependencies:
 
-**Common:**
- - Qt 5.15.2
- - Qxtended (my own personal Qt based library, see below)
- - libsquish 1.15
+### Summary
 
-**Windows:**
- - Windows 10 SDK 10.0.19041.0 or later
- - MSVC2019 v142 or later
+ - C++20
+ - CMake 3.21.1
+ - Targets:
+	 - Windows 10+
+	 - Linux
 
-**Debian:**
-- g++ 9.3.0 or later
-- libgomp1
+### Dependencies
+- Qt6
+- [Qx](https://github.com/oblivioncth/Qx/)
+- [libsquish](https://sourceforge.net/projects/libsquish/)
 
-Builds have been tested on Windows 10 21H1 and Ubuntu 20.04
+### Builds
+CI/CD:
+ - Windows:
+    - 10 - MSVC2022
+ - Linux:
+	 - Ubuntu 20.04/Clang 12
+	 - Ubuntu 22.04/Clang 14
 
-Because of the allowances by various licenses and overall small footprints, this repository comes with everything needed to build for the target platform, other than a build of Qt itself. This includes pre-built static libs of Qxtended (source code available upon request), and libquish for Debug/Release and x86/x64.
-
-This project is configured for the qmake build system and can be built using it directly or through Qt Creator via the included .pro file.
-
-Other platforms are possible to compile for with some modifications.
+### Details
+The source for this project is managed by a sensible CMake configuration that allows for straightforward compilation and consumption of its target(s), either as a sub-project or as an imported package. All required dependencies except for Qt6 are automatically acquired via CMake's FetchContent mechanism.
 
 
 ## Klei TEX Format

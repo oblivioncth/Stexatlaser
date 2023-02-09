@@ -1,0 +1,84 @@
+name: Master pull-request merge reaction
+on:
+  pull_request:
+    types: [closed]
+    branches:
+    - 'master'
+env:
+  artifacts_path: ${{ github.workspace }}/Artifacts
+  zips_path: ${{ github.workspace }}/Zips
+  
+jobs:
+  tag_master_and_sync_dev:
+    name: Tag master merge commit, FF back to dev
+    if: github.event.pull_request.merged == true
+    runs-on: windows-latest
+    outputs:
+      new_version: ${{ steps.get-proj-ver.outputs.version }}
+    steps:
+    - name: Get project version
+      id: get-proj-ver
+      uses: oblivioncth/actions/cmake/get-project-version@dev
+    - name: Set Git user to ObyBotCI
+      uses: oblivioncth/actions/git/set-git-user-to-oby-bot@dev
+    - name: Tag master with new version tag
+      uses: oblivioncth/actions/git/tag@dev
+      with:
+        tag: 'v${{ steps.get-proj-ver.outputs.version }}'
+        message: 'Release v${{ steps.get-proj-ver.outputs.version }}'
+    - name: Move 'latest' tag
+      uses: oblivioncth/actions/git/move-latest-tag@dev
+    - name: Fast-forward merge master into to dev
+      if: always()
+      uses: oblivioncth/actions/git/merge-branches@dev
+      with:
+        source_branch: master
+        target_branch: dev
+        ff: only
+  
+  build_stex_release_windows:
+    name: Build Stex Release (Windows)
+    needs: tag_master_and_sync_dev
+    if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/build-stex-windows.yml
+    secrets:
+      qt_ffynnon_cred: ${{ secrets.OBYBOT_FFYNNON_CREDS }}
+      
+  build_stex_release_linux:
+    name: Build Stex Release (Linux)
+    needs: tag_master_and_sync_dev
+    if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/build-stex-linux.yml
+    secrets:
+      qt_ffynnon_cred: ${{ secrets.OBYBOT_FFYNNON_CREDS }}
+
+  create-release:
+    name: Create GitHub release
+    needs: [build_stex_release_windows, build_stex_release_linux, tag_master_and_sync_dev]
+    if: github.event.pull_request.merged == true
+    runs-on: windows-latest
+    steps:
+    - name: Download built Stex artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ${{ env.artifacts_path }}
+    - name: Zip up release artifacts
+      run: |
+        $artifact_folders = Get-ChildItem -Directory -Path "${{ env.artifacts_path }}"
+        foreach($art_dir in $artifact_folders)
+        {
+          $name = $art_dir.name
+          $path = $art_dir.fullname
+          7z a "${{ env.zips_path }}/${name}.zip" "${path}/*"
+        }
+    - name: Generate release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: "Stex Release v${{ needs.tag_master_and_sync_dev.outputs.new_version }}"
+        tag_name: "v${{ needs.tag_master_and_sync_dev.outputs.new_version }}"
+        fail_on_unmatched_files: true
+        generate_release_notes: true
+        files: |
+          ${{ env.zips_path }}/*.zip
+    
+        

@@ -1,0 +1,17 @@
+changelog:
+  exclude:
+    labels:
+      - release-pr
+  categories:
+    - title: New Features
+      labels:
+        - enhancement
+    - title: Bug Fixes
+      labels:
+        - bug
+    - title: Backend Improvements
+      labels:
+        - backend
+    - title: Other Changes
+      labels:
+        - "*"

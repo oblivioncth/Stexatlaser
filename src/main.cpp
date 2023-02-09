@@ -1,3 +1,4 @@
+// Qt Includes
 #include <QCoreApplication>
 #include <QString>
 #include <QDir>
@@ -5,11 +6,10 @@
 #include <QImageReader>
 #include <QImageWriter>
 
-#include "qx-io.h"
-
-#include "version.h"
+// Project Includes
 #include "stex.h"
 #include "command.h"
+#include "project_vars.h"
 
 // Error Messages
 const QString ERR_INVALID_COMMAND = R"("%1" is not a valid command)";
@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
     // Set application name
-    QCoreApplication::setApplicationName(VER_PRODUCTNAME_STR);
-    QCoreApplication::setApplicationVersion(VER_FILEVERSION_STR);
+    QCoreApplication::setApplicationName(PROJECT_APP_NAME);
+    QCoreApplication::setApplicationVersion(PROJECT_VERSION_STR);
 
     // Error status tracker
     ErrorCode errorStatus = Stex::ErrorCodes::NO_ERR;

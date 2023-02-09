@@ -1,8 +1,15 @@
 #ifndef KXML_H
 #define KXML_H
 
+// Qt Includes
 #include <QFile>
+#include <QXmlStreamWriter>
 
+// Qx Includes
+#include <qx/xml/qx-xmlstreamwritererror.h>
+#include <qx/xml/qx-xmlstreamreadererror.h>
+
+// Project Includes
 #include "k-atlaskey.h"
 
 class KAtlasKeyWriter
