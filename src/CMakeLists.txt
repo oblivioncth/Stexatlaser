@@ -18,6 +18,8 @@ set(CXX_SOURCES
     command.h
     command.cpp
     command/c-pack.h
+    command/c-pack.cpp
+    command/c-pack.h
     command/c-unpack.cpp
     klei/k-atlas.h
     klei/k-atlas.cpp
