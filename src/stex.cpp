@@ -1,12 +1,17 @@
+// Unit Includes
 #include "stex.h"
 
-#include <QImageReader>
+// Standard Library Includes
 #include <iostream>
 
-#include "command.h"
+// Qt Includes
+#include <QImageReader>
 
 // Qx Includes
 #include <qx/utility/qx-helpers.h>
+
+// Project Includes
+#include "command.h"
 
 //===============================================================================================================
 // Stex

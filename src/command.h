@@ -1,10 +1,11 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+// Qt Includes
 #include <QCommandLineParser>
 
+// Project Include
 #include "stex.h"
-
 
 class CommandFactory;
 

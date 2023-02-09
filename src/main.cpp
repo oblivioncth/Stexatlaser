@@ -1,3 +1,4 @@
+// Qt Includes
 #include <QCoreApplication>
 #include <QString>
 #include <QDir>
@@ -5,6 +6,7 @@
 #include <QImageReader>
 #include <QImageWriter>
 
+// Project Includes
 #include "version.h"
 #include "stex.h"
 #include "command.h"

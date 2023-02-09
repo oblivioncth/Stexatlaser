@@ -1,14 +1,16 @@
 #ifndef K_TEX_IO_H
 #define K_TEX_IO_H
 
+// Qt Includes
 #include <QFile>
-
-#include "k-tex.h"
 
 // Qx Includes
 #include <qx/io/qx-filestreamwriter.h>
 #include <qx/io/qx-filestreamreader.h>
 #include <qx/core/qx-bitarray.h>
+
+// Project Includes
+#include "k-tex.h"
 
 class KTexWriter
 {

@@ -1,6 +1,7 @@
 #ifndef STEX_H
 #define STEX_H
 
+// Qt Includes
 #include <QString>
 #include <QSet>
 #include <QTextStream>
@@ -10,8 +11,8 @@
 // Qx Includes
 #include <qx/core/qx-genericerror.h>
 
+// Project Includes
 #include "version.h"
-
 
 //-Typedef---------------------------------------------------------------------
 typedef int ErrorCode;

@@ -1,6 +1,7 @@
 #ifndef ATLAS_H
 #define ATLAS_H
 
+// Qt Includes
 #include <QStringList>
 #include <QMap>
 #include <QImage>

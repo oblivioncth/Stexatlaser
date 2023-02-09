@@ -1,13 +1,16 @@
+// Unit Includes
 #include "c-pack.h"
 
+// Qt Includes
 #include <QDir>
 #include <QImageReader>
 
+// Project Includes
 #include "conversion.h"
-#include "../klei/k-atlas.h"
-#include "../klei/k-atlaskey.h"
-#include "../klei/k-tex-io.h"
-#include "../klei/k-xml.h"
+#include "klei/k-atlas.h"
+#include "klei/k-atlaskey.h"
+#include "klei/k-tex-io.h"
+#include "klei/k-xml.h"
 
 //===============================================================================================================
 // CPack
@@ -16,7 +19,7 @@
 //-Constructor-------------------------------------------------------------
 //Public:
 CPack::CPack(Stex& coreRef) : Command(coreRef)
-{ }
+{}
 
 //-Class Functions----------------------------------------------------------------
 //Private:

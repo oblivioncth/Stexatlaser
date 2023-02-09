@@ -1,9 +1,11 @@
+// Unit Includes
 #include "k-atlaskey.h"
 
+// Qt Includes
 #include <QXmlStreamWriter>
 #include <QFileInfo>
-#include <cmath>
 
+// Project Includes
 #include "k-tex.h"
 
 //===============================================================================================================

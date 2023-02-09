@@ -1,9 +1,12 @@
+// Unit Includes
 #include "k-atlas.h"
 
+// Qt Includes
 #include <QImageReader>
 #include <QPainter>
 #include <cmath>
 
+// Qx Includes
 #include <qx/core/qx-algorithm.h>
 
 //===============================================================================================================
