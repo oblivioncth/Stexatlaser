@@ -113,7 +113,7 @@ Still, for this reason it is recommended to keep original copies of your texture
 ## Exit Codes
 Once stex has finished executing an exit code is reported that indicates the "error status" of the program, which can be useful for recording/determining issues. The exit code can be obtained by running the application in the following manner:
 
-    start /wait CLIFp.exe [parameters]
+    start /wait Stex [parameters]
     echo %errorlevel%
 
 | Value | Code               | Description                                                              |
@@ -164,9 +164,9 @@ This extension will be removed during filename assignment when unpacking an atla
 This tool was written in C++ 17 targeting Windows/Debian and has the following dependencies:
 
 **Common:**
- - Qt 5.15.2
- - Qxtended (my own personal Qt based library, see below)
- - libsquish 1.15
+ - Qt6
+ - Qx
+ - libsquish
 
 **Windows:**
  - Windows 10 SDK 10.0.19041.0 or later
