@@ -86,6 +86,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 # Disable deprecated code
 add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x060000)
 
+# Fetch Qx
 include(OB/FetchQx)
 fetch_qx(
     REF "v0.4.3"
@@ -93,6 +94,10 @@ fetch_qx(
         Core
         Io
 )
+
+# Fetch libsquish
+include(Stex/FetchLibSquish)
+fetch_libsquish("104") # v1.15 (tag)
 
 # Set main target name
 # Name here needs to be as unique as possible for when this project is inlcuded

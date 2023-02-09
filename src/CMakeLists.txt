@@ -48,6 +48,7 @@ target_link_libraries(${MAIN_TARGET_NAME}
         Qt6::Core
         Qx::Core
         Qx::Io
+        Squish::Squish
 )
 
 # Configure target properties
