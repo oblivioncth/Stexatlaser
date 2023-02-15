@@ -1,7 +1,7 @@
 #================= Project Setup ==========================
 
 # CMake
-cmake_minimum_required(VERSION 3.25.0)
+cmake_minimum_required(VERSION 3.24.0)
 
 # Project
 # NOTE: DON'T USE TRAILING ZEROS IN VERSIONS
@@ -90,7 +90,7 @@ add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x060000)
 # Fetch Qx
 include(OB/FetchQx)
 fetch_qx(
-    REF "e2053af327e27c3f5a304539c4b1243fa3c44669"
+    REF "4661b909d8c7d2df5a45aa7786ec7f458a733d48"
     COMPONENTS
         Core
         Io
