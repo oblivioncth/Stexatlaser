@@ -13,7 +13,7 @@ project(Stex
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("35544f88f92469a441c4f5fe62fb4df873b22a3c")
+fetch_ob_cmake("ff98eea4b9189f5ada2687aa43e766f1f55ad7aa")
 
 # Initialize project according to standard rules
 include(OB/Project)
