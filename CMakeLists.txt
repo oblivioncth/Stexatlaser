@@ -67,7 +67,7 @@ ob_fetch_qx(
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_libsquish("104") # v1.15 (tag)
+ob_fetch_libsquish("110") # v1.15 (tag)
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
