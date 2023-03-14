@@ -13,7 +13,7 @@ project(Stex
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("ca3d41aa274df93a5757f8d546d05f5c1a8c026f")
+fetch_ob_cmake("a23b02ed06e6d1a2c91f5d81d74c127157289094")
 
 # Initialize project according to standard rules
 include(OB/Project)
@@ -60,14 +60,14 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "a23c8ba1c927f1776eb3419ba77a3f55bd75467f"
+    REF "202531b2811f3f0d9fb94937dcd1c9250657d840"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_libsquish("110") # v1.15 (tag)
+ob_fetch_modern_libsquish("48178735e3f9c57b999cd7be32a6348ae2a41e33")
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
