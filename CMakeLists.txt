@@ -13,7 +13,7 @@ project(Stex
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("ff98eea4b9189f5ada2687aa43e766f1f55ad7aa")
+fetch_ob_cmake("ca3d41aa274df93a5757f8d546d05f5c1a8c026f")
 
 # Initialize project according to standard rules
 include(OB/Project)
@@ -60,7 +60,7 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "a290fd23bb36779aeccf2ae881b542d22d716829"
+    REF "a23c8ba1c927f1776eb3419ba77a3f55bd75467f"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
@@ -80,7 +80,7 @@ ob_standard_project_package_config(
     COMPATIBILITY "SameMinorVersion"
     CONFIG STANDARD
         TARGET_CONFIGS
-            "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}"
+            TARGET "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}"
 )
 
 #================= Install ==========================
