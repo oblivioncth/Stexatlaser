@@ -164,7 +164,7 @@ This extension will be removed during filename assignment when unpacking an atla
 ### Summary
 
  - C++20
- - CMake 3.24.0
+ - CMake 3.23.0
  - Targets:
 	 - Windows 10+
 	 - Linux
@@ -173,14 +173,11 @@ This extension will be removed during filename assignment when unpacking an atla
 - Qt6
 - [Qx](https://github.com/oblivioncth/Qx/)
 - [libsquish](https://sourceforge.net/projects/libsquish/)
+- [OBCMake](https://github.com/oblivioncth/OBCmake)
 
-### Builds
-CI/CD:
- - Windows:
-    - 10 - MSVC2022
- - Linux:
-	 - Ubuntu 20.04/Clang 12 & GCC 10
-	 - Ubuntu 22.04/Clang 14 & GCC 12
+## Pre-built Releases/Artifacts
+
+Releases and some workflows currently provide builds of Stex in various combinations of platforms and compilers. View the repository [Actions](https://github.com/oblivioncth/Stexatlaser/actions) or [Releases](https://github.com/oblivioncth/Stexatlaser/releases) to see examples
 
 ### Details
 The source for this project is managed by a sensible CMake configuration that allows for straightforward compilation and consumption of its target(s), either as a sub-project or as an imported package. All required dependencies except for Qt6 are automatically acquired via CMake's FetchContent mechanism.
