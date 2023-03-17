@@ -13,7 +13,7 @@ project(Stex
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("35544f88f92469a441c4f5fe62fb4df873b22a3c")
+fetch_ob_cmake("a23b02ed06e6d1a2c91f5d81d74c127157289094")
 
 # Initialize project according to standard rules
 include(OB/Project)
@@ -60,14 +60,14 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "a290fd23bb36779aeccf2ae881b542d22d716829"
+    REF "202531b2811f3f0d9fb94937dcd1c9250657d840"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_libsquish("104") # v1.15 (tag)
+ob_fetch_modern_libsquish("48178735e3f9c57b999cd7be32a6348ae2a41e33")
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
@@ -80,7 +80,7 @@ ob_standard_project_package_config(
     COMPATIBILITY "SameMinorVersion"
     CONFIG STANDARD
         TARGET_CONFIGS
-            "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}"
+            TARGET "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}"
 )
 
 #================= Install ==========================

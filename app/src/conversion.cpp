@@ -5,7 +5,7 @@
 #include <cstring>
 
 // Squish Includes
-#include "Squish/squish.h"
+#include "squish/squish.h"
 
 // NOTE: The Qt image formats (QImage::Format) used here are all byte ordered based on the host system, yet squish (and DST?)
 // expect the input data to always be RGB(A), which means these won't work on Big Endian ordered systems;
