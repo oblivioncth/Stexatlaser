@@ -60,14 +60,14 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "202531b2811f3f0d9fb94937dcd1c9250657d840"
+    REF "5b184c1ccea191ae6a885ea9a240a0d15b77b08c"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_modern_libsquish("48178735e3f9c57b999cd7be32a6348ae2a41e33")
+ob_fetch_modern_libsquish("655dab336bd017ec1a23917a850b8384ce30cb7d")
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
@@ -80,7 +80,7 @@ ob_standard_project_package_config(
     COMPATIBILITY "SameMinorVersion"
     CONFIG STANDARD
         TARGET_CONFIGS
-            TARGET "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}"
+            TARGET "${PROJECT_NAMESPACE}::${APP_ALIAS_NAME}" COMPONENT "${APP_ALIAS_NAME}" DEFAULT
 )
 
 #================= Install ==========================
