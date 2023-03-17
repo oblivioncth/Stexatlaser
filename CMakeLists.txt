@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.23.0...3.25.0)
 # Project
 # NOTE: DON'T USE TRAILING ZEROS IN VERSIONS
 project(Stex
-    VERSION 0.3
+    VERSION 0.3.1
     LANGUAGES CXX
     DESCRIPTION "A tool to pack/unpack Klei TEX format atlases"
 )
