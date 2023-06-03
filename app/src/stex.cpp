@@ -80,9 +80,6 @@ ErrorCode Stex::initialize(QStringList& commandLine)
     // Parse
     bool validArgs = clParser.parse(commandLine);
 
-    // Remove app name from command line string
-    commandLine.removeFirst();
-
     // Check for valid arguments
     if(validArgs)
     {
