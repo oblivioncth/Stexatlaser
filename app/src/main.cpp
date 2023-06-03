@@ -1,10 +1,5 @@
 // Qt Includes
 #include <QCoreApplication>
-#include <QString>
-#include <QDir>
-#include <QImage>
-#include <QImageReader>
-#include <QImageWriter>
 
 // Project Includes
 #include "stex.h"
