@@ -34,10 +34,7 @@ public:
     };
 
 //-Class Variables------------------------------------------------------------------------------------------------------
-public:
-    // Error Messages
-    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " PROJECT_SHORT_NAME " -h for help";
-
+private:
     // Global command line option strings
     static inline const QString CL_OPT_HELP_S_NAME = "h";
     static inline const QString CL_OPT_HELP_L_NAME = "help";
@@ -82,6 +79,10 @@ public:
 
     // Meta
     static inline const QString NAME = "stex";
+
+public:
+    // Error Messages
+    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " PROJECT_SHORT_NAME " -h for help";
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:
