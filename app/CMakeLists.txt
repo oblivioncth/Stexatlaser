@@ -11,6 +11,7 @@ ob_add_standard_executable(${APP_TARGET_NAME}
         command/c-pack.h
         command/c-pack.cpp
         command/c-pack.h
+        command/c-unpack.h
         command/c-unpack.cpp
         klei/k-atlas.h
         klei/k-atlas.cpp
