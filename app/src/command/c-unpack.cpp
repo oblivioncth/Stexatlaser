@@ -23,34 +23,14 @@ CUnpack::CUnpack(Stex& coreRef) : Command(coreRef) {}
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-const QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-const QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-const QString CUnpack::name() { return NAME; }
+QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
+QString CUnpack::name() { return NAME; }
 
 //Public:
-ErrorCode CUnpack::process(const QStringList& commandLine)
+ErrorCode CUnpack::perform()
 {
     ErrorCode errorStatus;
-
-    // Parse and check for valid arguments
-    if((errorStatus = parse(commandLine)))
-        return errorStatus;
-
-    // Handle standard options
-    if(checkStandardOptions())
-        return Stex::ErrorCodes::NO_ERR;
-
-    // Make sure input and output were provided
-    if(!mParser.isSet(CL_OPTION_INPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_INPUT));
-        return Stex::ErrorCodes::NO_INPUT;
-    }
-    if(!mParser.isSet(CL_OPTION_OUTPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_OUTPUT));
-        return Stex::ErrorCodes::NO_OUTPUT;
-    }
 
     // Get input and output
     mCore.printMessage(NAME, MSG_INPUT_VALIDATION);

@@ -80,16 +80,20 @@ public:
     static QString describe(const QString& name);
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
-protected:
-    virtual const QList<const QCommandLineOption*> options() = 0;
-    virtual const QSet<const QCommandLineOption*> requiredOptions() = 0;
-    virtual const QString name() = 0;
+private:
     ErrorCode parse(const QStringList& commandLine);
     bool checkStandardOptions();
+    ErrorCode checkRequiredOptions();
     void showHelp();
 
+protected:
+    virtual QList<const QCommandLineOption*> options() = 0;
+    virtual QSet<const QCommandLineOption*> requiredOptions();
+    virtual QString name() = 0;
+    virtual ErrorCode perform() = 0;
+
 public:
-    virtual ErrorCode process(const QStringList& commandLine) = 0;
+    virtual ErrorCode process(const QStringList& commandLine);
 };
 
 class CommandFactory

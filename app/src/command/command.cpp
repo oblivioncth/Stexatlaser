@@ -24,9 +24,7 @@ QString Command::describe(const QString& name) { return registry().value(name).d
 std::unique_ptr<Command> Command::acquire(const QString& name, Stex& coreRef) { return registry().value(name).factory->produce(coreRef); }
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
-//Protected:
-const QList<const QCommandLineOption*> Command::options() { return CL_OPTIONS_STANDARD; }
-
+//Private:
 ErrorCode Command::parse(const QStringList& commandLine)
 {
     // Add command options
@@ -56,6 +54,19 @@ bool Command::checkStandardOptions()
     return false;
 }
 
+ErrorCode Command::checkRequiredOptions()
+{
+    QStringList missing;
+    for(auto opt : qxAsConst(requiredOptions()))
+        if(!mParser.isSet(*opt))
+            missing.append(opt->names().constFirst());
+
+//    if(!missing.isEmpty())
+//        return ERR_MISSING_REQ_OPT.arged(name()).wDetails(u"'"_s + missing.join(u"','"_s) + u"'"_s);
+
+    return Stex::ErrorCodes::INVALID_ARGS; // PLACEHOLDER
+}
+
 void Command::showHelp()
 {
     // Help string
@@ -63,7 +74,7 @@ void Command::showHelp()
 
     // One time setup
     if(helpStr.isNull())
-    {        
+    {
         // Help options
         QString optStr;
         for(const QCommandLineOption* clOption : options())
@@ -84,4 +95,32 @@ void Command::showHelp()
 
     // Show help
     mCore.printVerbatim(helpStr);
+}
+
+//Protected:
+QList<const QCommandLineOption*> Command::options() { return CL_OPTIONS_STANDARD; }
+QSet<const QCommandLineOption*> Command::requiredOptions() { return {}; }
+
+//Public:
+ErrorCode Command::process(const QStringList& commandLine)
+{
+    // Parse and check for valid arguments
+    ErrorCode processError = parse(commandLine);
+    if(processError)
+        return processError;
+
+    // Handle standard options
+    if(checkStandardOptions())
+        return Stex::ErrorCodes::NO_ERR;
+
+    // Check for required options
+    processError = checkRequiredOptions();
+    if(processError)
+    {
+        mCore.printError(NAME, Qx::GenericError()); // Placeholder for next commit
+        return processError;
+    }
+
+    // Perform command
+    return perform();
 }

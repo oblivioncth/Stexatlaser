@@ -3,7 +3,7 @@
 
 // Project Includes
 #include "stex.h"
-#include "command.h"
+#include "command/command.h"
 #include "project_vars.h"
 
 // Error Messages

@@ -1,8 +1,7 @@
 #ifndef CUNPACK_H
 #define CUNPACK_H
 
-#include "../command.h"
-#include "../klei/k-tex.h"
+#include "command.h"
 
 class CUnpack : public Command
 {
@@ -75,12 +74,12 @@ public:
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
-    const QList<const QCommandLineOption*> options();
-    const QSet<const QCommandLineOption*> requiredOptions();
-    const QString name();
+    QList<const QCommandLineOption*> options();
+    QSet<const QCommandLineOption*> requiredOptions();
+    QString name();
 
 public:
-    ErrorCode process(const QStringList& commandLine);
+    ErrorCode perform();
 };
 REGISTER_COMMAND(CUnpack::NAME, CUnpack, CUnpack::DESCRIPTION);
 

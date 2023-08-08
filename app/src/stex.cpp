@@ -11,7 +11,7 @@
 #include <qx/utility/qx-helpers.h>
 
 // Project Includes
-#include "command.h"
+#include "command/command.h"
 
 //===============================================================================================================
 // Stex

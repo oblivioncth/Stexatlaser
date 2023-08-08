@@ -111,12 +111,12 @@ private:
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
-    const QList<const QCommandLineOption*> options();
-    const QSet<const QCommandLineOption*> requiredOptions();
-    const QString name();
+    QList<const QCommandLineOption*> options();
+    QSet<const QCommandLineOption*> requiredOptions();
+    QString name();
 
 public:
-    ErrorCode process(const QStringList& commandLine);
+    ErrorCode perform();
 };
 REGISTER_COMMAND(CPack::NAME, CPack, CPack::DESCRIPTION);
 

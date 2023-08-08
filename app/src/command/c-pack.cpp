@@ -43,34 +43,14 @@ bool CPack::hasBasenameCollision(const QFileInfoList& imageFiles)
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-const QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-const QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-const QString CPack::name() { return NAME; }
+QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
+QString CPack::name() { return NAME; }
 
 //Public:
-ErrorCode CPack::process(const QStringList& commandLine)
+ErrorCode CPack::perform()
 {
     ErrorCode errorStatus;
-
-    // Parse and check for valid arguments
-    if((errorStatus = parse(commandLine)))
-        return errorStatus;
-
-    // Handle standard options
-    if(checkStandardOptions())
-        return Stex::ErrorCodes::NO_ERR;
-
-    // Make sure input and output were provided
-    if(!mParser.isSet(CL_OPTION_INPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_INPUT));
-        return Stex::ErrorCodes::NO_INPUT;
-    }
-    if(!mParser.isSet(CL_OPTION_OUTPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_OUTPUT));
-        return Stex::ErrorCodes::NO_OUTPUT;
-    }
 
     // Make sure output pixel format is valid if provided
     if(mParser.isSet(CL_OPTION_FORMAT) && !PIXEL_FORMAT_MAP.contains(mParser.value(CL_OPTION_FORMAT)))
