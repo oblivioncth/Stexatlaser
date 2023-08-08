@@ -15,10 +15,10 @@ namespace
         const QString ELEMENT_STR_ALPHA = "StraightAlpha";
         const QString ATTRIBUTE_FILENAME = "filename";
         const QString ATTRIBUTE_ELEMENT_NAME = "name";
-        const QString ATTRIBUTE_TOP_LEFT_X = "u1";
-        const QString ATTRIBUTE_TOP_LEFT_Y = "v1";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_X = "u2";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_Y = "v2";
+        const QString ATTRIBUTE_TOP_LEFT_U = "u1";
+        const QString ATTRIBUTE_TOP_LEFT_V = "v1";
+        const QString ATTRIBUTE_BOTTOM_RIGHT_U = "u2";
+        const QString ATTRIBUTE_BOTTOM_RIGHT_V = "v2";
     }
 }
 
@@ -38,10 +38,10 @@ bool KAtlasKeyWriter::writeElement(const QString& elementName, const QRectF& ele
 {
     mStreamWriter.writeEmptyElement(Xml::ELEMENT_ELEMENT);
     mStreamWriter.writeAttribute(Xml::ATTRIBUTE_ELEMENT_NAME, elementName);
-    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_TOP_LEFT_X, QString::number(element.left()));
-    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_BOTTOM_RIGHT_X, QString::number(element.right()));
-    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_TOP_LEFT_Y, QString::number(element.top()));
-    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_BOTTOM_RIGHT_Y, QString::number(element.bottom()));
+    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_TOP_LEFT_U, QString::number(element.left()));
+    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_BOTTOM_RIGHT_U, QString::number(element.right()));
+    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_TOP_LEFT_V, QString::number(element.top()));
+    mStreamWriter.writeAttribute(Xml::ATTRIBUTE_BOTTOM_RIGHT_V, QString::number(element.bottom()));
 
     // Return error status
     return !mStreamWriter.hasError();
@@ -186,18 +186,18 @@ void KAtlasKeyReader::parseElement()
 
     // Check for require attributes
     if(!hasAttributes(elementAttriv, {Xml::ATTRIBUTE_ELEMENT_NAME,
-                                      Xml::ATTRIBUTE_TOP_LEFT_X, Xml::ATTRIBUTE_TOP_LEFT_Y,
-                                      Xml::ATTRIBUTE_BOTTOM_RIGHT_X, Xml::ATTRIBUTE_BOTTOM_RIGHT_Y}))
+                                       Xml::ATTRIBUTE_TOP_LEFT_U, Xml::ATTRIBUTE_TOP_LEFT_V,
+                                       Xml::ATTRIBUTE_BOTTOM_RIGHT_U, Xml::ATTRIBUTE_BOTTOM_RIGHT_V}))
         return;
 
     // Read attributes
     QString elementName = elementAttriv.value("", Xml::ATTRIBUTE_ELEMENT_NAME).toString();
 
     QRectF element;
-    element.setTopLeft(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_X).toDouble(),
-                               elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_Y).toDouble()));
-    element.setBottomRight(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_X).toDouble(),
-                                   elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_Y).toDouble()));
+    element.setTopLeft(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_U).toDouble(),
+                               elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_V).toDouble()));
+    element.setBottomRight(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_U).toDouble(),
+                                   elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_V).toDouble()));
 
     mTargetAtlasKey.insertElement(elementName, element);
 
