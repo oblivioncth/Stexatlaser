@@ -5,6 +5,36 @@
 #include <qx/utility/qx-helpers.h>
 
 //===============================================================================================================
+// CommandError
+//===============================================================================================================
+
+//-Constructor-----------------------------------------------------------------------------------------------------
+//Public:
+CommandError::CommandError() :
+    mType(NoError)
+{}
+
+//Private:
+CommandError::CommandError(Type type, const QString& errStr) :
+    mType(type),
+    mString(errStr)
+{}
+
+//-Instance Functions----------------------------------------------------------------------------------------------
+//Private:
+quint32 CommandError::deriveValue() const { return static_cast<quint32>(mType); }
+QString CommandError::derivePrimary() const { return PRIMARY_STRING; }
+QString CommandError::deriveSecondary() const { return mString; }
+QString CommandError::deriveDetails() const { return mDetails; }
+Qx::Severity CommandError::deriveSeverity() const { return Qx::Critical; }
+CommandError& CommandError::wDetails(const QString& det) { mDetails = det; return *this; }
+
+//Public:
+bool CommandError::isValid() const { return mType != NoError; }
+CommandError::Type CommandError::type() const { return mType; }
+QString CommandError::errorString() const { return mString; }
+
+//===============================================================================================================
 // Command
 //===============================================================================================================
 
@@ -18,14 +48,19 @@ QMap<QString, Command::Entry>& Command::registry() { static QMap<QString, Entry>
 
 //Public:
 void Command::registerCommand(const QString& name, CommandFactory* factory, const QString& desc) { registry()[name] = {factory, desc}; }
-bool Command::isRegistered(const QString &name) { return registry().contains(name); }
+
+CommandError Command::isRegistered(const QString &name)
+{
+    return registry().contains(name) ? CommandError() : ERR_INVALID_COMMAND.arged(name);
+}
+
 QList<QString> Command::registered() { return registry().keys(); }
 QString Command::describe(const QString& name) { return registry().value(name).description; }
 std::unique_ptr<Command> Command::acquire(const QString& name, Stex& coreRef) { return registry().value(name).factory->produce(coreRef); }
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
 //Private:
-ErrorCode Command::parse(const QStringList& commandLine)
+CommandError Command::parse(const QStringList& commandLine)
 {
     // Add command options
     for(const QCommandLineOption* clOption : options())
@@ -33,11 +68,12 @@ ErrorCode Command::parse(const QStringList& commandLine)
 
     // Parse
     if(mParser.parse(commandLine))
-        return Stex::ErrorCodes::NO_ERR;
+        return CommandError();
     else
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, mParser.errorText()));
-        return Stex::ErrorCodes::INVALID_ARGS;
+        CommandError parseErr = CommandError(ERR_INVALID_ARGS).wDetails(mParser.errorText());
+        mCore.printError(NAME, parseErr);
+        return parseErr;
     }
 }
 
@@ -54,17 +90,17 @@ bool Command::checkStandardOptions()
     return false;
 }
 
-ErrorCode Command::checkRequiredOptions()
+CommandError Command::checkRequiredOptions()
 {
     QStringList missing;
     for(auto opt : qxAsConst(requiredOptions()))
         if(!mParser.isSet(*opt))
             missing.append(opt->names().constFirst());
 
-//    if(!missing.isEmpty())
-//        return ERR_MISSING_REQ_OPT.arged(name()).wDetails(u"'"_s + missing.join(u"','"_s) + u"'"_s);
+    if(!missing.isEmpty())
+        return ERR_MISSING_REQ_OPT.arged(name()).wDetails(u"'"_s + missing.join(u"','"_s) + u"'"_s);
 
-    return Stex::ErrorCodes::INVALID_ARGS; // PLACEHOLDER
+    return CommandError();
 }
 
 void Command::showHelp()
@@ -102,22 +138,22 @@ QList<const QCommandLineOption*> Command::options() { return CL_OPTIONS_STANDARD
 QSet<const QCommandLineOption*> Command::requiredOptions() { return {}; }
 
 //Public:
-ErrorCode Command::process(const QStringList& commandLine)
+Qx::Error Command::process(const QStringList& commandLine)
 {
     // Parse and check for valid arguments
-    ErrorCode processError = parse(commandLine);
-    if(processError)
+    CommandError processError = parse(commandLine);
+    if(processError.isValid())
         return processError;
 
     // Handle standard options
     if(checkStandardOptions())
-        return Stex::ErrorCodes::NO_ERR;
+        return Qx::Error();
 
     // Check for required options
     processError = checkRequiredOptions();
-    if(processError)
+    if(processError.isValid())
     {
-        mCore.printError(NAME, Qx::GenericError()); // Placeholder for next commit
+        mCore.printError(NAME, processError);
         return processError;
     }
 

@@ -8,22 +8,64 @@
 #include "command.h"
 #include "klei/k-tex.h"
 
-class CPack : public Command
+class QX_ERROR_TYPE(CPackError, "CPackError", 1211)
 {
-//-Inner Classes--------------------------------------------------------------------------------------------------------
-private:
-    class ErrorCodes
+    friend class CPack;
+//-Class Enums-------------------------------------------------------------
+public:
+    enum Type
     {
-    //-Class Variables--------------------------------------------------------------------------------------------------
-    public:
-        static const ErrorCode INVALID_FORMAT = 101;
-        static const ErrorCode NO_IMAGES = 102;
-        static const ErrorCode DUPLICATE_NAME = 103;
-        static const ErrorCode CANT_READ_IMAGE = 104;
-        static const ErrorCode CANT_WRITE_ATLAS = 105;
-        static const ErrorCode CANT_WRITE_KEY = 106;
+        NoError,
+        InvalidInput,
+        InvalidOutput,
+        InvalidFormat,
+        NoImages,
+        DupeBasename,
+        CantReadImage,
+        CantWriteAtlas,
+        CantWriteKey
     };
 
+//-Class Variables-------------------------------------------------------------
+private:
+    static inline const QHash<Type, QString> ERR_STRINGS{
+        {NoError, u""_s},
+        {InvalidInput, u"The provided input directory is invalid."_s},
+        {InvalidOutput, u"The provided output directory is invalid."_s},
+        {InvalidFormat, u"The provided output pixel format is invalid."_s},
+        {NoImages, u"The provided input directory contains no images."_s},
+        {DupeBasename, u"The provided input directory contains images with the same basename (name without extension)."_s},
+        {CantReadImage, u"Failed to read image."_s},
+        {CantWriteAtlas, u"Failed to write output atlas."_s},
+        {CantWriteKey, u"Failed to write output atlas key."_s}
+    };
+
+//-Instance Variables-------------------------------------------------------------
+private:
+    Type mType;
+    QString mSpecific;
+    QString mDetails;
+
+//-Constructor-------------------------------------------------------------
+private:
+    CPackError(Type t = NoError, const QString& s = {}, const QString& d = {});
+
+//-Instance Functions-------------------------------------------------------------
+public:
+    bool isValid() const;
+    Type type() const;
+    QString specific() const;
+
+private:
+    Qx::Severity deriveSeverity() const override;
+    quint32 deriveValue() const override;
+    QString derivePrimary() const override;
+    QString deriveSecondary() const override;
+    QString deriveDetails() const override;
+};
+
+class CPack : public Command
+{
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
     // Processing
@@ -44,18 +86,6 @@ private:
     static inline const QString MSG_WRITE_TEX = "Writing TEX...";
     static inline const QString MSG_WRITE_KEY = "Writing atlas key...";
     static inline const QString MSG_SUCCESS = "Successfully packed %1 images";
-
-    // Error Messages
-    static inline const QString ERR_NO_INPUT = "No input directory was provided.";
-    static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";
-    static inline const QString ERR_INVALID_INPUT = "The provided input directory is invalid.";
-    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory is invalid.";
-    static inline const QString ERR_INVALID_FORMAT = "The provided output pixel format is invalid.";
-    static inline const QString ERR_NO_IMAGES = "The provided input directory contains no images.";
-    static inline const QString ERR_DUPE_BASENAME = "The provided input directory contains images with the same basename (name without extension).";
-    static inline const QString ERR_CANT_READ_IMAGE = "Failed to read image %1";
-    static inline const QString ERR_CANT_WRITE_ATLAS = "Failed to write output atlas %1";
-    static inline const QString ERR_CANT_WRITE_KEY = "Failed to write output atlas key %1";
 
     // Command line option strings
     static inline const QString CL_OPT_STRAIGHT_S_NAME = "s";
@@ -116,7 +146,7 @@ protected:
     QString name();
 
 public:
-    ErrorCode perform();
+    Qx::Error perform();
 };
 REGISTER_COMMAND(CPack::NAME, CPack, CPack::DESCRIPTION);
 

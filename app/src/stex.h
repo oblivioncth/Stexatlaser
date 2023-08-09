@@ -9,30 +9,57 @@
 #include <QCommandLineOption>
 
 // Qx Includes
-#include <qx/core/qx-genericerror.h>
+#include <qx/core/qx-error.h>
 
 // Project Includes
 #include "project_vars.h"
 
-//-Typedef---------------------------------------------------------------------
-typedef int ErrorCode;
+// General Aliases
+using ErrorCode = quint32;
+
+class QX_ERROR_TYPE(StexError, "CoreError", 1200)
+{
+    friend class Stex;
+//-Class Enums-------------------------------------------------------------
+public:
+    enum Type
+    {
+        NoError = 0,
+        InvalidOptions = 1
+    };
+
+//-Class Variables-------------------------------------------------------------
+private:
+    static inline const QHash<Type, QString> ERR_STRINGS{
+        {NoError, u""_s},
+        {InvalidOptions, u"Invalid global options provided."_s}
+    };
+
+//-Instance Variables-------------------------------------------------------------
+private:
+    Type mType;
+    QString mSpecific;
+    Qx::Severity mSeverity;
+
+//-Constructor-------------------------------------------------------------
+private:
+    StexError(Type t = NoError, const QString& s = {}, Qx::Severity sv = Qx::Critical);
+
+//-Instance Functions-------------------------------------------------------------
+public:
+    bool isValid() const;
+    Type type() const;
+    QString specific() const;
+
+private:
+    Qx::Severity deriveSeverity() const override;
+    quint32 deriveValue() const override;
+    QString derivePrimary() const override;
+    QString deriveSecondary() const override;
+};
 
 class Stex
 {
-//-Inner Classes--------------------------------------------------------------------------------------------------------
-public:
-    class ErrorCodes
-    {
-    //-Class Variables--------------------------------------------------------------------------------------------------
-    public:
-        static const ErrorCode NO_ERR = 0;
-        static const ErrorCode INVALID_ARGS = 1;
-        static const ErrorCode NO_INPUT = 2;
-        static const ErrorCode NO_OUTPUT = 3;
-        static const ErrorCode INVALID_INPUT = 4;
-        static const ErrorCode INVALID_OUTPUT = 5;
-    };
-
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
     // Global command line option strings
@@ -74,15 +101,8 @@ private:
     static inline const QString MSG_VERSION = PROJECT_APP_NAME " version " PROJECT_VERSION_STR "\n";
     static inline const QString MSG_FORMATS = PROJECT_SHORT_NAME " supports the following image formats:\n%1\n";
 
-    // Stream
-    static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
-
     // Meta
     static inline const QString NAME = "stex";
-
-public:
-    // Error Messages
-    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " PROJECT_SHORT_NAME " -h for help";
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:
@@ -101,12 +121,12 @@ private:
     void showFormats();
 
 public:
-    ErrorCode initialize(QStringList& commandLine);
+    Qx::Error initialize(QStringList& commandLine);
 
     QStringList imageFormatFilter() const;
     QStringList supportedImageFormats() const;
 
-    void printError(QString src, Qx::GenericError error);
+    void printError(QString src, Qx::Error error);
     void printMessage(QString src, QString message);
     void printVerbatim(QString text);
 };

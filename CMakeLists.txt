@@ -60,7 +60,7 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "v0.5"
+    REF "v0.5.2"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
