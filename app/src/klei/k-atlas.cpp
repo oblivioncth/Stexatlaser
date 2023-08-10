@@ -148,8 +148,7 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
                         }
 
                         // Remove original container
-                        iContainer++;
-                        possibleContainers.erase(std::prev(iContainer));
+                        iContainer = possibleContainers.erase(iContainer);
                     }
                     else
                         iContainer++;
@@ -165,14 +164,10 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
                     while(iContainerB != possibleContainers.end())
                     {
                         if(iContainerA->contains(*iContainerB))
-                        {
-                            iContainerB++;
-                            possibleContainers.erase(std::prev(iContainerB));
-                        }
+                            iContainerB = possibleContainers.erase(iContainerB);
                         else if(iContainerB->contains(*iContainerA))
                         {
-                            iContainerA++;
-                            possibleContainers.erase(std::prev(iContainerA));
+                            iContainerA = possibleContainers.erase(iContainerA);
                             break;
                         }
                         else
