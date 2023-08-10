@@ -28,7 +28,7 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
 
     while(packedMap.isEmpty())
     {
-        // Need to use std::list because its iterators arent invalidated due to insertions unlike QList/QVector
+        // Need to use std::list because its iterators aren't invalidated due to insertions unlike QList/QVector
         std::list<QRect> possibleContainers = {QRect(QPoint(0,0), size)}; // Start with entire area
 
         // Box pool
@@ -42,7 +42,7 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
             QMap<QString, QSize>::iterator iSmallestBox = remainingBoxes.end();
             std::list<QRect>::iterator iSmallestContainer = possibleContainers.end();
 
-            // Check each box agaisnt available containers to find the tightest combination (smallest container that fits smallest box)
+            // Check each box against available containers to find the tightest combination (smallest container that fits smallest box)
             for(QMap<QString, QSize>::iterator iBoxes = remainingBoxes.begin(); iBoxes != remainingBoxes.end(); iBoxes++)
             {
                 for(std::list<QRect>::iterator iContainers = possibleContainers.begin(); iContainers != possibleContainers.end(); iContainers++)
@@ -55,12 +55,11 @@ QMap<QString, QPoint> KAtlaser::packMap(const QMap<QString, QSize>& boxesToPack,
                         iSmallestBox = iBoxes; // Record current smallest box
                         iSmallestContainer = iContainers; // Record current smallest container
                     }
-
                 }
             }
 
             // Check if no combination was valid
-            if(iSmallestBox == remainingBoxes.end() || iSmallestContainer == possibleContainers.end())
+            if(iSmallestBox == remainingBoxes.end())
             {
                 // Reset results and reattempt with larger area
                 packedMap.clear();
