@@ -102,7 +102,7 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName) const
 {
     QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + "." + KTex::FILE_EXT;
+    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + u"."_s + KTex::FILE_EXT;
 }
 
 //Public:
@@ -110,7 +110,7 @@ KAtlasKey KAtlasKeyGenerator::process() const
 {
     // Create atlas key
     KAtlasKey atlasKey;
-    atlasKey.setAtlasFilename(mAtlasName + "." + KTex::FILE_EXT);
+    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::FILE_EXT);
     atlasKey.setStraightAlpha(mStraightAlpha);
     atlasKey.elements() = translateElements();
 

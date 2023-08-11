@@ -118,11 +118,11 @@ void Command::showHelp()
             // Handle names
             QStringList dashedNames;
             for(const QString& name :  qxAsConst(clOption->names()))
-                dashedNames << ((name.length() > 1 ? "--" : "-") + name);
+                dashedNames << ((name.length() > 1 ? u"--"_s : u"-"_s) + name);
 
             // Add option
-            QString marker = requiredOptions().contains(clOption) ? "*" : "";
-            optStr += HELP_OPT_TEMPL.arg(marker, dashedNames.join(" | "), clOption->description());
+            QString marker = requiredOptions().contains(clOption) ? u"*"_s : u""_s;
+            optStr += HELP_OPT_TEMPL.arg(marker, dashedNames.join(u" | "_s), clOption->description());
         }
 
         // Complete string

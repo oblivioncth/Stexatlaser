@@ -8,17 +8,17 @@ namespace
 {
     namespace Xml
     {
-        const QString ELEMENT_ATLAS = "Atlas";
-        const QString ELEMENT_ELEMENTS = "Elements";
-        const QString ELEMENT_ELEMENT = "Element";
-        const QString ELEMENT_TEXTURE = "Texture";
-        const QString ELEMENT_STR_ALPHA = "StraightAlpha";
-        const QString ATTRIBUTE_FILENAME = "filename";
-        const QString ATTRIBUTE_ELEMENT_NAME = "name";
-        const QString ATTRIBUTE_TOP_LEFT_U = "u1";
-        const QString ATTRIBUTE_TOP_LEFT_V = "v1";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_U = "u2";
-        const QString ATTRIBUTE_BOTTOM_RIGHT_V = "v2";
+        const QString ELEMENT_ATLAS = u"Atlas"_s;
+        const QString ELEMENT_ELEMENTS = u"Elements"_s;
+        const QString ELEMENT_ELEMENT = u"Element"_s;
+        const QString ELEMENT_TEXTURE = u"Texture"_s;
+        const QString ELEMENT_STR_ALPHA = u"StraightAlpha"_s;
+        const QString ATTRIBUTE_FILENAME = u"filename"_s;
+        const QString ATTRIBUTE_ELEMENT_NAME = u"name"_s;
+        const QString ATTRIBUTE_TOP_LEFT_U = u"u1"_s;
+        const QString ATTRIBUTE_TOP_LEFT_V = u"v1"_s;
+        const QString ATTRIBUTE_BOTTOM_RIGHT_U = u"u2"_s;
+        const QString ATTRIBUTE_BOTTOM_RIGHT_V = u"v2"_s;
     }
 }
 
@@ -81,7 +81,7 @@ Qx::XmlStreamWriterError KAtlasKeyWriter::write()
     mStreamWriter.writeEndElement();
 
     // Write straight alpha
-    mStreamWriter.writeTextElement(Xml::ELEMENT_STR_ALPHA, mSourceAtlasKey.straightAlpha() ? "true" : "false");
+    mStreamWriter.writeTextElement(Xml::ELEMENT_STR_ALPHA, mSourceAtlasKey.straightAlpha() ? u"true"_s : u"false"_s);
 
     // End atlas element
     mStreamWriter.writeEndDocument();
@@ -174,7 +174,7 @@ void KAtlasKeyReader::parseTexture()
         return;
 
     // Read attributes
-    mTargetAtlasKey.setAtlasFilename(textureAttrib.value("", Xml::ATTRIBUTE_FILENAME).toString());
+    mTargetAtlasKey.setAtlasFilename(textureAttrib.value(u""_s, Xml::ATTRIBUTE_FILENAME).toString());
 
     // Go to end of element
     mStreamReader.skipCurrentElement();
@@ -191,13 +191,13 @@ void KAtlasKeyReader::parseElement()
         return;
 
     // Read attributes
-    QString elementName = elementAttriv.value("", Xml::ATTRIBUTE_ELEMENT_NAME).toString();
+    QString elementName = elementAttriv.value(u""_s, Xml::ATTRIBUTE_ELEMENT_NAME).toString();
 
     QRectF element;
-    element.setTopLeft(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_U).toDouble(),
-                               elementAttriv.value("", Xml::ATTRIBUTE_TOP_LEFT_V).toDouble()));
-    element.setBottomRight(QPointF(elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_U).toDouble(),
-                                   elementAttriv.value("", Xml::ATTRIBUTE_BOTTOM_RIGHT_V).toDouble()));
+    element.setTopLeft(QPointF(elementAttriv.value(u""_s, Xml::ATTRIBUTE_TOP_LEFT_U).toDouble(),
+                               elementAttriv.value(u""_s, Xml::ATTRIBUTE_TOP_LEFT_V).toDouble()));
+    element.setBottomRight(QPointF(elementAttriv.value(u""_s, Xml::ATTRIBUTE_BOTTOM_RIGHT_U).toDouble(),
+                                   elementAttriv.value(u""_s, Xml::ATTRIBUTE_BOTTOM_RIGHT_V).toDouble()));
 
     mTargetAtlasKey.insertElement(elementName, element);
 
@@ -210,9 +210,9 @@ void KAtlasKeyReader::parseStraightAlpha()
     QString text = mStreamReader.readElementText(); // Already goes to end of element
     bool straightAlpha = false;
 
-    if(text == "true")
+    if(text == u"true"_s)
         straightAlpha = true;
-    else if(text == "false")
+    else if(text == u"false"_s)
         straightAlpha = false;
     else
         mStreamReader.raiseError(ERR_INVALID_STR_ALPHA);
@@ -224,7 +224,7 @@ bool KAtlasKeyReader::hasAttributes(const QXmlStreamAttributes& attributes, cons
 {
     for(const QString& attrib : checkList)
     {
-        if(!attributes.hasAttribute("", attrib))
+        if(!attributes.hasAttribute(u""_s, attrib))
         {
             mStreamReader.raiseError(ERR_INVALID_ATTRIBS);
             return false;

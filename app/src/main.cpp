@@ -7,7 +7,7 @@
 #include "project_vars.h"
 
 // Meta
-const QString NAME = "main";
+const QString NAME = u"main"_s;
 
 int main(int argc, char *argv[])
 {

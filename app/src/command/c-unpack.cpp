@@ -61,7 +61,7 @@ Qx::Error CUnpack::perform()
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
     // Make sure the provided input and output are valid
-    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != "xml")
+    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != u"xml"_s)
     {
         CUnpackError err(CUnpackError::InvalidInput);
         mCore.printError(NAME, err);
@@ -151,7 +151,7 @@ Qx::Error CUnpack::perform()
     QMap<QString, QImage>::const_iterator i;
     for(i = namedImages.constBegin(); i != namedImages.constEnd(); i++)
     {
-        QString filename = finalOutputDir.absoluteFilePath(i.key() + ".png");
+        QString filename = finalOutputDir.absoluteFilePath(i.key() + u".png"_s);
         QImageWriter writer(filename);
         if(!writer.write(i.value()))
         {

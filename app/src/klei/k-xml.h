@@ -36,11 +36,11 @@ class KAtlasKeyReader
 {
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
-    static inline const QString ERR_NOT_ATLAS_KEY = "The provided XML file is not an atlas key!";
-    static inline const QString ERR_NO_FILENAME = "The provided atlas key has no atlas filename!";
-    static inline const QString ERR_NO_ELMENTS = "The provided atlas key has no elements!";
-    static inline const QString ERR_INVALID_ATTRIBS = "The provided atlas key has a key with an invalid attributes!";
-    static inline const QString ERR_INVALID_STR_ALPHA = "The value for StraightAlpha was not of boolean type!";
+    static inline const QString ERR_NOT_ATLAS_KEY = u"The provided XML file is not an atlas key!"_s;
+    static inline const QString ERR_NO_FILENAME = u"The provided atlas key has no atlas filename!"_s;
+    static inline const QString ERR_NO_ELMENTS = u"The provided atlas key has no elements!"_s;
+    static inline const QString ERR_INVALID_ATTRIBS = u"The provided atlas key has a key with an invalid attributes!"_s;
+    static inline const QString ERR_INVALID_STR_ALPHA = u"The value for StraightAlpha was not of boolean type!"_s;
 
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:

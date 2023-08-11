@@ -70,66 +70,66 @@ class CPack : public Command
 private:
     // Processing
     static inline const QMap<QString, KTex::Header::PixelFormat> PIXEL_FORMAT_MAP = {
-        {"dxt1", KTex::Header::PixelFormat::DXT1},
-        {"dxt3", KTex::Header::PixelFormat::DXT3},
-        {"dxt5", KTex::Header::PixelFormat::DXT5},
-        {"rgb", KTex::Header::PixelFormat::RGB},
-        {"rgba", KTex::Header::PixelFormat::RGBA},
+        {u"dxt1"_s, KTex::Header::PixelFormat::DXT1},
+        {u"dxt3"_s, KTex::Header::PixelFormat::DXT3},
+        {u"dxt5"_s, KTex::Header::PixelFormat::DXT5},
+        {u"rgb"_s, KTex::Header::PixelFormat::RGB},
+        {u"rgba"_s, KTex::Header::PixelFormat::RGBA},
     };
 
     // Messages
-    static inline const QString MSG_INPUT_VALIDATION = "Validating input...";
-    static inline const QString MSG_READ_IMAGES = "Reading input images...";
-    static inline const QString MSG_CREATE_ATLAS = "Creating atlas...";
-    static inline const QString MSG_CREATE_KEY = "Creating atlas key...";
-    static inline const QString MSG_CREATE_TEX = "Creating TEX...";
-    static inline const QString MSG_WRITE_TEX = "Writing TEX...";
-    static inline const QString MSG_WRITE_KEY = "Writing atlas key...";
-    static inline const QString MSG_SUCCESS = "Successfully packed %1 images";
+    static inline const QString MSG_INPUT_VALIDATION = u"Validating input..."_s;
+    static inline const QString MSG_READ_IMAGES = u"Reading input images..."_s;
+    static inline const QString MSG_CREATE_ATLAS = u"Creating atlas..."_s;
+    static inline const QString MSG_CREATE_KEY = u"Creating atlas key..."_s;
+    static inline const QString MSG_CREATE_TEX = u"Creating TEX..."_s;
+    static inline const QString MSG_WRITE_TEX = u"Writing TEX..."_s;
+    static inline const QString MSG_WRITE_KEY = u"Writing atlas key..."_s;
+    static inline const QString MSG_SUCCESS = u"Successfully packed %1 images"_s;
 
     // Command line option strings
-    static inline const QString CL_OPT_STRAIGHT_S_NAME = "s";
-    static inline const QString CL_OPT_STRAIGHT_L_NAME = "straight";
-    static inline const QString CL_OPT_STRAIGHT_DESC = "Keep straight alpha channel, do not pre-multiply.";
+    static inline const QString CL_OPT_STRAIGHT_S_NAME = u"s"_s;
+    static inline const QString CL_OPT_STRAIGHT_L_NAME = u"straight"_s;
+    static inline const QString CL_OPT_STRAIGHT_DESC = u"Keep straight alpha channel, do not pre-multiply."_s;
 
-    static inline const QString CL_OPT_UNOPT_S_NAME = "u";
-    static inline const QString CL_OPT_UNOPT_L_NAME = "unoptimized";
-    static inline const QString CL_OPT_UNOPT_DESC = "Do not generate smoothed mipmaps.";
+    static inline const QString CL_OPT_UNOPT_S_NAME = u"u"_s;
+    static inline const QString CL_OPT_UNOPT_L_NAME = u"unoptimized"_s;
+    static inline const QString CL_OPT_UNOPT_DESC = u"Do not generate smoothed mipmaps."_s;
 
-    static inline const QString CL_OPT_FORMAT_S_NAME = "f";
-    static inline const QString CL_OPT_FORMAT_L_NAME = "format";
-    static inline const QString CL_OPT_FORMAT_DESC = "Pixel format to use when encoding to TEX. <" +
-                                                     PIXEL_FORMAT_MAP.keys().join(" | ") + ">. " +
-                                                     "Defaults to DXT5.";
+    static inline const QString CL_OPT_FORMAT_S_NAME = u"f"_s;
+    static inline const QString CL_OPT_FORMAT_L_NAME = u"format"_s;
+    static inline const QString CL_OPT_FORMAT_DESC = u"Pixel format to use when encoding to TEX. <"_s +
+                                                     PIXEL_FORMAT_MAP.keys().join(u" | "_s) + u">. "_s +
+                                                     u"Defaults to DXT5."_s;
 
-    static inline const QString CL_OPT_MARGIN_S_NAME = "m";
-    static inline const QString CL_OPT_MARGIN_L_NAME = "margin";
-    static inline const QString CL_OPT_MARGIN_DESC = "Add a 1-px transparent margin to each input image (when more than one). Useful for rare cases of element bleed-over.";
+    static inline const QString CL_OPT_MARGIN_S_NAME = u"m"_s;
+    static inline const QString CL_OPT_MARGIN_L_NAME = u"margin"_s;
+    static inline const QString CL_OPT_MARGIN_DESC = u"Add a 1-px transparent margin to each input image (when more than one). Useful for rare cases of element bleed-over."_s;
 
-    static inline const QString CL_OPT_INPUT_S_NAME = "i";
-    static inline const QString CL_OPT_INPUT_L_NAME = "input";
-    static inline const QString CL_OPT_INPUT_DESC = "Directory containing images to pack.";
+    static inline const QString CL_OPT_INPUT_S_NAME = u"i"_s;
+    static inline const QString CL_OPT_INPUT_L_NAME = u"input"_s;
+    static inline const QString CL_OPT_INPUT_DESC = u"Directory containing images to pack."_s;
 
-    static inline const QString CL_OPT_OUTPUT_S_NAME = "o";
-    static inline const QString CL_OPT_OUTPUT_L_NAME = "output";
-    static inline const QString CL_OPT_OUTPUT_DESC = "Directory in which to place the resultant atlas and key.";
+    static inline const QString CL_OPT_OUTPUT_S_NAME = u"o"_s;
+    static inline const QString CL_OPT_OUTPUT_L_NAME = u"output"_s;
+    static inline const QString CL_OPT_OUTPUT_DESC = u"Directory in which to place the resultant atlas and key."_s;
 
     // Command line options
     static inline const QCommandLineOption CL_OPTION_STRAIGHT{{CL_OPT_STRAIGHT_S_NAME, CL_OPT_STRAIGHT_L_NAME}, CL_OPT_STRAIGHT_DESC}; // Boolean option
     static inline const QCommandLineOption CL_OPTION_UNOPT{{CL_OPT_UNOPT_S_NAME, CL_OPT_UNOPT_L_NAME}, CL_OPT_UNOPT_DESC}; // Boolean option
-    static inline const QCommandLineOption CL_OPTION_FORMAT{{CL_OPT_FORMAT_S_NAME, CL_OPT_FORMAT_L_NAME}, CL_OPT_FORMAT_DESC, "format"}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_FORMAT{{CL_OPT_FORMAT_S_NAME, CL_OPT_FORMAT_L_NAME}, CL_OPT_FORMAT_DESC, u"format"_s}; // Takes value
     static inline const QCommandLineOption CL_OPTION_MARGIN{{CL_OPT_MARGIN_S_NAME, CL_OPT_MARGIN_L_NAME}, CL_OPT_MARGIN_DESC}; // Boolean option
-    static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, "input"}; // Takes value
-    static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, "output"}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, u"input"_s}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, u"output"_s}; // Takes value
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT, &CL_OPTION_STRAIGHT,
                                                                              &CL_OPTION_UNOPT, &CL_OPTION_FORMAT, &CL_OPTION_MARGIN};
     static inline const QSet<const QCommandLineOption*> CL_OPTIONS_REQUIRED{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
 
 public:
     // Meta
-    static inline const QString NAME = "pack";
-    static inline const QString DESCRIPTION = "Pack a folder of images (PNG) into a TEX atlas. The input directory will be used as the name for the atlas/key, "
-                                              "while the image names will be used as the element names";
+    static inline const QString NAME = u"pack"_s;
+    static inline const QString DESCRIPTION = u"Pack a folder of images (PNG) into a TEX atlas. The input directory will be used as the name for the atlas/key, "
+                                              "while the image names will be used as the element names"_s;
 
 //-Constructor----------------------------------------------------------------------------------------------------------
 public:

@@ -5,6 +5,8 @@
 #include <QString>
 #include <QVector>
 
+using namespace Qt::Literals::StringLiterals;
+
 class KTex
 {
 //-Inner Classes----------------------------------------------------------------------------------------------------
@@ -35,7 +37,7 @@ public:
 
     //-Class Members-------------------------------------------------------------------------------------------------
     public:
-        static inline const QString MAGIC_NUM = "KTEX";
+        static inline const QString MAGIC_NUM = u"KTEX"_s;
 
         // Sizes
         static const int BL_PLATFORM_BC = 3;
@@ -112,7 +114,7 @@ public:
 
 //-Class Members----------------------------------------------------------------------------------------------------
 public:
-    static inline const QString FILE_EXT = "tex";
+    static inline const QString FILE_EXT = u"tex"_s;
 
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:

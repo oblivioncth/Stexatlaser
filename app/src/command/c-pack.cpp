@@ -183,7 +183,7 @@ Qx::Error CPack::perform()
 
     // Write atlas key
     mCore.printMessage(NAME, MSG_WRITE_KEY);
-    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + ".xml"));
+    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + u".xml"_s));
     KAtlasKeyWriter keyWriter(outputKeyFile, atlasKey);
     Qx::XmlStreamWriterError keyWriteReport;
     if((keyWriteReport = keyWriter.write()).isValid())

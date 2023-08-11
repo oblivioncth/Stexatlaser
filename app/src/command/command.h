@@ -95,28 +95,28 @@ private:
         CommandError(CommandError::MissingRequiredOption, u"Missing required options for '%1'"_s);
 
     // Help template
-    static inline const QString HELP_TEMPL = "Usage:\n"
+    static inline const QString HELP_TEMPL = u"Usage:\n"
                                              "------\n"
                                              "%1 <options>\n"
                                              "\n"
                                              "Options:\n"
                                              "--------%2\n"
                                              "\n"
-                                             "*Required Option\n";
-    static inline const QString HELP_OPT_TEMPL = "\n%1%2: %3";
+                                             "*Required Option\n"_s;
+    static inline const QString HELP_OPT_TEMPL = u"\n%1%2: %3"_s;
 
     // Standard command line option strings
-    static inline const QString CL_OPT_HELP_S_NAME = "h";
-    static inline const QString CL_OPT_HELP_L_NAME = "help";
-    static inline const QString CL_OPT_HELP_E_NAME = "?";
-    static inline const QString CL_OPT_HELP_DESC = "Prints this help message.";
+    static inline const QString CL_OPT_HELP_S_NAME = u"h"_s;
+    static inline const QString CL_OPT_HELP_L_NAME = u"help"_s;
+    static inline const QString CL_OPT_HELP_E_NAME = u"?"_s;
+    static inline const QString CL_OPT_HELP_DESC = u"Prints this help message."_s;
 
     // Standard command line options
     static inline const QCommandLineOption CL_OPTION_HELP{{CL_OPT_HELP_S_NAME, CL_OPT_HELP_L_NAME, CL_OPT_HELP_E_NAME}, CL_OPT_HELP_DESC}; // Boolean option
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_STANDARD{&CL_OPTION_HELP};
 
     // Meta
-    static inline const QString NAME = "command";
+    static inline const QString NAME = u"command"_s;
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:

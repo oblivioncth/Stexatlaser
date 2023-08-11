@@ -49,7 +49,7 @@ Stex::Stex()
     {
         QString formatExt = QString::fromUtf8(format);
         mImageFormats.append(formatExt);
-        mImageFormatFilter.append("*." + formatExt);
+        mImageFormatFilter.append(u"*."_s + formatExt);
     }
 }
 
@@ -70,10 +70,10 @@ void Stex::showHelp()
             // Handle names
             QStringList dashedNames;
             for(const QString& name : qxAsConst(clOption->names()))
-                dashedNames << ((name.length() > 1 ? "--" : "-") + name);
+                dashedNames << ((name.length() > 1 ? u"--"_s : u"-"_s) + name);
 
             // Add option
-            optStr += HELP_OPT_TEMPL.arg(dashedNames.join(" | "), clOption->description());
+            optStr += HELP_OPT_TEMPL.arg(dashedNames.join(u" | "_s), clOption->description());
         }
 
         // Help commands
@@ -145,20 +145,20 @@ QStringList Stex::supportedImageFormats() const { return mImageFormats; }
 
 void Stex::printError(QString src, Qx::Error error)
 {
-    QString message = "(" + error.severityString() + ") " + error.primary();
+    QString message = u"("_s + error.severityString() + u") "_s + error.primary();
 
     if(!error.secondary().isNull())
-        message += " | " + error.secondary();
+        message += u" | "_s + error.secondary();
 
     if(!error.details().isNull())
-        message += "\n" + error.details();
+        message += u"\n"_s + error.details();
 
     printMessage(src, message);
 }
 
 void Stex::printMessage(QString src, QString message)
 {
-    QString text =  "[" + src + "] " + message + "\n";
+    QString text =  u"["_s + src + u"] "_s + message + u"\n"_s;
     printVerbatim(text);
 }
 
