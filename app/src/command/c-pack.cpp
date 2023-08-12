@@ -169,6 +169,9 @@ Qx::Error CPack::perform()
     ToTexConverter ttc(atlas.image, ttco);
     KTex tex = ttc.convert();
 
+    // Show metadata
+    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
+
     // Write TEX file
     mCore.printMessage(NAME, MSG_WRITE_TEX);
     QString outputTexFilePath(outputDir.absoluteFilePath(atlasKey.atlasFilename()));

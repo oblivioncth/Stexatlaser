@@ -129,6 +129,9 @@ Qx::Error CUnpack::perform()
         return err;
     }
 
+    // Show metadata
+    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
+
     // Extract atlas image from TEX
     mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
     FromTexConverter::Options ftco;

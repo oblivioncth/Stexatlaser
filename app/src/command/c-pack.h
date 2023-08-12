@@ -83,6 +83,7 @@ private:
     static inline const QString MSG_CREATE_ATLAS = u"Creating atlas..."_s;
     static inline const QString MSG_CREATE_KEY = u"Creating atlas key..."_s;
     static inline const QString MSG_CREATE_TEX = u"Creating TEX..."_s;
+    static inline const QString MSG_TEX_INFO =  u"TEX Info:\n%1"_s;
     static inline const QString MSG_WRITE_TEX = u"Writing TEX..."_s;
     static inline const QString MSG_WRITE_KEY = u"Writing atlas key..."_s;
     static inline const QString MSG_SUCCESS = u"Successfully packed %1 images"_s;

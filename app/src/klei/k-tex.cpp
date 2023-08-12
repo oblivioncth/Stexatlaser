@@ -116,3 +116,25 @@ const KTex::Header& KTex::header() const { return mHeader; }
 quint8 KTex::mipMapCount() const { return mMipMaps.count(); }
 QVector<KTex::MipMapImage>& KTex::mipMaps() { return mMipMaps; }
 const QVector<KTex::MipMapImage>& KTex::mipMaps() const { return mMipMaps; }
+
+QString KTex::info(bool indent) const
+{
+    QStringList infoPoints;
+    infoPoints << u"Platform: "_s + PLATFORM_STRINGS[mHeader.platform()];
+    infoPoints << u"Pixel Format: "_s + PIXEL_FORMAT_STRINGS[mHeader.pixelFormat()];
+    infoPoints << u"Texture Type: "_s + TEXTURE_TYPE_STRINGS[mHeader.textureType()];
+    infoPoints << u"Unknown Flag 1: "_s + (mHeader.flagOne() ? "true" : "false");
+    infoPoints << u"Unknown Flag 2: "_s + (mHeader.flagTwo() ? "true" : "false");
+    infoPoints << u"Mip Maps: "_s + QString::number(mMipMaps.count());
+
+    for(const auto& mm : mMipMaps)
+        infoPoints << u"  - "_s + (u"%1 x %2"_s).arg(mm.width()).arg(mm.height());
+
+    if(indent)
+    {
+        for(auto& ip : infoPoints)
+            ip.prepend(u"  "_s);
+    }
+
+    return infoPoints.join('\n');
+}

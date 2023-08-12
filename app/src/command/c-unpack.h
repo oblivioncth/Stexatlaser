@@ -67,6 +67,7 @@ private:
     static inline const QString MSG_INPUT_VALIDATION = u"Validating input..."_s;
     static inline const QString MSG_READ_KEY = u"Reading input atlas key..."_s;
     static inline const QString MSG_READ_TEX = u"Reading TEX..."_s;
+    static inline const QString MSG_TEX_INFO =  u"TEX Info:\n%1"_s;
     static inline const QString MSG_EXTRACT_IMAGE = u"Extracting primary TEX image..."_s;
     static inline const QString MSG_FORM_ATLAS = u"Forming atlas..."_s;
     static inline const QString MSG_DEATLAS = u"Deatlasing..."_s;
