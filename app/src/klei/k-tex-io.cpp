@@ -262,9 +262,22 @@ Qx::IoOpReport KTexReader::readMipMapMetadata()
 
     quint16 mipMapPitch;
     mStreamReader >> mipMapPitch;
+
     // Manually correct non-compliant mipmaps that report 0 pitch (*cough* matt's tools *cough*)
-    bool isRgb = mTargetTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB;
-    mipMap.setPitch(mipMapPitch != 0 ? mipMapPitch : mipMapWidth * (isRgb ? 3 : 4)); // width x 4 is from libsquish
+    if(mipMapPitch == 0)
+    {
+        auto pf = mTargetTex.header().pixelFormat();
+        bool isCompressed = pf != KTex::Header::PixelFormat::RGB && pf != KTex::Header::PixelFormat::RGBA;
+
+        if(isCompressed)
+        {
+            // Equivalent to squish::GetStorageRequirements(mipMapWidth, 1, squishFlag), but avoids squish include
+            mipMapPitch = ((mipMapWidth + 3) / 4) * (pf == KTex::Header::PixelFormat::DXT1 ? 8 : 16);
+        }
+        else
+            mipMapPitch = mipMapWidth * 4; // Used QImage formats are always 32-bit aligned.
+    }
+    mipMap.setPitch(mipMapPitch);
 
     quint32 mipMapDataSize;
     mStreamReader >> mipMapDataSize;
