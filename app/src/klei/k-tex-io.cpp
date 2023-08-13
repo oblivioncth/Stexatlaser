@@ -263,7 +263,8 @@ Qx::IoOpReport KTexReader::readMipMapMetadata()
     quint16 mipMapPitch;
     mStreamReader >> mipMapPitch;
     // Manually correct non-compliant mipmaps that report 0 pitch (*cough* matt's tools *cough*)
-    mipMap.setPitch(mipMapPitch != 0 ? mipMapPitch : mipMapWidth * 4); // width x 4 is from libsquish
+    bool isRgb = mTargetTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB;
+    mipMap.setPitch(mipMapPitch != 0 ? mipMapPitch : mipMapWidth * (isRgb ? 3 : 4)); // width x 4 is from libsquish
 
     quint32 mipMapDataSize;
     mStreamReader >> mipMapDataSize;
