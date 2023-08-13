@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.23.0...3.25.0)
 # Project
 # NOTE: DON'T USE TRAILING ZEROS IN VERSIONS
 project(Stex
-    VERSION 0.3.1
+    VERSION 0.4
     LANGUAGES CXX
     DESCRIPTION "A tool to pack/unpack Klei TEX format atlases"
 )
@@ -60,7 +60,7 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "v0.5.2"
+    REF "v0.5.3.1"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
