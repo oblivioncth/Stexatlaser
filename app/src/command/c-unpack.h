@@ -1,73 +1,103 @@
 #ifndef CUNPACK_H
 #define CUNPACK_H
 
-#include "../command.h"
-#include "../klei/k-tex.h"
+#include "command.h"
+
+class QX_ERROR_TYPE(CUnpackError, "CUnpackError", 1212)
+{
+    friend class CUnpack;
+//-Class Enums-------------------------------------------------------------
+public:
+    enum Type
+    {
+        NoError = 0,
+        InvalidInput = 1,
+        InvalidOutput = 2,
+        CantReadKey = 3,
+        AtlasDoesntExist = 4,
+        CantReadAtlas = 5,
+        AtlasUnsupported = 6,
+        CantCreateDir = 7,
+        CantWriteImage = 8
+    };
+
+//-Class Variables-------------------------------------------------------------
+private:
+    static inline const QHash<Type, QString> ERR_STRINGS{
+        {NoError, u""_s},
+        {InvalidInput, u"The provided input atlas key is invalid."_s},
+        {InvalidOutput, u"The provided output directory is invalid."_s},
+        {CantReadKey, u"Failed to read atlas key."_s},
+        {AtlasDoesntExist, u"The atlas specified by the provided atlas key does not exist."_s},
+        {CantReadAtlas, u"Failed to read atlas."_s},
+        {AtlasUnsupported, u"The input atlas is not supported."_s},
+        {CantCreateDir, u"Failed to create unpack folder."_s},
+        {CantWriteImage, u"Failed to write output image."_s},
+    };
+
+//-Instance Variables-------------------------------------------------------------
+private:
+    Type mType;
+    QString mSpecific;
+    QString mDetails;
+
+//-Constructor-------------------------------------------------------------
+private:
+    CUnpackError(Type t = NoError, const QString& s = {}, const QString& d = {});
+
+//-Instance Functions-------------------------------------------------------------
+public:
+    bool isValid() const;
+    Type type() const;
+    QString specific() const;
+
+private:
+    Qx::Severity deriveSeverity() const override;
+    quint32 deriveValue() const override;
+    QString derivePrimary() const override;
+    QString deriveSecondary() const override;
+    QString deriveDetails() const override;
+};
 
 class CUnpack : public Command
 {
-//-Inner Classes--------------------------------------------------------------------------------------------------------
-private:
-    class ErrorCodes
-    {
-    //-Class Variables--------------------------------------------------------------------------------------------------
-    public:
-        static const ErrorCode CANT_READ_KEY = 201;
-        static const ErrorCode ATLAS_DOESNT_EXIST = 202;
-        static const ErrorCode CANT_READ_ATALAS = 203;
-        static const ErrorCode ATLAS_UNSUPPORTED = 204;
-        static const ErrorCode CANT_CREATE_DIR = 205;
-        static const ErrorCode CANT_WRITE_IMAGE = 206;
-    };
-
 //-Class Variables------------------------------------------------------------------------------------------------------
 private:
     // Messages
-    static inline const QString MSG_INPUT_VALIDATION = "Validating input...";
-    static inline const QString MSG_READ_KEY = "Reading input atlas key...";
-    static inline const QString MSG_READ_TEX = "Reading TEX...";
-    static inline const QString MSG_EXTRACT_IMAGE = "Extracing primary TEX image...";
-    static inline const QString MSG_FORM_ATLAS = "Forming atlas...";
-    static inline const QString MSG_DEATLAS = "Deatlasing...";
-    static inline const QString MSG_WRITE_IMAGES = "Writing output images...";
-    static inline const QString MSG_SUCCESS = "Successfully unpacked %1 images";
-
-    // Error Messages
-    static inline const QString ERR_NO_INPUT = "No input directory was provided.";
-    static inline const QString ERR_NO_OUTPUT = "No output directory was provided.";
-    static inline const QString ERR_INVALID_INPUT = "The provided input atlas key is invalid.";
-    static inline const QString ERR_INVALID_OUTPUT = "The provided output directory is invalid.";
-    static inline const QString ERR_CANT_READ_KEY = "Failed to read atlas key %1";
-    static inline const QString ERR_ATLAS_DNE = "The atlas specified by the provided atlas key does not exist (%1)";
-    static inline const QString ERR_CANT_READ_ATLAS = "Failed to read atlas %1";
-    static inline const QString ERR_ATLAS_NOT_SUPPORTED = "The input atlas is not supported.";
-    static inline const QString ERR_CANT_CREATE_DIR = "Failed to create unpack folder %1";
-    static inline const QString ERR_CANT_WRITE_IMAGE = "Failed to write output image %1";
+    static inline const QString MSG_INPUT_VALIDATION = u"Validating input..."_s;
+    static inline const QString MSG_READ_KEY = u"Reading input atlas key..."_s;
+    static inline const QString MSG_READ_TEX = u"Reading TEX..."_s;
+    static inline const QString MSG_TEX_INFO =  u"TEX Info:\n%1"_s;
+    static inline const QString MSG_EXTRACT_IMAGE = u"Extracting primary TEX image..."_s;
+    static inline const QString MSG_FORM_ATLAS = u"Forming atlas..."_s;
+    static inline const QString MSG_DEATLAS = u"Deatlasing..."_s;
+    static inline const QString MSG_WRITE_IMAGES = u"Writing output images..."_s;
+    static inline const QString MSG_SUCCESS = u"Successfully unpacked %1 images"_s;
 
     // Command line option strings
-    static inline const QString CL_OPT_STRAIGHT_S_NAME = "s";
-    static inline const QString CL_OPT_STRAIGHT_L_NAME = "straight";
-    static inline const QString CL_OPT_STRAIGHT_DESC = "Specify that the alpha information within the input TEX is straight, do not de-multiply.";
+    static inline const QString CL_OPT_STRAIGHT_S_NAME = u"s"_s;
+    static inline const QString CL_OPT_STRAIGHT_L_NAME = u"straight"_s;
+    static inline const QString CL_OPT_STRAIGHT_DESC = u"Specify that the alpha information within the input TEX is straight, do not de-multiply."_s;
 
-    static inline const QString CL_OPT_INPUT_S_NAME = "i";
-    static inline const QString CL_OPT_INPUT_L_NAME = "input";
-    static inline const QString CL_OPT_INPUT_DESC = "Key of the atlas to unpack. Must be in the same directory as its atlas.";
+    static inline const QString CL_OPT_INPUT_S_NAME = u"i"_s;
+    static inline const QString CL_OPT_INPUT_L_NAME = u"input"_s;
+    static inline const QString CL_OPT_INPUT_DESC = u"Key of the atlas to unpack. Must be in the same directory as its atlas."_s;
 
-    static inline const QString CL_OPT_OUTPUT_S_NAME = "o";
-    static inline const QString CL_OPT_OUTPUT_L_NAME = "output";
-    static inline const QString CL_OPT_OUTPUT_DESC = "Directory in which to place the resultant folder of unpacked images.";
+    static inline const QString CL_OPT_OUTPUT_S_NAME = u"o"_s;
+    static inline const QString CL_OPT_OUTPUT_L_NAME = u"output"_s;
+    static inline const QString CL_OPT_OUTPUT_DESC = u"Directory in which to place the resultant folder of unpacked images."_s;
 
     // Command line options
     static inline const QCommandLineOption CL_OPTION_STRAIGHT{{CL_OPT_STRAIGHT_S_NAME, CL_OPT_STRAIGHT_L_NAME}, CL_OPT_STRAIGHT_DESC}; // Boolean option
-    static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, "input"}; // Takes value
-    static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, "output"}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_INPUT{{CL_OPT_INPUT_S_NAME, CL_OPT_INPUT_L_NAME}, CL_OPT_INPUT_DESC, u"input"_s}; // Takes value
+    static inline const QCommandLineOption CL_OPTION_OUTPUT{{CL_OPT_OUTPUT_S_NAME, CL_OPT_OUTPUT_L_NAME}, CL_OPT_OUTPUT_DESC, u"output"_s}; // Takes value
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_SPECIFIC{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT, &CL_OPTION_STRAIGHT};
     static inline const QSet<const QCommandLineOption*> CL_OPTIONS_REQUIRED{&CL_OPTION_INPUT, &CL_OPTION_OUTPUT};
 
 public:
     // Meta
-    static inline const QString NAME = "unpack";
-    static inline const QString DESCRIPTION = "Unpack a TEX atlas into its component images";
+    static inline const QString NAME = u"unpack"_s;
+    static inline const QString DESCRIPTION = u"Unpack a TEX atlas into its component images"_s;
 
 //-Constructor----------------------------------------------------------------------------------------------------------
 public:
@@ -75,12 +105,12 @@ public:
 
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
-    const QList<const QCommandLineOption*> options();
-    const QSet<const QCommandLineOption*> requiredOptions();
-    const QString name();
+    QList<const QCommandLineOption*> options();
+    QSet<const QCommandLineOption*> requiredOptions();
+    QString name();
 
 public:
-    ErrorCode process(const QStringList& commandLine);
+    Qx::Error perform();
 };
 REGISTER_COMMAND(CUnpack::NAME, CUnpack, CUnpack::DESCRIPTION);
 

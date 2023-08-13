@@ -109,35 +109,6 @@ Still, for this reason it is recommended to keep original copies of your texture
 
 --------------------------------------------------------------------------------
  
-
-## Exit Codes
-Once stex has finished executing an exit code is reported that indicates the "error status" of the program, which can be useful for recording/determining issues. The exit code can be obtained by running the application in the following manner:
-
-    start /wait Stex [parameters]
-    echo %errorlevel%
-
-| Value | Code               | Description                                                              |
-|-------|--------------------|--------------------------------------------------------------------------|
-| 0     | NO_ERR             | The application completed successfully                                   |
-| 1     | INVALID_ARGS       | The arguments provided were not recognized or were formatted incorrectly |
-| 2     | NO_INPUT           | The required input directory was not provided                            |
-| 3     | NO_OUTPUT          | The required output directory was not provided                           |
-| 4     | INVALID_INPUT      | The provided input directory is invalid                                  |
-| 5     | INVALID_OUTPUT     | The provided output directory is invalid                                 |
-| 101   | INVALID_FORMAT     | The provided pixel format is invalid                                     |
-| 102   | NO_IMAGES          | The provided input directory contains no images                          |
-| 103   | DUPLICATE_NAME     | The provided input directory contains images with the same basename      |
-| 104   | CANT_READ_IMAGE    | Failed to read an input image                                            |
-| 105   | CANT_WRITE_ATLAS   | Failed to write the output atlas                                         |
-| 106   | CANT_WRITE_KEY     | Failed to write the output atlas key                                     |
-| 201   | CANT_READ_KEY      | Failed to read the input atlas key                                       |
-| 202   | ATLAS_DOESNT_EXIST | The TEX file specified within the input atlas key could not be found     |
-| 203   | CANT_READ_ATALAS   | Failed to read the input atlas                                           |
-| 204   | ATLAS_UNSUPPORTED  | The provided input atlas uses an unknown format                          |
-| 205   | CANT_CREATE_DIR    | Failed to create the element output directory                            |
-| 206   | CANT_WRITE_IMAGE   | Failed to write an output image                                          |
-
-
 ## Additional Information
 **Automatic Pre-multiplied Alpha Handling**
 

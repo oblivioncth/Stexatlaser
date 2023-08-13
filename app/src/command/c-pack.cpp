@@ -13,6 +13,31 @@
 #include "klei/k-xml.h"
 
 //===============================================================================================================
+// CPackError
+//===============================================================================================================
+
+//-Constructor-------------------------------------------------------------
+//Private:
+CPackError::CPackError(Type t, const QString& s, const QString& d) :
+    mType(t),
+    mSpecific(s),
+    mDetails(d)
+{}
+
+//-Instance Functions-------------------------------------------------------------
+//Public:
+bool CPackError::isValid() const { return mType != NoError; }
+QString CPackError::specific() const { return mSpecific; }
+CPackError::Type CPackError::type() const { return mType; }
+
+//Private:
+Qx::Severity CPackError::deriveSeverity() const { return Qx::Critical; }
+quint32 CPackError::deriveValue() const { return mType; }
+QString CPackError::derivePrimary() const { return ERR_STRINGS.value(mType); }
+QString CPackError::deriveSecondary() const { return mSpecific; }
+QString CPackError::deriveDetails() const { return mDetails; }
+
+//===============================================================================================================
 // CPack
 //===============================================================================================================
 
@@ -37,46 +62,25 @@ bool CPack::hasBasenameCollision(const QFileInfoList& imageFiles)
             return true;
     }
 
-    // No collisons occured
+    // No collisions occurred
     return false;
 }
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-const QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-const QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-const QString CPack::name() { return NAME; }
+QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
+QString CPack::name() { return NAME; }
 
 //Public:
-ErrorCode CPack::process(const QStringList& commandLine)
+Qx::Error CPack::perform()
 {
-    ErrorCode errorStatus;
-
-    // Parse and check for valid arguments
-    if((errorStatus = parse(commandLine)))
-        return errorStatus;
-
-    // Handle standard options
-    if(checkStandardOptions())
-        return Stex::ErrorCodes::NO_ERR;
-
-    // Make sure input and output were provided
-    if(!mParser.isSet(CL_OPTION_INPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_INPUT));
-        return Stex::ErrorCodes::NO_INPUT;
-    }
-    if(!mParser.isSet(CL_OPTION_OUTPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_OUTPUT));
-        return Stex::ErrorCodes::NO_OUTPUT;
-    }
-
     // Make sure output pixel format is valid if provided
     if(mParser.isSet(CL_OPTION_FORMAT) && !PIXEL_FORMAT_MAP.contains(mParser.value(CL_OPTION_FORMAT)))
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_INVALID_FORMAT));
-        return ErrorCodes::INVALID_FORMAT;
+        CPackError err(CPackError::InvalidFormat);
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Get input and output
@@ -87,15 +91,17 @@ ErrorCode CPack::process(const QStringList& commandLine)
     // Make sure the provided input and output are valid
     if(!inputDir.exists())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_INPUT));
-        return Stex::ErrorCodes::INVALID_INPUT;
+        CPackError err(CPackError::InvalidInput);
+        mCore.printError(NAME, err);
+        return err;
     }
     if(!outputDir.exists())
     {
         if(!outputDir.mkpath(outputDir.absolutePath()))
         {
-            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_OUTPUT));
-            return Stex::ErrorCodes::INVALID_OUTPUT;
+            CPackError err(CPackError::InvalidOutput);
+            mCore.printError(NAME, err);
+            return err;
         }
     }
 
@@ -110,15 +116,17 @@ ErrorCode CPack::process(const QStringList& commandLine)
     // Make sure there is at least one image
     if(imageFiles.isEmpty())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_IMAGES));
-        return ErrorCodes::NO_IMAGES;
+        CPackError err(CPackError::NoImages);
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Make sure there are no basename collisions
     if(hasBasenameCollision(imageFiles))
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_DUPE_BASENAME));
-        return ErrorCodes::DUPLICATE_NAME;
+        CPackError err(CPackError::DupeBasename);
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Generate named image map
@@ -133,8 +141,9 @@ ErrorCode CPack::process(const QStringList& commandLine)
         QImage image;
         if(!imageReader.read(&image))
         {
-            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_IMAGE.arg(imageInfo.absoluteFilePath())));
-            return ErrorCodes::CANT_READ_IMAGE;
+            CPackError err(CPackError::CantReadImage, imageInfo.absoluteFilePath());
+            mCore.printError(NAME, err);
+            return err;
         }
 
         namedImages[elementName] = image;
@@ -160,6 +169,9 @@ ErrorCode CPack::process(const QStringList& commandLine)
     ToTexConverter ttc(atlas.image, ttco);
     KTex tex = ttc.convert();
 
+    // Show metadata
+    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
+
     // Write TEX file
     mCore.printMessage(NAME, MSG_WRITE_TEX);
     QString outputTexFilePath(outputDir.absoluteFilePath(atlasKey.atlasFilename()));
@@ -167,24 +179,24 @@ ErrorCode CPack::process(const QStringList& commandLine)
     Qx::IoOpReport texWriteReport;
     if((texWriteReport = texWriter.write()).isFailure())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_ATLAS.arg(outputTexFilePath),
-                                                texWriteReport.outcomeInfo()));
-        return ErrorCodes::CANT_WRITE_ATLAS;
+        CPackError err(CPackError::CantWriteAtlas, outputTexFilePath, texWriteReport.outcomeInfo());
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Write atlas key
     mCore.printMessage(NAME, MSG_WRITE_KEY);
-    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + ".xml"));
+    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + u".xml"_s));
     KAtlasKeyWriter keyWriter(outputKeyFile, atlasKey);
     Qx::XmlStreamWriterError keyWriteReport;
     if((keyWriteReport = keyWriter.write()).isValid())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_KEY.arg(outputKeyFile.fileName()),
-                                                keyWriteReport.text()));
-        return ErrorCodes::CANT_WRITE_KEY;
+        CPackError err(CPackError::CantWriteKey, outputKeyFile.fileName(), keyWriteReport.text());
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Return success
     mCore.printMessage(NAME, MSG_SUCCESS.arg(namedImages.count()));
-    return Stex::ErrorCodes::NO_ERR;
+    return Qx::Error();
 }

@@ -6,11 +6,12 @@ ob_add_standard_executable(${APP_TARGET_NAME}
     NAMESPACE "${PROJECT_NAMESPACE}"
     ALIAS "${APP_ALIAS_NAME}"
     SOURCE
-        command.h
-        command.cpp
+        command/command.h
+        command/command.cpp
         command/c-pack.h
         command/c-pack.cpp
         command/c-pack.h
+        command/c-unpack.h
         command/c-unpack.cpp
         klei/k-atlas.h
         klei/k-atlas.cpp

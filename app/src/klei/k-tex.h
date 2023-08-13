@@ -4,6 +4,9 @@
 // Qt Includes
 #include <QString>
 #include <QVector>
+#include <QHash>
+
+using namespace Qt::Literals::StringLiterals;
 
 class KTex
 {
@@ -35,7 +38,7 @@ public:
 
     //-Class Members-------------------------------------------------------------------------------------------------
     public:
-        static inline const QString MAGIC_NUM = "KTEX";
+        static inline const QString MAGIC_NUM = u"KTEX"_s;
 
         // Sizes
         static const int BL_PLATFORM_BC = 3;
@@ -111,8 +114,29 @@ public:
     };
 
 //-Class Members----------------------------------------------------------------------------------------------------
+private:
+    static inline const QHash<Header::Platform, QString> PLATFORM_STRINGS = {
+        {KTex::Header::Platform::Default, u"Default"_s},
+        {KTex::Header::Platform::PC, u"PC"_s},
+        {KTex::Header::Platform::PS3, u"PS3"_s},
+        {KTex::Header::Platform::Xbox360, u"Xbox360"_s},
+        };
+    static inline const QHash<Header::PixelFormat, QString> PIXEL_FORMAT_STRINGS = {
+        {KTex::Header::PixelFormat::DXT1, u"DXT1"_s},
+        {KTex::Header::PixelFormat::DXT3, u"DXT3"_s},
+        {KTex::Header::PixelFormat::DXT5, u"DXT5"_s},
+        {KTex::Header::PixelFormat::RGB, u"RGB"_s},
+        {KTex::Header::PixelFormat::RGBA, u"RGBA"_s}
+    };
+    static inline const QHash<Header::TextureType, QString> TEXTURE_TYPE_STRINGS = {
+        {KTex::Header::TextureType::OneD, u"1D"_s},
+        {KTex::Header::TextureType::TwoD, u"2D"_s},
+        {KTex::Header::TextureType::ThreeD, u"3D"_s},
+        {KTex::Header::TextureType::CubeMapped, u"Cube Mapped"_s},
+    };
+
 public:
-    static inline const QString FILE_EXT = "tex";
+    static inline const QString FILE_EXT = u"tex"_s;
 
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
@@ -136,6 +160,8 @@ public:
     quint8 mipMapCount() const;
     QVector<MipMapImage>& mipMaps();
     const QVector<MipMapImage>& mipMaps() const;
+
+    QString info(bool indent = false) const;
 
 };
 

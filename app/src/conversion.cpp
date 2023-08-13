@@ -66,18 +66,17 @@ QImage ToTexConverter::convertToBasePixelFormat()
 
 QVector<QImage> ToTexConverter::generateMipMaps(const QImage& baseImage)
 {
-    QVector<QImage> mipMaps;
-    QSize mipMapSize = baseImage.size()/2;
-
     // Ideally this would perform a bit more image processing but Qt doesn't have much
     // and for now the priority is to keep lib dependency low (ImageMagick feature disabling
     // on Windows in particular is really troublesome and it has a conflict with harfbuzz in Qt)
-    while(mipMapSize.width() > 0 && mipMapSize.height() > 0)
+
+    QVector<QImage> mipMaps;
+    QSize mipMapSize = baseImage.size();
+
+    while(mipMapSize != QSize(1,1))
     {
+        mipMapSize /= 2; // This always rounds up to the nearest integer, so it won't drop the dimensions below 1x1
         mipMaps.append(baseImage.scaled(mipMapSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-        mipMapSize.setWidth(mipMapSize.width()/2);
-        mipMapSize.setHeight(mipMapSize.height()/2);
-        // Can't use QSize::operator/() directly because it rounds up to nearest integer and won't reach 0
     }
 
     return mipMaps;
@@ -166,18 +165,15 @@ QImage FromTexConverter::convertToStandardFormat(const KTex::MipMapImage& mainIm
 {
     QByteArray rawData;
     quint16 pitch;
-    QImage::Format rawFormat = mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB ?
-                               QImage::Format_RGB888 : mOptions.demultiplyAlpha ?
-                                                       QImage::Format_RGBA8888_Premultiplied :
-                                                       QImage::Format_RGBA8888;
+    QImage::Format rawFormat = mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB ? QImage::Format_RGB888 :
+                               mOptions.demultiplyAlpha ? QImage::Format_RGBA8888_Premultiplied : QImage::Format_RGBA8888;
 
     // Uncompressed steps
     if(mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGBA ||
        mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB)
     {
-        rawData.resize(mainImage.imageDataSize());
         pitch = mainImage.pitch();
-        std::memcpy(rawData.data(), mainImage.imageData().data(), mainImage.imageDataSize());
+        rawData = mainImage.imageData(); // Implicit sharing avoids copy
     }
     else // Compressed steps
     {
@@ -185,7 +181,7 @@ QImage FromTexConverter::convertToStandardFormat(const KTex::MipMapImage& mainIm
         int squishFlag = getSquishCompressionFlag(mSourceTex.header().pixelFormat());
         pitch = mainImage.width() * 4;
         rawData.resize(mainImage.width() * mainImage.height() * 4);
-        squish::DecompressImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), mainImage.pitch(),
+        squish::DecompressImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), pitch,
                                 mainImage.imageData().data(), squishFlag);
 
     }

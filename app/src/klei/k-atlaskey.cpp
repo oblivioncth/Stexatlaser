@@ -8,6 +8,34 @@
 // Project Includes
 #include "k-tex.h"
 
+/*
+ * Pixel coordinate to UV coordinate conversion has some degree of variation depending on
+ * the context in which it is performed. Since in this case the conversion is from a 2D
+ * space to another 2D space and essentially is only for the purpose of going from absolute
+ * coordinates to relative coordinates, the conversions are performed as directly as possible
+ * with no interpolation whatsoever.
+ *
+ * Remember that in the UV space 1 is the right/bottom most edge of the texture so the UV coordinates
+ * of an element within an atlas need to span from the upper (or lower if in regards to systmes
+ * with a lower left origin) left corner of its pixels to its lower right. Normally, this would mean
+ * the left-hand coordinate can be taken as is, and the right-hand coordinate of an element needs to be
+ * +1'ed before converting to UV space so that the resultant UV coordinate is at the extent of that pixel;
+ * however, standard convention instead views pixel coordinates as being located at the center of each
+ * pixel in a pixel-grid, with the goal of direct UV mapping being to have the UV bounding-box lie such
+ * that its edges intersect each of these center points for the pixels that should be included.
+ *
+ * This is covered in the following article, though note that the bit about the upper left actually being
+ * (-0.5,-0.5) does not apply in this context and the origin is still 0,0:
+ * https://learn.microsoft.com/en-us/windows/win32/direct3d9/directly-mapping-texels-to-pixels
+ *
+ * To acheive this, pixel coordinates are shifted by +0.5 before coverting to the UV coordinate space
+ * and by -0.5 when coming from the UV coordinate space.
+ *
+ * NOTE: In the event that the game has issues with the UV coordinates being too close to edges,
+ * it may be necessary to inset the bounding-box of each atlas element very slightly (by fractions
+ * of a pixel).
+ */
+
 //===============================================================================================================
 // K_ATLAS_KEY
 //===============================================================================================================
@@ -48,30 +76,24 @@ KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlas
 //Private:
 QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 {
-    // Determine largest coordinate
-    QPoint imageMaxCoord = {mAtlas.image.width() - 1, mAtlas.image.height() - 1};
-
     // Translate
     QMap<QString, QRectF> translatedElements;
 
-    QMap<QString, QRect>::const_iterator i;
-    for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
+    qreal xMax = mAtlas.image.width();
+    qreal yMax = mAtlas.image.height();
+
+    for(auto i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
     {
-        // Convert coordinates to relative
-        QPointF topLeft{
-            static_cast<qreal>(i->topLeft().x())/static_cast<qreal>(imageMaxCoord.x()),
-            static_cast<qreal>(i->topLeft().y())/static_cast<qreal>(imageMaxCoord.y())
-        };
-        QPointF bottomRight{
-            static_cast<qreal>(i->bottomRight().x())/static_cast<qreal>(imageMaxCoord.x()),
-            static_cast<qreal>(i->bottomRight().y())/static_cast<qreal>(imageMaxCoord.y())
-        };
+        // Map to UV coordinate space
+        // + 0.5 to correspond to center of edge pixels
+        QPointF topLeftUV((i->topLeft().x() + 0.5)/xMax, (i->topLeft().y() + 0.5)/yMax);
+        QPointF bottomRightUV((i->bottomRight().x() + 0.5)/xMax, (i->bottomRight().y() + 0.5)/yMax);
 
         // Convert name if needed
         QString elementName = ensureElementExtension(i.key());
 
         // Add translated element
-        translatedElements[elementName] = {topLeft, bottomRight};
+        translatedElements[elementName] = QRectF(topLeftUV, bottomRightUV);
     }
 
     return translatedElements;
@@ -80,16 +102,15 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName) const
 {
     QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + "." + KTex::FILE_EXT;
+    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + u"."_s + KTex::FILE_EXT;
 }
-
 
 //Public:
 KAtlasKey KAtlasKeyGenerator::process() const
 {
     // Create atlas key
     KAtlasKey atlasKey;
-    atlasKey.setAtlasFilename(mAtlasName + "." + KTex::FILE_EXT);
+    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::FILE_EXT);
     atlasKey.setStraightAlpha(mStraightAlpha);
     atlasKey.elements() = translateElements();
 
@@ -110,30 +131,23 @@ KAtlasKeyParser::KAtlasKeyParser(const KAtlasKey& atlasKey, const QImage& atlasI
 //Private:
 QMap<QString, QRect> KAtlasKeyParser::translateElements() const
 {
-    // Determine largest coordinate
-    QPoint imageMaxCoord = {mAtlasImage.width() - 1, mAtlasImage.height() - 1};
-
     // Translate
     QMap<QString, QRect> translatedElements;
 
-    QMap<QString, QRectF>::const_iterator i;
-    for(i = mAtlasKey.elements().constBegin(); i != mAtlasKey.elements().constEnd(); i++)
+    qreal xMax = mAtlasImage.width();
+    qreal yMax = mAtlasImage.height();
+
+    for(auto i = mAtlasKey.elements().constBegin(); i != mAtlasKey.elements().constEnd(); i++)
     {
-        // Convert to coordinates to absolute
-        QPoint topLeft{
-            static_cast<int>(std::round(i->topLeft().x() * imageMaxCoord.x())),
-            static_cast<int>(std::round(i->topLeft().y() * imageMaxCoord.y()))
-        };
-        QPoint bottomRight{
-            static_cast<int>(std::round(i->bottomRight().x() * imageMaxCoord.x())),
-            static_cast<int>(std::round(i->bottomRight().y() * imageMaxCoord.y()))
-        };
+        // Map to pixel coordinate space
+        QPoint topLeft(std::round(i->topLeft().x() * xMax - 0.5), std::round(i->topLeft().y() * yMax - 0.5));
+        QPoint bottomRight(std::round(i->bottomRight().x() * xMax - 0.5), std::round(i->bottomRight().y() * yMax - 0.5));
 
         // Convert name if needed
         QString elementName = peelElementExtension(i.key());
 
         // Add translated element
-        translatedElements[elementName] = {topLeft, bottomRight};
+        translatedElements[elementName] = QRect(topLeft, bottomRight);
     }
 
     return translatedElements;

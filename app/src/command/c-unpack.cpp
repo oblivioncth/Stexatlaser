@@ -14,6 +14,31 @@
 #include "klei/k-xml.h"
 
 //===============================================================================================================
+// CUnpackError
+//===============================================================================================================
+
+//-Constructor-------------------------------------------------------------
+//Private:
+CUnpackError::CUnpackError(Type t, const QString& s, const QString& d) :
+    mType(t),
+    mSpecific(s),
+    mDetails(d)
+{}
+
+//-Instance Functions-------------------------------------------------------------
+//Public:
+bool CUnpackError::isValid() const { return mType != NoError; }
+QString CUnpackError::specific() const { return mSpecific; }
+CUnpackError::Type CUnpackError::type() const { return mType; }
+
+//Private:
+Qx::Severity CUnpackError::deriveSeverity() const { return Qx::Critical; }
+quint32 CUnpackError::deriveValue() const { return mType; }
+QString CUnpackError::derivePrimary() const { return ERR_STRINGS.value(mType); }
+QString CUnpackError::deriveSecondary() const { return mSpecific; }
+QString CUnpackError::deriveDetails() const { return mDetails; }
+
+//===============================================================================================================
 // CPack
 //===============================================================================================================
 
@@ -23,52 +48,32 @@ CUnpack::CUnpack(Stex& coreRef) : Command(coreRef) {}
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-const QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-const QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-const QString CUnpack::name() { return NAME; }
+QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
+QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
+QString CUnpack::name() { return NAME; }
 
 //Public:
-ErrorCode CUnpack::process(const QStringList& commandLine)
+Qx::Error CUnpack::perform()
 {
-    ErrorCode errorStatus;
-
-    // Parse and check for valid arguments
-    if((errorStatus = parse(commandLine)))
-        return errorStatus;
-
-    // Handle standard options
-    if(checkStandardOptions())
-        return Stex::ErrorCodes::NO_ERR;
-
-    // Make sure input and output were provided
-    if(!mParser.isSet(CL_OPTION_INPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_INPUT));
-        return Stex::ErrorCodes::NO_INPUT;
-    }
-    if(!mParser.isSet(CL_OPTION_OUTPUT))
-    {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_NO_OUTPUT));
-        return Stex::ErrorCodes::NO_OUTPUT;
-    }
-
     // Get input and output
     mCore.printMessage(NAME, MSG_INPUT_VALIDATION);
     QFileInfo inputKey(mParser.value(CL_OPTION_INPUT));
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
     // Make sure the provided input and output are valid
-    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != "xml")
+    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != u"xml"_s)
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_INPUT));
-        return Stex::ErrorCodes::INVALID_INPUT;
+        CUnpackError err(CUnpackError::InvalidInput);
+        mCore.printError(NAME, err);
+        return err;
     }
     if(!outputDir.exists())
     {
         if(!outputDir.mkpath(outputDir.absolutePath()))
         {
-            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, Stex::ERR_INVALID_PARAM, ERR_INVALID_OUTPUT));
-            return Stex::ErrorCodes::INVALID_OUTPUT;
+            CUnpackError err(CUnpackError::InvalidOutput);
+            mCore.printError(NAME, err);
+            return err;
         }
     }
 
@@ -81,25 +86,27 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
 
     if(keyReadReport.isValid())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_KEY.arg(atlasKeyFile.fileName()),
-                                                keyReadReport.text()));
-        return ErrorCodes::CANT_READ_KEY;
+        CUnpackError err(CUnpackError::CantReadKey, atlasKeyFile.fileName(), keyReadReport.text());
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Ensure TEX atlas Exists
     QFileInfo texFileInfo(inputKey.absoluteDir().filePath(atlasKey.atlasFilename()));
     if(!texFileInfo.exists() || !texFileInfo.isFile())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_ATLAS_DNE.arg(texFileInfo.fileName())));
-        return ErrorCodes::ATLAS_DOESNT_EXIST;
+        CUnpackError err(CUnpackError::AtlasDoesntExist, texFileInfo.fileName());
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Create final output directory
     QDir finalOutputDir(outputDir.absoluteFilePath(texFileInfo.baseName()));
     if(!finalOutputDir.exists() && !outputDir.mkpath(finalOutputDir.absolutePath()))
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_CREATE_DIR.arg(finalOutputDir.absolutePath())));
-        return ErrorCodes::CANT_CREATE_DIR;
+        CUnpackError err(CUnpackError::CantCreateDir, finalOutputDir.absolutePath());
+        mCore.printError(NAME, err);
+        return err;
     }
 
     // Read TEX atlas
@@ -111,15 +118,19 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
 
     if(texReadReport.isFailure())
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_READ_ATLAS.arg(texFileInfo.absoluteFilePath()),
-                                                texReadReport.outcomeInfo()));
-        return ErrorCodes::CANT_READ_ATALAS;
+        CUnpackError err(CUnpackError::CantReadAtlas, texFileInfo.absoluteFilePath(), texReadReport.outcomeInfo());
+        mCore.printError(NAME, err);
+        return err;
     }
     else if(!supported)
     {
-        mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_ATLAS_NOT_SUPPORTED));
-        return ErrorCodes::ATLAS_UNSUPPORTED;
+        CUnpackError err(CUnpackError::AtlasUnsupported, texFileInfo.fileName());
+        mCore.printError(NAME, err);
+        return err;
     }
+
+    // Show metadata
+    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
 
     // Extract atlas image from TEX
     mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
@@ -143,16 +154,17 @@ ErrorCode CUnpack::process(const QStringList& commandLine)
     QMap<QString, QImage>::const_iterator i;
     for(i = namedImages.constBegin(); i != namedImages.constEnd(); i++)
     {
-        QString filename = finalOutputDir.absoluteFilePath(i.key() + ".png");
+        QString filename = finalOutputDir.absoluteFilePath(i.key() + u".png"_s);
         QImageWriter writer(filename);
         if(!writer.write(i.value()))
         {
-            mCore.printError(NAME, Qx::GenericError(Qx::GenericError::Error, ERR_CANT_WRITE_IMAGE.arg(filename), writer.errorString()));
-            return ErrorCodes::CANT_WRITE_IMAGE;
+            CUnpackError err(CUnpackError::CantWriteImage, filename, writer.errorString());
+            mCore.printError(NAME, err);
+            return err;
         }
     }
 
     // Return success
     mCore.printMessage(NAME, MSG_SUCCESS.arg(namedImages.count()));
-    return Stex::ErrorCodes::NO_ERR;
+    return Qx::Error();
 }

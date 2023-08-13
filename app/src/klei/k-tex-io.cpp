@@ -149,18 +149,18 @@ Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelForm
 
 Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
 {
-    // Split specificatons
+    // Split specifications
     int startBit = 0;
 
-    quint8 platformRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_BC).toInteger<quint8>();
+    quint8 platformRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PLATFORM_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_PLATFORM_BC;
-    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PIXEL_FORMAT_BC).toInteger<quint8>();
+    quint8 pixelFormatRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PIXEL_FORMAT_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_PIXEL_FORMAT_BC;
-    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_TEXTURE_TYPE_BC).toInteger<quint8>();
+    quint8 textureTypeRaw = specifcationBits.subArray(startBit, KTex::Header::BL_TEXTURE_TYPE_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_TEXTURE_TYPE_BC;
-    quint8 mipMapCountRaw = specifcationBits.extract(startBit, KTex::Header::BL_MIP_MAP_COUNT_BC).toInteger<quint8>();
+    quint8 mipMapCountRaw = specifcationBits.subArray(startBit, KTex::Header::BL_MIP_MAP_COUNT_BC).toInteger<quint8>();
     startBit += KTex::Header::BL_MIP_MAP_COUNT_BC;
-    quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_BC).toInteger<quint8>();
+    quint8 flagOneRaw = specifcationBits.subArray(startBit, KTex::Header::BL_FLAG_BC).toInteger<quint8>();
 
     // Check if file is unsupported
     Qx::IoOpReport specsCheck;
@@ -184,17 +184,17 @@ Qx::IoOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
     // Split specificatons
     int startBit = 0;
 
-    quint8 platformRaw = specifcationBits.extract(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
+    quint8 platformRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_PLATFORM_AC;
-    quint8 pixelFormatRaw = specifcationBits.extract(startBit, KTex::Header::BL_PIXEL_FORMAT_AC).toInteger<quint8>();
+    quint8 pixelFormatRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PIXEL_FORMAT_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_PIXEL_FORMAT_AC;
-    quint8 textureTypeRaw = specifcationBits.extract(startBit, KTex::Header::BL_TEXTURE_TYPE_AC).toInteger<quint8>();
+    quint8 textureTypeRaw = specifcationBits.subArray(startBit, KTex::Header::BL_TEXTURE_TYPE_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_TEXTURE_TYPE_AC;
-    quint8 mipMapCountRaw = specifcationBits.extract(startBit, KTex::Header::BL_MIP_MAP_COUNT_AC).toInteger<quint8>();
+    quint8 mipMapCountRaw = specifcationBits.subArray(startBit, KTex::Header::BL_MIP_MAP_COUNT_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_MIP_MAP_COUNT_AC;
-    quint8 flagOneRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
+    quint8 flagOneRaw = specifcationBits.subArray(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
     startBit += KTex::Header::BL_FLAG_AC;
-    quint8 flagTwoRaw = specifcationBits.extract(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
+    quint8 flagTwoRaw = specifcationBits.subArray(startBit, KTex::Header::BL_FLAG_AC).toInteger<quint8>();
 
     // Check if file is unsupported
     Qx::IoOpReport specsCheck;
@@ -224,17 +224,17 @@ Qx::IoOpReport KTexReader::readHeader()
     if((magicCheck = checkFileSupport(magicNumber)).isFailure())
         return magicCheck;
 
-    // Read specifcation int
+    // Read specification int
     quint32 specifications;
     mStreamReader >> specifications;
 
-    // Parse specifcations based on their version
+    // Parse specifications based on their version
     Qx::BitArray specifcationBits = Qx::BitArray::fromInteger<quint32>(specifications);
 
     // This test has a false positive (for pre-caves update) if the input TEX is of the post-caves update variety,
     // has both flags set to high, and has at least 30 mipmaps. This is considered unlikely enough to be reasonable
     // (as it would likely result from an image with an initial size of 73,728 x 73,728) since there is no other way to check
-    if(specifcationBits.extract(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC)
+    if(specifcationBits.subArray(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC)
         parsePreCavesSpecs(specifcationBits);
     else
         parsePostCavesSpecs(specifcationBits);
@@ -262,8 +262,22 @@ Qx::IoOpReport KTexReader::readMipMapMetadata()
 
     quint16 mipMapPitch;
     mStreamReader >> mipMapPitch;
+
     // Manually correct non-compliant mipmaps that report 0 pitch (*cough* matt's tools *cough*)
-    mipMap.setPitch(mipMapPitch != 0 ? mipMapPitch : mipMapWidth * 4); // width x 4 is from libsquish
+    if(mipMapPitch == 0)
+    {
+        auto pf = mTargetTex.header().pixelFormat();
+        bool isCompressed = pf != KTex::Header::PixelFormat::RGB && pf != KTex::Header::PixelFormat::RGBA;
+
+        if(isCompressed)
+        {
+            // Equivalent to squish::GetStorageRequirements(mipMapWidth, 1, squishFlag), but avoids squish include
+            mipMapPitch = ((mipMapWidth + 3) / 4) * (pf == KTex::Header::PixelFormat::DXT1 ? 8 : 16);
+        }
+        else
+            mipMapPitch = mipMapWidth * 4; // Used QImage formats are always 32-bit aligned.
+    }
+    mipMap.setPitch(mipMapPitch);
 
     quint32 mipMapDataSize;
     mStreamReader >> mipMapDataSize;

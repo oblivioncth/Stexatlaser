@@ -9,48 +9,72 @@
 #include <QCommandLineOption>
 
 // Qx Includes
-#include <qx/core/qx-genericerror.h>
+#include <qx/core/qx-error.h>
 
 // Project Includes
 #include "project_vars.h"
 
-//-Typedef---------------------------------------------------------------------
-typedef int ErrorCode;
+// General Aliases
+using ErrorCode = quint32;
+
+class QX_ERROR_TYPE(StexError, "CoreError", 1200)
+{
+    friend class Stex;
+//-Class Enums-------------------------------------------------------------
+public:
+    enum Type
+    {
+        NoError = 0,
+        InvalidOptions = 1
+    };
+
+//-Class Variables-------------------------------------------------------------
+private:
+    static inline const QHash<Type, QString> ERR_STRINGS{
+        {NoError, u""_s},
+        {InvalidOptions, u"Invalid global options provided."_s}
+    };
+
+//-Instance Variables-------------------------------------------------------------
+private:
+    Type mType;
+    QString mSpecific;
+    Qx::Severity mSeverity;
+
+//-Constructor-------------------------------------------------------------
+private:
+    StexError(Type t = NoError, const QString& s = {}, Qx::Severity sv = Qx::Critical);
+
+//-Instance Functions-------------------------------------------------------------
+public:
+    bool isValid() const;
+    Type type() const;
+    QString specific() const;
+
+private:
+    Qx::Severity deriveSeverity() const override;
+    quint32 deriveValue() const override;
+    QString derivePrimary() const override;
+    QString deriveSecondary() const override;
+};
 
 class Stex
 {
-//-Inner Classes--------------------------------------------------------------------------------------------------------
-public:
-    class ErrorCodes
-    {
-    //-Class Variables--------------------------------------------------------------------------------------------------
-    public:
-        static const ErrorCode NO_ERR = 0;
-        static const ErrorCode INVALID_ARGS = 1;
-        static const ErrorCode NO_INPUT = 2;
-        static const ErrorCode NO_OUTPUT = 3;
-        static const ErrorCode INVALID_INPUT = 4;
-        static const ErrorCode INVALID_OUTPUT = 5;
-    };
-
 //-Class Variables------------------------------------------------------------------------------------------------------
-public:
-    // Error Messages
-    static inline const QString ERR_INVALID_PARAM = "Invalid arguments. Use " PROJECT_SHORT_NAME " -h for help";
-
+private:
     // Global command line option strings
-    static inline const QString CL_OPT_HELP_S_NAME = "h";
-    static inline const QString CL_OPT_HELP_L_NAME = "help";
-    static inline const QString CL_OPT_HELP_E_NAME = "?";
-    static inline const QString CL_OPT_HELP_DESC = "Prints this help message.";
+    static inline const QString CL_OPT_HELP_S_NAME = u"h"_s;
+    static inline const QString CL_OPT_HELP_L_NAME = u"help"_s;
+    static inline const QString CL_OPT_HELP_E_NAME = u"?"_s;
+    static inline const QString CL_OPT_HELP_DESC = u"Prints this help message."_s;
 
-    static inline const QString CL_OPT_VERSION_S_NAME = "v";
-    static inline const QString CL_OPT_VERSION_L_NAME = "version";
-    static inline const QString CL_OPT_VERSION_DESC = "Prints the current version of this tool.";
+    static inline const QString CL_OPT_VERSION_S_NAME = u"v"_s;
+    static inline const QString CL_OPT_VERSION_L_NAME = u"version"_s;
+    static inline const QString CL_OPT_VERSION_DESC = u"Prints the current version of this tool."_s;
 
-    static inline const QString CL_OPT_FORMATS_S_NAME = "f";
-    static inline const QString CL_OPT_FORMATS_L_NAME = "formats";
-    static inline const QString CL_OPT_FORMATS_DESC = "Prints the image formats this tool supports.";
+    static inline const QString CL_OPT_FORMATS_S_NAME = u"f"_s;
+    static inline const QString CL_OPT_FORMATS_L_NAME = u"formats"_s;
+    static inline const QString CL_OPT_FORMATS_DESC = u"Prints the image formats this tool supports."_s;
 
     // Global command line options
     static inline const QCommandLineOption CL_OPTION_HELP{{CL_OPT_HELP_S_NAME, CL_OPT_HELP_L_NAME, CL_OPT_HELP_E_NAME}, CL_OPT_HELP_DESC}; // Boolean option
@@ -60,7 +84,7 @@ public:
     static inline const QList<const QCommandLineOption*> CL_OPTIONS_ALL{&CL_OPTION_HELP, &CL_OPTION_VERSION, &CL_OPTION_FORMATS};
 
     // Help template
-    static inline const QString HELP_TEMPL = "Usage:\n"
+    static inline const QString HELP_TEMPL = u"Usage:\n"
                                              "------\n"
                                              PROJECT_SHORT_NAME " <global options> [command] <command options>\n"
                                              "\n"
@@ -69,19 +93,16 @@ public:
                                              "\n"
                                              "Commands:\n"
                                              "---------%2\n"
-                                             "Use the '-h' switch after a command to see it's specific usage notes\n";
-    static inline const QString HELP_OPT_TEMPL = "\n%1: %2";
-    static inline const QString HELP_COMMAND_TEMPL = "\n[%1]: %2\n";
+                                             "Use the '-h' switch after a command to see it's specific usage notes\n"_s;
+    static inline const QString HELP_OPT_TEMPL = u"\n%1: %2"_s;
+    static inline const QString HELP_COMMAND_TEMPL = u"\n[%1]: %2\n"_s;
 
     // Messages
-    static inline const QString MSG_VERSION = PROJECT_APP_NAME " version " PROJECT_VERSION_STR "\n";
-    static inline const QString MSG_FORMATS = PROJECT_SHORT_NAME " supports the following image formats:\n%1\n";
-
-    // Stream
-    static inline QTextStream qcout = QTextStream(stdout, QIODevice::WriteOnly);
+    static inline const QString MSG_VERSION = PROJECT_APP_NAME u" version "_s PROJECT_VERSION_STR u"\n"_s;
+    static inline const QString MSG_FORMATS = PROJECT_SHORT_NAME u" supports the following image formats:\n%1\n"_s;
 
     // Meta
-    static inline const QString NAME = "stex";
+    static inline const QString NAME = u"stex"_s;
 
 //-Instance Variables------------------------------------------------------------------------------------------------------
 private:
@@ -100,12 +121,12 @@ private:
     void showFormats();
 
 public:
-    ErrorCode initialize(QStringList& commandLine);
+    Qx::Error initialize(QStringList& commandLine);
 
     QStringList imageFormatFilter() const;
     QStringList supportedImageFormats() const;
 
-    void printError(QString src, Qx::GenericError error);
+    void printError(QString src, Qx::Error error);
     void printMessage(QString src, QString message);
     void printVerbatim(QString text);
 };
