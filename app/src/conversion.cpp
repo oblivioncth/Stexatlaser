@@ -181,7 +181,7 @@ QImage FromTexConverter::convertToStandardFormat(const KTex::MipMapImage& mainIm
         int squishFlag = getSquishCompressionFlag(mSourceTex.header().pixelFormat());
         pitch = mainImage.width() * 4;
         rawData.resize(mainImage.width() * mainImage.height() * 4);
-        squish::DecompressImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), mainImage.pitch(),
+        squish::DecompressImage(reinterpret_cast<uchar*>(rawData.data()), mainImage.width(), mainImage.height(), pitch,
                                 mainImage.imageData().data(), squishFlag);
 
     }
