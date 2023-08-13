@@ -165,18 +165,15 @@ QImage FromTexConverter::convertToStandardFormat(const KTex::MipMapImage& mainIm
 {
     QByteArray rawData;
     quint16 pitch;
-    QImage::Format rawFormat = mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB ?
-                               QImage::Format_RGB888 : mOptions.demultiplyAlpha ?
-                                                       QImage::Format_RGBA8888_Premultiplied :
-                                                       QImage::Format_RGBA8888;
+    QImage::Format rawFormat = mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB ? QImage::Format_RGB888 :
+                               mOptions.demultiplyAlpha ? QImage::Format_RGBA8888_Premultiplied : QImage::Format_RGBA8888;
 
     // Uncompressed steps
     if(mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGBA ||
        mSourceTex.header().pixelFormat() == KTex::Header::PixelFormat::RGB)
     {
-        rawData.resize(mainImage.imageDataSize());
         pitch = mainImage.pitch();
-        std::memcpy(rawData.data(), mainImage.imageData().data(), mainImage.imageDataSize());
+        rawData = mainImage.imageData(); // Implicit sharing avoids copy
     }
     else // Compressed steps
     {
