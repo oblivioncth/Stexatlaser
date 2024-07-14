@@ -73,7 +73,7 @@ jobs:
           7z a "${{ env.zips_path }}/${name}.zip" "${path}/*"
         }
     - name: Generate release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         name: "Stex Release v${{ needs.tag_master_and_sync_dev.outputs.new_version }}"
         tag_name: "v${{ needs.tag_master_and_sync_dev.outputs.new_version }}"

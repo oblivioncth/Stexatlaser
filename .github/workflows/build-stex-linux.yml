@@ -104,7 +104,7 @@ jobs:
         artifact_name="$(basename "$cpack_name" .zip) [${{ matrix.cxx_comp }}]"
         echo "current_artifact_name=$artifact_name" >> $GITHUB_ENV
     - name: Upload Stex build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.current_artifact_name }}
         path: ${{ env.stex_install_path }}

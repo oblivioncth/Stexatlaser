@@ -73,7 +73,7 @@ jobs:
         $artifact_name=$((Get-ChildItem -Path "${{ env.stex_package_path }}" -Filter *.zip)[0].BaseName)
         echo "current_artifact_name=$artifact_name" >> $Env:GITHUB_ENV
     - name: Upload Stex build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.current_artifact_name }}
         path: ${{ env.stex_install_path }}
