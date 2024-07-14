@@ -80,7 +80,7 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: sudo apt-get install libegl1-mesa-dev
     - name: Checkout Stex
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: ${{ env.stex_src_suffix }}
         fetch-depth: 0 # Required for verbose versioning to work correctly
