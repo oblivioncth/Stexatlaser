@@ -18,33 +18,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
-        compiler: [gcc, clang]
-        lib_linkage: [shared, static]
-        include:
-          - os: ubuntu-20.04
-            compiler: gcc
-            c_comp: gcc-10
-            cxx_comp: g++-10
-            qt_comp: clang12
-          - os: ubuntu-20.04
-            compiler: clang
-            c_comp: clang-12
-            cxx_comp: clang++-12
-            qt_comp: clang12            
-          - os: ubuntu-22.04
-            compiler: gcc
-            c_comp: gcc-12
-            cxx_comp: g++-12
-            qt_comp: clang14
-          - os: ubuntu-22.04
-            compiler: clang
-            c_comp: clang-14
-            cxx_comp: clang++-14
-            qt_comp: clang14
-          - lib_linkage: shared
-            cmake_bsl: ON
-          - lib_linkage: static
-            cmake_bsl: OFF   
+        compiler: [{c: gcc-10, cxx: g++-10, qt: clang12}, {c: gcc-12, cxx: g++-12, qt: clang14}, {c: clang-12, cxx: clang++-12, qt: clang12}, {c: clang-14, cxx: clang++-14, qt: clang14}]
+        linkage: [{type: shared, cmake_bsl: ON}, {type: static, cmake_bsl: OFF}]
+        exclude:
+            - os: ubuntu-20.04
+              compiler: {c: gcc-12, cxx: g++-12, qt: clang14}
+            - os: ubuntu-20.04
+              compiler: {c: clang-14, cxx: clang++-14, qt: clang14}
+            - os: ubuntu-22.04
+              compiler: {c: gcc-10, cxx: g++-10, qt: clang12}
+            - os: ubuntu-22.04
+              compiler: {c: clang-12, cxx: clang++-12, qt: clang12}  
     runs-on: ${{ matrix.os }}
     env:
       cmake_gen: Ninja Multi-Config
@@ -60,8 +44,8 @@ jobs:
       with:
         version: 6.5.1
         os: linux
-        compiler: ${{ matrix.qt_comp }}
-        linkage: ${{ matrix.lib_linkage }}
+        compiler: ${{ matrix.compiler.qt }}
+        linkage: ${{ matrix.linkage.type }}
         path: ${{ env.qt_install_dir }}
         credentials: ${{ secrets.qt_ffynnon_cred }}
     - name: Update package index
@@ -88,7 +72,7 @@ jobs:
       working-directory: ${{ env.stex_src_dir }}
       run: |
         echo Configuring CMake...
-        "$qt_cmake" -G "$cmake_gen" -S "$stex_src_dir" -B "$stex_build_dir" -D BUILD_SHARED_LIBS="${{ matrix.cmake_bsl }}" -D CMAKE_CXX_COMPILER="${{ matrix.cxx_comp }}" -D CMAKE_C_COMPILER="${{ matrix.c_comp }}"
+        "$qt_cmake" -G "$cmake_gen" -S "$stex_src_dir" -B "$stex_build_dir" -D BUILD_SHARED_LIBS="${{ matrix.linkage.cmake_bsl }}" -D CMAKE_CXX_COMPILER="${{ matrix.compiler.cxx }}" -D CMAKE_C_COMPILER="${{ matrix.compiler.c }}"
         echo Changing to build directory...
         cd "$stex_build_dir"
         echo Building Stex Release...
@@ -101,7 +85,7 @@ jobs:
     - name: Get Stex artifact name
       run: |
         cpack_name=$(find "${{ env.stex_package_path }}" -type f -name "*.zip")
-        artifact_name="$(basename "$cpack_name" .zip) [${{ matrix.cxx_comp }}]"
+        artifact_name="$(basename "$cpack_name" .zip) [${{ matrix.compiler.cxx }}]"
         echo "current_artifact_name=$artifact_name" >> $GITHUB_ENV
     - name: Upload Stex build artifact
       uses: actions/upload-artifact@v4
