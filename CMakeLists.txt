@@ -44,6 +44,7 @@ endif()
 set(STEX_QT_COMPONENTS
     Core
     Gui
+    Xml
 )
 
 # Find Qt package
