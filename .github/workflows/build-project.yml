@@ -19,3 +19,16 @@ jobs:
     uses: oblivioncth/actions/.github/workflows/build-cxx-project.yml@v1
     secrets:
       ffynnon_access: ${{ secrets.OBYBOT_FFYNNON_ACCESS }}
+    with:
+      pre_build_steps: |
+        - name: Install OpenMP lib [Linux]
+          if: env.run_is_linux == 'true'
+          shell: pwsh
+          run: |
+            if($Env:run_compiler.StartsWith('g++-')) {
+                sudo apt-get install libgomp1
+            } elseif($Env:run_compiler.StartsWith('clang++-')) {
+                $ver = $Env:run_compiler.replace('clang++-', '')
+                $pkg = "libomp-${ver}-dev"
+                sudo apt-get install $pkg
+            }
