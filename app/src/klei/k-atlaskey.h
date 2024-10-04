@@ -16,6 +16,10 @@ private:
 public:
     KAtlasKey();
 
+//-Class Functions--------------------------------------------------------------------------------------------------
+public:
+    static QString standardExtension();
+
 //-Instance Functions----------------------------------------------------------------------------------------------
 public:
     QString atlasFilename() const;

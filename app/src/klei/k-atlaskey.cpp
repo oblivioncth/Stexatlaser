@@ -47,6 +47,10 @@ KAtlasKey::KAtlasKey() :
     mRelativeElements()
 {}
 
+//-Class Function---s--------------------------------------------------------------------------------------------
+//Public:
+QString KAtlasKey::standardExtension() { return u"xml"_s; }
+
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Public:
 QString KAtlasKey::atlasFilename() const { return mAtlasFilename; }
@@ -102,7 +106,8 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName) const
 {
     QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + u"."_s + KTex::FILE_EXT;
+    QString ext = KTex::standardExtension();
+    return nameInfo.suffix() == ext ? elementName : elementName + u"."_s + ext;
 }
 
 //Public:
@@ -110,7 +115,7 @@ KAtlasKey KAtlasKeyGenerator::process() const
 {
     // Create atlas key
     KAtlasKey atlasKey;
-    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::FILE_EXT);
+    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::standardExtension());
     atlasKey.setStraightAlpha(mStraightAlpha);
     atlasKey.elements() = translateElements();
 
@@ -156,7 +161,8 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
 QString KAtlasKeyParser::peelElementExtension(const QString& elementName) const
 {
     QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName.chopped(KTex::FILE_EXT.length() + 1) : elementName;
+    QString ext = KTex::standardExtension();
+    return nameInfo.suffix() == ext ? elementName.chopped(ext.length() + 1) : elementName;
 }
 
 //Public:

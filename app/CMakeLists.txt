@@ -8,11 +8,19 @@ ob_add_standard_executable(${APP_TARGET_NAME}
     SOURCE
         command/command.h
         command/command.cpp
+        command/c-compress.h
+        command/c-compress.cpp
+        command/c-decompress.h
+        command/c-decompress.cpp
         command/c-pack.h
         command/c-pack.cpp
         command/c-pack.h
         command/c-unpack.h
         command/c-unpack.cpp
+        command/tex-command.h
+        command/tex-command.cpp
+        command/untex-command.h
+        command/untex-command.cpp
         klei/k-atlas.h
         klei/k-atlas.cpp
         klei/k-atlaskey.h

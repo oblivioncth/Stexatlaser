@@ -66,6 +66,8 @@ KTex::KTex() :
 
 //-Class Functions---------------------------------------------------------------------------------------------------
 //Public:
+QString KTex::standardExtension() { return u"tex"_s; }
+
 bool KTex::supportedPlatform(quint8 platformVal)
 {
     switch(platformVal)

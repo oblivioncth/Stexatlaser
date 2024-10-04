@@ -149,9 +149,9 @@ private:
     void showHelp();
 
 protected:
-    virtual QList<const QCommandLineOption*> options() = 0;
-    virtual QSet<const QCommandLineOption*> requiredOptions();
-    virtual QString name() = 0;
+    virtual QList<const QCommandLineOption*> options() const = 0;
+    virtual QSet<const QCommandLineOption*> requiredOptions() const;
+    virtual QString name() const = 0;
     virtual Qx::Error perform() = 0;
 
 public:
