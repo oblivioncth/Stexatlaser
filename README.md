@@ -1,11 +1,13 @@
 # Stexatlaser (Stex)
-<img align="left" src="https://i.imgur.com/LCBz647.png" width=27%>
+<img align="left" src="https://i.imgur.com/LCBz647.png" width=25%>
 
 Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required. It can also reverse the process and extract element images from an atlas using its key.
 
 This tool uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
 
 Stex additionally can be used to directly convert single images to/from the TEX format.
+
+[![Dev Builds](https://github.com/oblivioncth/Stexatlaser/actions/workflows/build-project.yml/badge.svg?branch=dev)](https://github.com/oblivioncth/Stexatlaser/actions/workflows/build-project.yml)
 
 ## Compatibility
 While this tool was written with Don't Starve Together in mind, it should work with any Klei TEX file as long as the format is not significantly different. There are still a few unknowns concerning format interpretation with even DST, but they do not impact the performance of this tool and will be addressed in the event they're determined to be relevant.
