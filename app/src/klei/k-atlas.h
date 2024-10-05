@@ -44,11 +44,11 @@ private:
 public:
     KDeatlaser(const KAtlas& atlas);
 
-//-Instance Functions----------------------------------------------------------------------------------------------
+//-Class Functions-------------------------------------------------------------------------------------------------
 private:
-    QMap<QString, QRect> flipElements() const;
-    QMap<QString, QImage> extractElements(const QImage& normalizedAtlas, const QMap<QString, QRect> normalizedElements) const;
+    static QMap<QString, QImage> extractElements(const QImage& atlas, const QMap<QString, QRect> elements);
 
+//-Instance Functions----------------------------------------------------------------------------------------------
 public:
     QMap<QString, QImage> process() const;
 };

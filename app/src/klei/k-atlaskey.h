@@ -46,10 +46,13 @@ private:
 public:
     KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlasName, bool straightAlpha);
 
+//-Class Functions------------------------------------------------------------------------------------------------
+private:
+    static QString ensureElementExtension(const QString& elementName);
+
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
     QMap<QString, QRectF> translateElements() const;
-    QString ensureElementExtension(const QString& elementName) const;
 
 public:
     KAtlasKey process() const;

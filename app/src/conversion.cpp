@@ -9,7 +9,7 @@
 
 // NOTE: The Qt image formats (QImage::Format) used here are all byte ordered based on the host system, yet squish (and DST?)
 // expect the input data to always be RGB(A), which means these won't work on Big Endian ordered systems;
-// however this is considered acceptible given the target system is x86 based (LE)
+// however this is considered acceptable given the target system is x86 based (LE)
 
 //===============================================================================================================
 // UNIT ONLY
@@ -123,6 +123,9 @@ KTex ToTexConverter::convert()
     // Convert to base pixel format to work with
     QImage baseImage = convertToBasePixelFormat();
 
+    // Flip
+    baseImage.mirror();
+
     // Working images
     QVector<QImage> workingImages = {baseImage};
 
@@ -203,5 +206,10 @@ QImage FromTexConverter::convert()
     const KTex::MipMapImage& mainImage = getMainImage();
 
     // Convert to QImage
-    return convertToStandardFormat(mainImage);
+    QImage img = convertToStandardFormat(mainImage);
+
+    // Flip
+    img.mirror();
+
+    return img;
 }
