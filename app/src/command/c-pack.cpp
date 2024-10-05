@@ -3,13 +3,10 @@
 
 // Qt Includes
 #include <QDir>
-#include <QImageReader>
 
 // Project Includes
-#include "conversion.h"
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"
-#include "klei/k-tex-io.h"
 #include "klei/k-xml.h"
 
 //===============================================================================================================
@@ -43,7 +40,7 @@ QString CPackError::deriveDetails() const { return mDetails; }
 
 //-Constructor-------------------------------------------------------------
 //Public:
-CPack::CPack(Stex& coreRef) : Command(coreRef)
+CPack::CPack(Stex& coreRef) : TexCommand(coreRef)
 {}
 
 //-Class Functions----------------------------------------------------------------
@@ -68,23 +65,21 @@ bool CPack::hasBasenameCollision(const QFileInfoList& imageFiles)
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-QList<const QCommandLineOption*> CPack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-QSet<const QCommandLineOption*> CPack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-QString CPack::name() { return NAME; }
+QList<const QCommandLineOption*> CPack::options() const { return CL_OPTIONS_SPECIFIC + TexCommand::options(); }
+QSet<const QCommandLineOption*> CPack::requiredOptions() const { return CL_OPTIONS_REQUIRED; }
+QString CPack::name() const { return NAME; }
 
 //Public:
 Qx::Error CPack::perform()
 {
-    // Make sure output pixel format is valid if provided
-    if(mParser.isSet(CL_OPTION_FORMAT) && !PIXEL_FORMAT_MAP.contains(mParser.value(CL_OPTION_FORMAT)))
-    {
-        CPackError err(CPackError::InvalidFormat);
-        mCore.printError(NAME, err);
+    mCore.printMessage(NAME, MSG_INPUT_VALIDATION);
+
+    // Get and validate format
+    KTex::Header::PixelFormat outputPixelFormat;
+    if(auto err = getFormat(outputPixelFormat); err.isValid())
         return err;
-    }
 
     // Get input and output
-    mCore.printMessage(NAME, MSG_INPUT_VALIDATION);
     QDir inputDir(mParser.value(CL_OPTION_INPUT));
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
@@ -104,10 +99,6 @@ Qx::Error CPack::perform()
             return err;
         }
     }
-
-    // Get output pixel format
-    KTex::Header::PixelFormat outputPixelFormat = mParser.isSet(CL_OPTION_FORMAT) ? PIXEL_FORMAT_MAP[mParser.value(CL_OPTION_FORMAT)] :
-                                                                                    KTex::Header::PixelFormat::DXT5;
 
     // Get source images
     mCore.printMessage(NAME, MSG_READ_IMAGES);
@@ -130,21 +121,14 @@ Qx::Error CPack::perform()
     }
 
     // Generate named image map
-    QImageReader imageReader;
     QMap<QString, QImage> namedImages;
 
     for(const QFileInfo& imageInfo : qAsConst(imageFiles))
     {
         QString elementName = imageInfo.baseName();
-        imageReader.setFileName(imageInfo.absoluteFilePath());
-
         QImage image;
-        if(!imageReader.read(&image))
-        {
-            CPackError err(CPackError::CantReadImage, imageInfo.absoluteFilePath());
-            mCore.printError(NAME, err);
+        if(auto err = readImage(image, imageInfo.absoluteFilePath()); err.isValid())
             return err;
-        }
 
         namedImages[elementName] = image;
     }
@@ -160,33 +144,20 @@ Qx::Error CPack::perform()
     KAtlasKey atlasKey = akg.process();
 
     // Create TEX
-    mCore.printMessage(NAME, MSG_CREATE_TEX);
-    ToTexConverter::Options ttco;
-    ttco.generateMipMaps = !mParser.isSet(CL_OPTION_UNOPT);
-    ttco.premultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT);
-    ttco.pixelFormat = outputPixelFormat;
-
-    ToTexConverter ttc(atlas.image, ttco);
-    KTex tex = ttc.convert();
-
-    // Show metadata
-    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
+    KTex tex = createTex(atlas.image, outputPixelFormat);
 
     // Write TEX file
-    mCore.printMessage(NAME, MSG_WRITE_TEX);
     QString outputTexFilePath(outputDir.absoluteFilePath(atlasKey.atlasFilename()));
-    KTexWriter texWriter(tex, outputTexFilePath);
-    Qx::IoOpReport texWriteReport;
-    if((texWriteReport = texWriter.write()).isFailure())
+    if(auto res = writeTex(tex, outputTexFilePath); res.isFailure())
     {
-        CPackError err(CPackError::CantWriteAtlas, outputTexFilePath, texWriteReport.outcomeInfo());
+        CPackError err(CPackError::CantWriteAtlas, outputTexFilePath, res.outcomeInfo());
         mCore.printError(NAME, err);
         return err;
     }
 
     // Write atlas key
     mCore.printMessage(NAME, MSG_WRITE_KEY);
-    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + u".xml"_s));
+    QFile outputKeyFile(outputDir.absoluteFilePath(inputDir.dirName() + '.' + KAtlasKey::standardExtension()));
     KAtlasKeyWriter keyWriter(outputKeyFile, atlasKey);
     Qx::XmlStreamWriterError keyWriteReport;
     if((keyWriteReport = keyWriter.write()).isValid())

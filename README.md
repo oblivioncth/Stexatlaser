@@ -1,12 +1,11 @@
 # Stexatlaser (Stex)
-<img align="left" src="https://i.imgur.com/LCBz647.png" width=25%>
+<img align="left" src="https://i.imgur.com/LCBz647.png" width=27%>
 
-Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required.
+Stexatlaser (*stex-atlaser*, a play on 'spectacular'), or simply Stex, is a simple tool for generating a (Klei) TEX format atlas and its key from a simple folder structure with no external dependencies required. It can also reverse the process and extract element images from an atlas using its key.
 
-It uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
+This tool uses an implementation of the MaxRects algorithm to efficiently pack each input element image into a larger atlas image, with as little wasted space as possible. Some empty space is inevitable given that atlases must have power-of-two dimensions.
 
-It can also reverse the process and extract element images from an atlas using its key.
-
+Stex additionally can be used to directly convert single images to/from the TEX format.
 
 ## Compatibility
 While this tool was written with Don't Starve Together in mind, it should work with any Klei TEX file as long as the format is not significantly different. There are still a few unknowns concerning format interpretation with even DST, but they do not impact the performance of this tool and will be addressed in the event they're determined to be relevant.
@@ -43,16 +42,26 @@ If you want to see the element arrangement, try viewing the output with a [TEX v
 
 **Extracting an Atlas**
 To extract an atlas, run Stex with the **unpack** command:
- 
+
     stex unpack -i "X:\Path\To\Input\key.xml" -o "X:\Path\To\Output\Directory"
 
 The key's corresponding atlas, which must be located alongside it, will be read automatically using the name specified within the key.
 
 When finished, a subfolder with the name of the atlas will be created within the specified output directory that contains each individual element as a separate PNG image. This results in the same structure used as input when packing an atlas.
 
+**Converting standalone images**
+Although the main feature of Stex is its atlas generation, one can also directly convert single textures to/from TEX if needed.
+
+Image to TEX:
+
+    stex compress -i "X:\Path\To\Input\texture.png" -o "X:\Path\To\Output\texture.tex"
+
+Image from TEX:
+
+	stex decompress -i "X:\Path\To\Input\texture.tex" -o "X:\Path\To\Output\texture.png"
 
 ### Advance Usage
-- If the alpha channel was **not** pre-multiplied when a given TEX atlas was created, the **-s** switch must be passed to **unpack** for the images to be recovered correctly. This is handled automatically for atlas/key pairs that were generated with Stex's pack command, as detailed in the "Additional Features" section 
+- If the alpha channel was **not** pre-multiplied when a given TEX atlas was created, the **-s** switch must be passed to **unpack** for the images to be recovered correctly. This is handled automatically for atlas/key pairs that were generated with Stex's pack command, as detailed in the "Additional Features" section
 - See the following section for more detailed options/modes.
 
 
@@ -71,9 +80,36 @@ though this isn't required as long as quotation and space use is carefully emplo
  -  **-h | --help | -?:** Prints usage information
  -  **-v | --version:** Prints the current version of the tool
  - **-f | --formats:** Prints the image formats supported by the tool (input only)
- 
- 
+
+
 ### Commands:
+
+**compress** - Converts a single image to TEX. No key is created
+
+Options:
+ -  **-i | --input:** Path to the input texture image
+ -  **-o | --output:** Path to the resultant TEX file. Defaults to the input path, but with a `tex` extension.
+ -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba>. Defaults  to  DXT5
+ -  **-u | --unoptimized:** Do  not  generate  smoothed  mipmaps
+ -  **-s | --straight:** Keep  straight  alpha  channel,  do  not  pre-multiply
+
+Requires:
+**-i**
+
+--------------------------------------------------------------------------------
+
+**decompress** - Converts a single TEX to a PNG image
+
+Options:
+ -  **-i | --input:** Path to the input TEX file
+ -  **-o | --output:** Path to the resultant texture image. Defaults to the input path, but with a `png` extension.
+ -  **-s | --straight:** Specify  that  the  alpha  information  within  the  input  TEX  is  straight,  do  not  de-multiply
+
+Requires:
+**-i**
+
+--------------------------------------------------------------------------------
+
 **pack** - Pack  a  folder  of  images  into  a  TEX  atlas.  The  input  directory  will  be  used  as  the  name  for  the  atlas/key, while  the  image  names  will  be  used  as  the  element  names
 
 Options:
@@ -85,10 +121,10 @@ Options:
  - **-m | --margin:** Add  a  1-px  transparent  margin  to  each  input  image  (when  more  than  one).  Useful  for  rare  cases  of  element  bleed-over
 
 Requires:
-**-i** and **-o** 
+**-i** and **-o**
 
-Notes: 
-Use `stex -f` to see the supported image formats. The **margin** switch is generally never required and is only available for extremely specific and unlikely cases in which floating point inaccuracies or rounding cause 1 row/column of pixels from one element to be marked as part of another during atlas key generation. 
+Notes:
+Use `stex -f` to see the supported image formats. The **margin** switch is generally never required and is only available for extremely specific and unlikely cases in which floating point inaccuracies or rounding cause 1 row/column of pixels from one element to be marked as part of another during atlas key generation.
 
 --------------------------------------------------------------------------------
 
@@ -100,15 +136,15 @@ Options:
  -  **-s | --straight:** Specify  that  the  alpha  information  within  the  input  TEX  is  straight,  do  not  de-multiply
 
 Requires:
-**-i** and **-o** 
+**-i** and **-o**
 
-Notes: 
+Notes:
 Because Klei TEX atlas keys use relative coordinates and converting to/from them incurs floating-point inaccuracies, there are some edge cases where the dimensions of unpacked images may differ very slightly from the originals used to create the TEX; however, this is generally not the case.
 
 Still, for this reason it is recommended to keep original copies of your textures and not rely on the TEX version as your only copy.
 
 --------------------------------------------------------------------------------
- 
+
 ## Additional Information
 **Automatic Pre-multiplied Alpha Handling**
 
@@ -161,7 +197,7 @@ When creating this tool I couldn't find any documentation on the Klei TEX format
     0x00 - HEADER (pre or post caves update)
     0x08 - MIMAP_METADATA[Mipmap_Count]
     0x^^ - MIMAP_DATA[Mipmap_Count]
-    
+
     HEADER (pre-caves update)
     ------
     0x00 - uint8[4]: Magic Number "KTEX"
@@ -174,7 +210,7 @@ When creating this tool I couldn't find any documentation on the Klei TEX format
        b9:12 - uint4: Mipmap Count
        b13 - uint1: Flags (Unknown)
        b14:31 - uint18: *padding (all high)*
-       
+
     HEADER (post-caves update)
     ------
     0x00 - uint8[4]: Magic Number "KTEX"
@@ -187,14 +223,14 @@ When creating this tool I couldn't find any documentation on the Klei TEX format
        b13:17 - uint5: Mipmap Count
        b18:19 - uint2: Flags (Unknown)
        b20:31 - uint12: *padding (all high)*
-       
+
     MIPMAP_METADATA
     ---------------
     0x00 - uint16: Width
     0x02 - uint16: Height
     0x04 - uint16: Pitch
     0x06 - uint32: Data Size
-    
+
     MIMAP_DATA
     ----------
     0x00 - uint8[Data_Size]: Image Data

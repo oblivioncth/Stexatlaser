@@ -4,13 +4,11 @@
 // Qt Includes
 #include <QDir>
 #include <QFileInfo>
-#include <QImageWriter>
 
 // Project Includes
-#include "conversion.h"
+#include "klei/k-tex.h"
 #include "klei/k-atlas.h"
 #include "klei/k-atlaskey.h"
-#include "klei/k-tex-io.h"
 #include "klei/k-xml.h"
 
 //===============================================================================================================
@@ -39,18 +37,18 @@ QString CUnpackError::deriveSecondary() const { return mSpecific; }
 QString CUnpackError::deriveDetails() const { return mDetails; }
 
 //===============================================================================================================
-// CPack
+// CUnpack
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------
 //Public:
-CUnpack::CUnpack(Stex& coreRef) : Command(coreRef) {}
+CUnpack::CUnpack(Stex& coreRef) : UntexCommand(coreRef) {}
 
 //-Instance Functions-------------------------------------------------------------
 //Protected:
-QList<const QCommandLineOption*> CUnpack::options() { return CL_OPTIONS_SPECIFIC + Command::options(); }
-QSet<const QCommandLineOption*> CUnpack::requiredOptions() { return CL_OPTIONS_REQUIRED; }
-QString CUnpack::name() { return NAME; }
+QList<const QCommandLineOption*> CUnpack::options() const { return CL_OPTIONS_SPECIFIC + Command::options(); }
+QSet<const QCommandLineOption*> CUnpack::requiredOptions() const { return CL_OPTIONS_REQUIRED; }
+QString CUnpack::name() const { return NAME; }
 
 //Public:
 Qx::Error CUnpack::perform()
@@ -61,7 +59,7 @@ Qx::Error CUnpack::perform()
     QDir outputDir(mParser.value(CL_OPTION_OUTPUT));
 
     // Make sure the provided input and output are valid
-    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != u"xml"_s)
+    if(!inputKey.exists() || !inputKey.isFile() || inputKey.suffix() != KAtlasKey::standardExtension())
     {
         CUnpackError err(CUnpackError::InvalidInput);
         mCore.printError(NAME, err);
@@ -110,15 +108,12 @@ Qx::Error CUnpack::perform()
     }
 
     // Read TEX atlas
-    mCore.printMessage(NAME, MSG_READ_TEX);
     KTex tex;
-    KTexReader texReader(texFileInfo.absoluteFilePath(), tex);
     bool supported;
-    Qx::IoOpReport texReadReport = texReader.read(supported);
-
-    if(texReadReport.isFailure())
+    QString atlasPath = texFileInfo.absoluteFilePath();
+    if(auto res = readTex(tex, supported, atlasPath); res.isFailure())
     {
-        CUnpackError err(CUnpackError::CantReadAtlas, texFileInfo.absoluteFilePath(), texReadReport.outcomeInfo());
+        CUnpackError err(CUnpackError::CantReadAtlas, atlasPath, res.outcomeInfo());
         mCore.printError(NAME, err);
         return err;
     }
@@ -129,15 +124,8 @@ Qx::Error CUnpack::perform()
         return err;
     }
 
-    // Show metadata
-    mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
-
     // Extract atlas image from TEX
-    mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
-    FromTexConverter::Options ftco;
-    ftco.demultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT) && !atlasKey.straightAlpha();
-    FromTexConverter ftc(tex, ftco);
-    QImage atlasImage = ftc.convert();
+    QImage atlasImage = extractImage(tex, atlasKey.straightAlpha());
 
     // Create atlas
     mCore.printMessage(NAME, MSG_FORM_ATLAS);
@@ -154,14 +142,9 @@ Qx::Error CUnpack::perform()
     QMap<QString, QImage>::const_iterator i;
     for(i = namedImages.constBegin(); i != namedImages.constEnd(); i++)
     {
-        QString filename = finalOutputDir.absoluteFilePath(i.key() + u".png"_s);
-        QImageWriter writer(filename);
-        if(!writer.write(i.value()))
-        {
-            CUnpackError err(CUnpackError::CantWriteImage, filename, writer.errorString());
-            mCore.printError(NAME, err);
+        QString path = finalOutputDir.absoluteFilePath(i.key() + '.' + STD_OUTPUT_EXT);
+        if(auto err = writeImage(i.value(), path); err.isValid())
             return err;
-        }
     }
 
     // Return success
