@@ -36,6 +36,16 @@
  * of a pixel).
  */
 
+namespace
+{
+
+QRect flipElement(const QRect& element, const QImage& image)
+{
+    return {QPoint(element.x(), (image.height() - 1) - element.bottom()), element.size()};
+}
+
+}
+
 //===============================================================================================================
 // K_ATLAS_KEY
 //===============================================================================================================
@@ -46,6 +56,10 @@ KAtlasKey::KAtlasKey() :
     mStraightAlpha(false), // Assume premultiplied by default
     mRelativeElements()
 {}
+
+//-Class Function---s--------------------------------------------------------------------------------------------
+//Public:
+QString KAtlasKey::standardExtension() { return u"xml"_s; }
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Public:
@@ -72,6 +86,16 @@ KAtlasKeyGenerator::KAtlasKeyGenerator(const KAtlas& atlas, const QString& atlas
     mStraightAlpha(straightAlpha)
 {}
 
+
+//-Class Functions------------------------------------------------------------------------------------------------
+//Private:
+QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName)
+{
+    QFileInfo nameInfo(elementName);
+    QString ext = KTex::standardExtension();
+    return nameInfo.suffix() == ext ? elementName : elementName + u"."_s + ext;
+}
+
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
 QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
@@ -84,10 +108,13 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
 
     for(auto i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
     {
+        // Flip
+        QRect fi = flipElement(*i, mAtlas.image);
+
         // Map to UV coordinate space
         // + 0.5 to correspond to center of edge pixels
-        QPointF topLeftUV((i->topLeft().x() + 0.5)/xMax, (i->topLeft().y() + 0.5)/yMax);
-        QPointF bottomRightUV((i->bottomRight().x() + 0.5)/xMax, (i->bottomRight().y() + 0.5)/yMax);
+        QPointF topLeftUV((fi.topLeft().x() + 0.5)/xMax, (fi.topLeft().y() + 0.5)/yMax);
+        QPointF bottomRightUV((fi.bottomRight().x() + 0.5)/xMax, (fi.bottomRight().y() + 0.5)/yMax);
 
         // Convert name if needed
         QString elementName = ensureElementExtension(i.key());
@@ -99,18 +126,12 @@ QMap<QString, QRectF> KAtlasKeyGenerator::translateElements() const
     return translatedElements;
 }
 
-QString KAtlasKeyGenerator::ensureElementExtension(const QString& elementName) const
-{
-    QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName : elementName + u"."_s + KTex::FILE_EXT;
-}
-
 //Public:
 KAtlasKey KAtlasKeyGenerator::process() const
 {
     // Create atlas key
     KAtlasKey atlasKey;
-    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::FILE_EXT);
+    atlasKey.setAtlasFilename(mAtlasName + u"."_s + KTex::standardExtension());
     atlasKey.setStraightAlpha(mStraightAlpha);
     atlasKey.elements() = translateElements();
 
@@ -143,11 +164,15 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
         QPoint topLeft(std::round(i->topLeft().x() * xMax - 0.5), std::round(i->topLeft().y() * yMax - 0.5));
         QPoint bottomRight(std::round(i->bottomRight().x() * xMax - 0.5), std::round(i->bottomRight().y() * yMax - 0.5));
 
+        // Flip
+        QRect flipped = flipElement({topLeft, bottomRight}, mAtlasImage);
+
+
         // Convert name if needed
         QString elementName = peelElementExtension(i.key());
 
         // Add translated element
-        translatedElements[elementName] = QRect(topLeft, bottomRight);
+        translatedElements[elementName] = flipped;
     }
 
     return translatedElements;
@@ -156,7 +181,8 @@ QMap<QString, QRect> KAtlasKeyParser::translateElements() const
 QString KAtlasKeyParser::peelElementExtension(const QString& elementName) const
 {
     QFileInfo nameInfo(elementName);
-    return nameInfo.suffix() == KTex::FILE_EXT ? elementName.chopped(KTex::FILE_EXT.length() + 1) : elementName;
+    QString ext = KTex::standardExtension();
+    return nameInfo.suffix() == ext ? elementName.chopped(ext.length() + 1) : elementName;
 }
 
 //Public:

@@ -135,9 +135,6 @@ private:
         {KTex::Header::TextureType::CubeMapped, u"Cube Mapped"_s},
     };
 
-public:
-    static inline const QString FILE_EXT = u"tex"_s;
-
 //-Instance Members-------------------------------------------------------------------------------------------------
 private:
     Header mHeader;
@@ -149,6 +146,7 @@ public:
 
 //-Class Functions---------------------------------------------------------------------------------------------------
 public:
+    static QString standardExtension();
     static bool supportedPlatform(quint8 platformVal);
     static bool supportedPixelFormat(quint8 pixelFormatVal);
     static bool supportedTextureType(quint8 textureTypeVal);

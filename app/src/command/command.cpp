@@ -134,8 +134,8 @@ void Command::showHelp()
 }
 
 //Protected:
-QList<const QCommandLineOption*> Command::options() { return CL_OPTIONS_STANDARD; }
-QSet<const QCommandLineOption*> Command::requiredOptions() { return {}; }
+QList<const QCommandLineOption*> Command::options() const { return CL_OPTIONS_STANDARD; }
+QSet<const QCommandLineOption*> Command::requiredOptions() const { return {}; }
 
 //Public:
 Qx::Error Command::process(const QStringList& commandLine)

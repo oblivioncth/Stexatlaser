@@ -223,15 +223,11 @@ KAtlas KAtlaser::processSingleImage() const
     QPainter elementPainter(&atlasImage);
     elementPainter.drawImage(QPoint(0, 0), image);
 
-    // Create element key (correct for atlas being stored buttom up)
-    QRect topUpRect = {QPoint(0, 0), image.size()};
-    QRect bottomUpRect = {QPoint(topUpRect.x(), (atlasSize.height() - 1) - topUpRect.bottom()), topUpRect.size()};
-    QMap<QString, QRect> atlasElements = {{imageName, bottomUpRect}};
+    // Create element key
+    QRect rect = {QPoint(0, 0), image.size()};
+    QMap<QString, QRect> atlasElements = {{imageName, rect}};
 
-    // Flip image to be stored bottom up
-    QImage atlasMirrored = atlasImage.mirrored();
-
-    return KAtlas{atlasMirrored, atlasElements};
+    return KAtlas{atlasImage, atlasElements};
 }
 
 KAtlas KAtlaser::processMultiImage() const
@@ -287,20 +283,14 @@ KAtlas KAtlaser::processMultiImage() const
         // Paint image on atlas
         QPainter elementPainter(&atlasImage);
         elementPainter.drawImage(imagePos, image);
-
-        // Correct for atlas being stored bottom up.
-        // The new top left corner will be the old bottom left corner after a simulated flip
-        QRect topUpRect = {imagePos, image.size()};
-        QRect bottomUpRect = {QPoint(topUpRect.x(), (atlasSize.height() - 1) - topUpRect.bottom()), topUpRect.size()};
+        QRect rect = {imagePos, image.size()};
 
         // Add to element list, accounting for atlas being stored bottom up
-        atlasElements[iMappedBoxes.key()] = bottomUpRect;
+        atlasElements[iMappedBoxes.key()] = rect;
     }
 
-    // Flip image to be stored bottom up
-    QImage atlasMirrored = atlasImage.mirrored();
 
-    return KAtlas{atlasMirrored, atlasElements};
+    return KAtlas{atlasImage, atlasElements};
 }
 
 //Public:
@@ -322,43 +312,27 @@ KAtlas KAtlaser::process() const
 //-Constructor-------------------------------------------------------------------------------------------------
 KDeatlaser::KDeatlaser(const KAtlas& atlas) : mAtlas(atlas) {}
 
-//-Instance Functions--------------------------------------------------------------------------------------------
+//-Class Functions------------------------------------------------------------------------------------------------
 //Private:
-QMap<QString, QRect> KDeatlaser::flipElements() const
-{
-    QMap<QString, QRect> flippedElements;
-
-    QMap<QString, QRect>::const_iterator i;
-    for(i = mAtlas.elements.constBegin(); i != mAtlas.elements.constEnd(); i++)
-        flippedElements[i.key()] = {QPoint(i->x(), (mAtlas.image.height() - 1) - i->bottom()), i->size()};
-
-    return flippedElements;
-}
-
-QMap<QString, QImage> KDeatlaser::extractElements(const QImage& normalizedAtlas, const QMap<QString, QRect> normalizedElements) const
+QMap<QString, QImage> KDeatlaser::extractElements(const QImage& atlas, const QMap<QString, QRect> elements)
 {
     QMap<QString, QImage> namedImages;
 
     QMap<QString, QRect>::const_iterator i;
-    for(i = normalizedElements.constBegin(); i != normalizedElements.constEnd(); i++)
-        namedImages[i.key()] = normalizedAtlas.copy(i.value());
+    for(i = elements.constBegin(); i != elements.constEnd(); i++)
+        namedImages[i.key()] = atlas.copy(i.value());
 
     return namedImages;
 }
 
+//-Instance Functions--------------------------------------------------------------------------------------------
 //Public:
 QMap<QString, QImage> KDeatlaser::process() const
 {
-    // Flip atlas
-    QImage standardImage = mAtlas.image.mirrored();
-
     // Convert to "standard" format (not needed, but hey)
-    standardImage = standardImage.convertToFormat(QImage::Format_ARGB32);
-
-    // Flip elements
-    QMap<QString, QRect> flippedElements = flipElements();
+    QImage standardImage = mAtlas.image.convertToFormat(QImage::Format_ARGB32);
 
     // Extract
-    return extractElements(standardImage, flippedElements);
+    return extractElements(standardImage, mAtlas.elements);
 
 }

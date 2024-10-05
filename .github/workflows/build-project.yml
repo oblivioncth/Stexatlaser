@@ -1,0 +1,34 @@
+name: Build Project
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+    - 'master'
+  workflow_run:
+    workflows: Tag and Sync
+    types: completed
+    branches: dev
+    # This is the branch that the original workflow ran on, which is technically dev, due to how
+    # the "pull_request" trigger works (it works off master correctly for a merged PR but is triggered
+    # by dev
+
+jobs:
+  trigger-build:
+    name: Build Project
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    uses: oblivioncth/actions/.github/workflows/build-cxx-project.yml@v1
+    secrets:
+      ffynnon_access: ${{ secrets.OBYBOT_FFYNNON_ACCESS }}
+    with:
+      pre_build_steps: |
+        - name: Install OpenMP lib [Linux]
+          if: env.run_is_linux == 'true'
+          shell: pwsh
+          run: |
+            if($Env:run_compiler.StartsWith('g++-')) {
+                sudo apt-get install libgomp1
+            } elseif($Env:run_compiler.StartsWith('clang++-')) {
+                $ver = $Env:run_compiler.replace('clang++-', '')
+                $pkg = "libomp-${ver}-dev"
+                sudo apt-get install $pkg
+            }
