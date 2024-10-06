@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.23.0...3.25.0)
 # Project
 # NOTE: DON'T USE TRAILING ZEROS IN VERSIONS
 project(Stex
-    VERSION 0.5
+    VERSION 0.5.0.1
     LANGUAGES CXX
     DESCRIPTION "A tool to pack/unpack Klei TEX format atlases"
 )
@@ -68,7 +68,7 @@ ob_fetch_qx(
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_modern_libsquish("8e24a23e0c41f44a56c0231698795d652bc2c3f2")
+ob_fetch_modern_libsquish("8a6aad970285a536170de9b3fc63735a72674561")
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
