@@ -1,6 +1,9 @@
 // Unit Includes
 #include "command.h"
 
+// Qt Includes
+#include <QMap>
+
 // Qx Includes
 #include <qx/utility/qx-helpers.h>
 
