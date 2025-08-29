@@ -112,9 +112,10 @@ Qx::IoOpReport KTexWriter::write()
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex) :
+KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex, bool anyPixelFormat) :
     mStreamReader(sourceFilePath),
     mTargetTex(targetTex),
+    mAnyPixelFormat(anyPixelFormat),
     mMipMapCount(0)
 {
     mStreamReader.setByteOrder(QDataStream::LittleEndian);
@@ -136,7 +137,7 @@ Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
 Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw)
 {
     if(!KTex::supportedPlatform(platformRaw) ||
-       !KTex::supportedPixelFormat(pixelFormatRaw)  ||
+       (!mAnyPixelFormat &&!KTex::supportedPixelFormat(pixelFormatRaw)) ||
        !KTex::supportedTextureType(textureTypeRaw))
     {
         qWarning("TEX is unsupported.");

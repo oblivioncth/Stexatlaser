@@ -1,6 +1,22 @@
 // Unit Includes
 #include "k-tex.h"
 
+// Qx Includes
+#include <qx/core/qx-json.h>
+
+namespace
+{
+
+struct MipMapMeta
+{
+    quint16 width;
+    quint16 height;
+    quint16 pitch;
+    QX_JSON_STRUCT(width, height, pitch);
+};
+
+}
+
 //===============================================================================================================
 // K_TEX::HEADER
 //===============================================================================================================
@@ -46,8 +62,16 @@ quint16 KTex::MipMapImage::width() const { return mWidth; }
 quint16 KTex::MipMapImage::height() const { return mHeight; };
 quint16 KTex::MipMapImage::pitch() const { return mPitch; }
 quint32 KTex::MipMapImage::imageDataSize() const { return mImageData.size(); }
-QByteArray& KTex::MipMapImage::imageData() {return mImageData; }
+QByteArray& KTex::MipMapImage::imageData() { return mImageData; }
 const QByteArray& KTex::MipMapImage::imageData() const { return mImageData; }
+
+QByteArray KTex::MipMapImage::jsonMetadata() const
+{
+    MipMapMeta meta{mWidth, mHeight, mPitch};
+    QByteArray json;
+    Qx::serializeJson(json, meta);
+    return json;
+}
 
 void KTex::MipMapImage::setWidth(quint16 width) { mWidth = width; }
 void KTex::MipMapImage::setHeight(quint16 height) { mHeight = height; }
@@ -116,6 +140,7 @@ bool KTex::supportedTextureType(quint8 textureTypeVal)
 KTex::Header& KTex::header() { return mHeader; }
 const KTex::Header& KTex::header() const { return mHeader; }
 quint8 KTex::mipMapCount() const { return mMipMaps.count(); }
+bool KTex::hasMipMaps() const { return !mMipMaps.isEmpty(); }
 QVector<KTex::MipMapImage>& KTex::mipMaps() { return mMipMaps; }
 const QVector<KTex::MipMapImage>& KTex::mipMaps() const { return mMipMaps; }
 
@@ -123,7 +148,9 @@ QString KTex::info(bool indent) const
 {
     QStringList infoPoints;
     infoPoints << u"Platform: "_s + PLATFORM_STRINGS[mHeader.platform()];
-    infoPoints << u"Pixel Format: "_s + PIXEL_FORMAT_STRINGS[mHeader.pixelFormat()];
+    auto pxForm = PIXEL_FORMAT_STRINGS.find(mHeader.pixelFormat());
+    QString pxFormStr = pxForm != PIXEL_FORMAT_STRINGS.end() ? pxForm.value() : "Unknown";
+    infoPoints << u"Pixel Format: "_s + pxFormStr;
     infoPoints << u"Texture Type: "_s + TEXTURE_TYPE_STRINGS[mHeader.textureType()];
     infoPoints << u"Unknown Flag 1: "_s + (mHeader.flagOne() ? "true" : "false");
     infoPoints << u"Unknown Flag 2: "_s + (mHeader.flagTwo() ? "true" : "false");

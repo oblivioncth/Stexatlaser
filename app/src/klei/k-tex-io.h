@@ -46,6 +46,7 @@ private:
 private:
     Qx::FileStreamReader mStreamReader;
     KTex& mTargetTex;
+    bool mAnyPixelFormat;
 
     // Mipmap helper members
     quint8 mMipMapCount;
@@ -55,7 +56,7 @@ private:
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KTexReader(const QString& sourceFilePath, KTex& targetTex);
+    KTexReader(const QString& sourceFilePath, KTex& targetTex, bool anyPixelFormat = false);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
