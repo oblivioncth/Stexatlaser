@@ -16,8 +16,7 @@ public:
     {
         NoError,
         InvalidInput,
-        CantReadTex,
-        TexUnsupported
+        CantReadTex
     };
 
 //-Class Variables-------------------------------------------------------------
@@ -25,8 +24,7 @@ private:
     static inline const QHash<Type, QString> ERR_STRINGS{
         {NoError, u""_s},
         {InvalidInput, u"The provided input TEX path is invalid."_s},
-        {CantReadTex, u"Failed to read TEX."_s},
-        {TexUnsupported, u"The input TEX is not supported."_s},
+        {CantReadTex, u"Failed to read TEX."_s}
     };
 
 //-Instance Variables-------------------------------------------------------------

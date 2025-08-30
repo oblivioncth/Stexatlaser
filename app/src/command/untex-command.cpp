@@ -46,13 +46,13 @@ UntexCommand::UntexCommand(Stex& coreRef) : Command(coreRef)
 //Protected:
 QList<const QCommandLineOption*> UntexCommand::options() const { return CL_OPTIONS_SPECIFIC + Command::options(); }
 
-Qx::IoOpReport UntexCommand::readTex(KTex& tex, bool& supported, const QString& path) const
+Qx::IoOpReport UntexCommand::readTex(KTex& tex, const QString& path) const
 {
     mCore.printMessage(NAME, MSG_READ_TEX);
     KTexReader texReader(path, tex);
-    Qx::IoOpReport res = texReader.read(supported);
+    Qx::IoOpReport res = texReader.read();
 
-    if(!res.isFailure() && supported)
+    if(!res.isFailure())
         mCore.printMessage(NAME, MSG_TEX_INFO.arg(tex.info(true)));
 
     return res;

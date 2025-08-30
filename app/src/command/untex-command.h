@@ -92,7 +92,7 @@ public:
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
     virtual QList<const QCommandLineOption*> options() const override;
-    Qx::IoOpReport readTex(KTex& tex, bool& supported, const QString& path) const;
+    Qx::IoOpReport readTex(KTex& tex, const QString& path) const;
     QImage extractImage(const KTex& tex, bool forceStraight = false) const;
     UntexCommandError writeImage(const QImage& image, const QString& path) const;
 };

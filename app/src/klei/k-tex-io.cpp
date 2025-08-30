@@ -115,8 +115,7 @@ Qx::IoOpReport KTexWriter::write()
 KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex) :
     mStreamReader(sourceFilePath),
     mTargetTex(targetTex),
-    mMipMapCount(0),
-    mSupported()
+    mMipMapCount(0)
 {
     mStreamReader.setByteOrder(QDataStream::LittleEndian);
 }
@@ -127,7 +126,7 @@ Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
 {
     if(QString::fromUtf8(magicNumberRaw) != KTex::Header::MAGIC_NUM)
     {
-        *mSupported = false;
+        qWarning("Incorrect magic number.");
         return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
@@ -140,7 +139,7 @@ Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelForm
        !KTex::supportedPixelFormat(pixelFormatRaw)  ||
        !KTex::supportedTextureType(textureTypeRaw))
     {
-        *mSupported = false;
+        qWarning("TEX is unsupported.");
         return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
@@ -229,15 +228,15 @@ Qx::IoOpReport KTexReader::readHeader()
     mStreamReader >> specifications;
 
     // Parse specifications based on their version
-    Qx::BitArray specifcationBits = Qx::BitArray::fromInteger<quint32>(specifications);
+    Qx::BitArray specificationBits = Qx::BitArray::fromInteger<quint32>(specifications);
 
     // This test has a false positive (for pre-caves update) if the input TEX is of the post-caves update variety,
     // has both flags set to high, and has at least 30 mipmaps. This is considered unlikely enough to be reasonable
     // (as it would likely result from an image with an initial size of 73,728 x 73,728) since there is no other way to check
-    if(specifcationBits.subArray(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC)
-        parsePreCavesSpecs(specifcationBits);
-    else
-        parsePostCavesSpecs(specifcationBits);
+    bool preCaves = specificationBits.subArray(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC;
+
+    if(auto specCheck = preCaves ? parsePreCavesSpecs(specificationBits) : parsePostCavesSpecs(specificationBits); specCheck.isFailure())
+        return specCheck;
 
     // Reserve space for known mipmap count
     mTargetTex.mipMaps().reserve(mMipMapCount);
@@ -300,12 +299,8 @@ Qx::IoOpReport KTexReader::readMipMapData(int i)
 }
 
 //Public:
-Qx::IoOpReport KTexReader::read(bool& supported)
+Qx::IoOpReport KTexReader::read()
 {
-    // Initialize supported status flag
-    mSupported = &supported;
-    *mSupported = true;
-
     // Track status
     Qx::IoOpReport status;
 

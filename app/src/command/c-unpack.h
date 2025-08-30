@@ -17,7 +17,6 @@ public:
         CantReadKey,
         AtlasDoesntExist,
         CantReadAtlas,
-        AtlasUnsupported,
         CantCreateDir
     };
 
@@ -30,7 +29,6 @@ private:
         {CantReadKey, u"Failed to read atlas key."_s},
         {AtlasDoesntExist, u"The atlas specified by the provided atlas key does not exist."_s},
         {CantReadAtlas, u"Failed to read atlas."_s},
-        {AtlasUnsupported, u"The input atlas is not supported."_s},
         {CantCreateDir, u"Failed to create unpack folder."_s}
     };
 

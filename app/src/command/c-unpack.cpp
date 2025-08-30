@@ -109,17 +109,10 @@ Qx::Error CUnpack::perform()
 
     // Read TEX atlas
     KTex tex;
-    bool supported;
     QString atlasPath = texFileInfo.absoluteFilePath();
-    if(auto res = readTex(tex, supported, atlasPath); res.isFailure())
+    if(auto res = readTex(tex, atlasPath); res.isFailure())
     {
         CUnpackError err(CUnpackError::CantReadAtlas, atlasPath, res.outcomeInfo());
-        mCore.printError(NAME, err);
-        return err;
-    }
-    else if(!supported)
-    {
-        CUnpackError err(CUnpackError::AtlasUnsupported, texFileInfo.fileName());
         mCore.printError(NAME, err);
         return err;
     }

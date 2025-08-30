@@ -75,17 +75,10 @@ Qx::Error CDecompress::perform()
 
     // Read TEX
     KTex tex;
-    bool supported;
     QString texPath = input.absoluteFilePath();
-    if(auto res = readTex(tex, supported, texPath); res.isFailure())
+    if(auto res = readTex(tex, texPath); res.isFailure())
     {
         CDecompressError err(CDecompressError::CantReadTex, texPath, res.outcomeInfo());
-        mCore.printError(NAME, err);
-        return err;
-    }
-    else if(!supported)
-    {
-        CDecompressError err(CDecompressError::TexUnsupported, input.fileName());
         mCore.printError(NAME, err);
         return err;
     }

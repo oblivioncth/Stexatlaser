@@ -51,7 +51,7 @@ private:
     quint8 mMipMapCount;
 
     // Status
-    bool* mSupported;
+    //bool* mSupported;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
@@ -69,7 +69,7 @@ private:
     Qx::IoOpReport readMipMapData(int i);
 
 public:
-    Qx::IoOpReport read(bool& supported);
+    Qx::IoOpReport read();
 };
 
 #endif // K_TEX_IO_H
