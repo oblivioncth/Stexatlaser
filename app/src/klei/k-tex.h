@@ -106,6 +106,7 @@ public:
         quint32 imageDataSize() const;
         QByteArray& imageData();
         const QByteArray& imageData() const;
+        QByteArray jsonMetadata() const;
 
         void setWidth(quint16 width);
         void setHeight(quint16 height);
@@ -156,6 +157,7 @@ public:
     Header& header();
     const Header& header() const;
     quint8 mipMapCount() const;
+    bool hasMipMaps() const;
     QVector<MipMapImage>& mipMaps();
     const QVector<MipMapImage>& mipMaps() const;
 
