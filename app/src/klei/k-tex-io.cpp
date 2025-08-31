@@ -326,8 +326,8 @@ Qx::IoOpReport KTexReader::read()
             return status;
     }
 
-    // TODO: Implement check/warning for if after reading known data, there is still data leftover
-    // i.e. mStreamReader.atEnd(), may need to advance one byte first
+    if(!mStreamReader.atEnd())
+        qWarning("There was still data left in the file after reading all mipmaps!");
 
     // Close file
     mStreamReader.closeFile();
