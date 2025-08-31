@@ -123,7 +123,7 @@ KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex, bool anyP
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
-Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
+Qx::IoOpReport KTexReader::checkFileSupport(QByteArrayView magicNumberRaw)
 {
     if(QString::fromUtf8(magicNumberRaw) != KTex::Header::MAGIC_NUM)
     {
@@ -147,7 +147,7 @@ Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelForm
     return mStreamReader.status();
 }
 
-Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePreCavesSpecs(const Qx::BitArray& specifcationBits)
 {
     // Split specifications
     int startBit = 0;
@@ -179,9 +179,9 @@ Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
     return mStreamReader.status();
 }
 
-Qx::IoOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePostCavesSpecs(const Qx::BitArray& specifcationBits)
 {
-    // Split specificatons
+    // Split specifications
     int startBit = 0;
 
     quint8 platformRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();

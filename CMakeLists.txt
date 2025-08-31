@@ -61,7 +61,7 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "31b3385222302a9411284124e4f912645d7ed13b"
+    REF "3f9a0d6f46b5c56e29d31d6e19939c407006adf0"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )

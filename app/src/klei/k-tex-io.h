@@ -60,11 +60,11 @@ public:
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    Qx::IoOpReport checkFileSupport(QByteArray magicNumberRaw);
+    Qx::IoOpReport checkFileSupport(QByteArrayView magicNumberRaw);
     Qx::IoOpReport checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw);
 
-    Qx::IoOpReport parsePreCavesSpecs(Qx::BitArray specifcationBits);
-    Qx::IoOpReport parsePostCavesSpecs(Qx::BitArray specifcationBits);
+    Qx::IoOpReport parsePreCavesSpecs(const Qx::BitArray& specifcationBits);
+    Qx::IoOpReport parsePostCavesSpecs(const Qx::BitArray& specifcationBits);
     Qx::IoOpReport readHeader();
     Qx::IoOpReport readMipMapMetadata();
     Qx::IoOpReport readMipMapData(int i);
