@@ -124,7 +124,7 @@ KTex ToTexConverter::convert()
     QImage baseImage = convertToBasePixelFormat();
 
     // Flip
-    baseImage.flip();
+    baseImage.mirror(); // .flip() in >= Qt 6.9.0
 
     // Working images
     QVector<QImage> workingImages = {baseImage};
@@ -209,7 +209,7 @@ QImage FromTexConverter::convert()
     QImage img = convertToStandardFormat(mainImage);
 
     // Flip
-    img.flip();
+    img.mirror(); // .flip() in >= Qt 6.9.0
 
     return img;
 }
