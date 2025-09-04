@@ -118,7 +118,9 @@ Qx::Error CUnpack::perform()
     }
 
     // Extract atlas image from TEX
-    QImage atlasImage = extractImage(tex, atlasKey.straightAlpha());
+    QImage atlasImage;
+    if(auto err = extractImage(atlasImage, tex, atlasKey.straightAlpha()); err.isValid())
+        return err;
 
     // Create atlas
     mCore.printMessage(NAME, MSG_FORM_ATLAS);

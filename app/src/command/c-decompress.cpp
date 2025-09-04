@@ -84,7 +84,9 @@ Qx::Error CDecompress::perform()
     }
 
     // Extract main image from TEX
-    QImage image = extractImage(tex);
+    QImage image;
+    if(auto err = extractImage(image, tex); err.isValid())
+        return err;
 
     // Write
     if(auto err = writeImage(image, output.absoluteFilePath()); err.isValid())

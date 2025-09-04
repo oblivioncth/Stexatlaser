@@ -58,13 +58,27 @@ Qx::IoOpReport UntexCommand::readTex(KTex& tex, const QString& path) const
     return res;
 }
 
-QImage UntexCommand::extractImage(const KTex& tex, bool forceStraight) const
+UntexCommandError UntexCommand::extractImage(QImage& mainImage, const KTex& tex, bool forceStraight) const
 {
     mCore.printMessage(NAME, MSG_EXTRACT_IMAGE);
+
+    mainImage = QImage();
+
+    // Check for empty TEX
+    if(!tex.hasMipMaps())
+    {
+        UntexCommandError err(UntexCommandError::TexEmpty);
+        mCore.printError(NAME, err);
+        return err;
+    }
+
+    // Get and convert
     FromTexConverter::Options ftco;
     ftco.demultiplyAlpha = !mParser.isSet(CL_OPTION_STRAIGHT) && !forceStraight;
     FromTexConverter ftc(tex, ftco);
-    return ftc.convert();
+    mainImage = ftc.convert();
+
+    return UntexCommandError();
 }
 
 UntexCommandError UntexCommand::writeImage(const QImage& image, const QString& path) const
