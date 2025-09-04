@@ -49,7 +49,7 @@ bool CPack::hasBasenameCollision(const QFileInfoList& imageFiles)
 {
     QSet<QString> baseNames;
 
-    for(const QFileInfo& fileInfo : qAsConst(imageFiles))
+    for(const QFileInfo& fileInfo : std::as_const(imageFiles))
     {
         QString baseName = fileInfo.baseName();
 
@@ -123,7 +123,7 @@ Qx::Error CPack::perform()
     // Generate named image map
     QMap<QString, QImage> namedImages;
 
-    for(const QFileInfo& imageInfo : qAsConst(imageFiles))
+    for(const QFileInfo& imageInfo : std::as_const(imageFiles))
     {
         QString elementName = imageInfo.baseName();
         QImage image;
