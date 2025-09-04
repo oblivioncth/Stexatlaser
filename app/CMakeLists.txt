@@ -46,6 +46,7 @@ ob_add_standard_executable(${APP_TARGET_NAME}
             Qx::Io
             Qx::Xml
             libsquish::Squish
+            Etc::Etc
     CONFIG STANDARD
 )
 

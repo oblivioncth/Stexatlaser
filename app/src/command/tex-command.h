@@ -63,6 +63,7 @@ private:
         {u"dxt5"_s, KTex::Header::PixelFormat::DXT5},
         {u"rgb"_s, KTex::Header::PixelFormat::RGB},
         {u"rgba"_s, KTex::Header::PixelFormat::RGBA},
+        {u"etc2eac"_s, KTex::Header::PixelFormat::ETC2EAC}
     };
 
     // Messages

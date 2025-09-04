@@ -115,6 +115,7 @@ bool KTex::supportedPixelFormat(quint8 pixelFormatVal)
         case static_cast<quint8>(Header::PixelFormat::DXT5):
         case static_cast<quint8>(Header::PixelFormat::RGB):
         case static_cast<quint8>(Header::PixelFormat::RGBA):
+        case static_cast<quint8>(Header::PixelFormat::ETC2EAC): // GL_COMPRESSED_RGBA8_ETC2_EAC
             return true;
         default:
             return false;
