@@ -91,7 +91,7 @@ though this isn't required as long as quotation and space use is carefully emplo
 Options:
  -  **-i | --input:** Path to the input texture image
  -  **-o | --output:** Path to the resultant TEX file. Defaults to the input path, but with a `tex` extension.
- -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba>. Defaults  to  DXT5
+ -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba | etc2eac>. Defaults  to  DXT5
  -  **-u | --unoptimized:** Do  not  generate  smoothed  mipmaps
  -  **-s | --straight:** Keep  straight  alpha  channel,  do  not  pre-multiply
 
@@ -117,7 +117,7 @@ Requires:
 Options:
  -  **-i | --input:** Directory  containing  images  to  pack
  -  **-o | --output:** Directory  in  which  to  place  the  resultant  atlas  and  key
- -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba>. Defaults  to  DXT5
+ -  **-f | --format:** Pixel  format  to  use  when  encoding  to  TEX.  The valid options are <dxt1 | dxt3 | dxt5 | rgb | rgba | etc2eac>. Defaults  to  DXT5
  -  **-u | --unoptimized:** Do  not  generate  smoothed  mipmaps
  -  **-s | --straight:** Keep  straight  alpha  channel,  do  not  pre-multiply
  - **-m | --margin:** Add  a  1-px  transparent  margin  to  each  input  image  (when  more  than  one).  Useful  for  rare  cases  of  element  bleed-over
@@ -182,6 +182,7 @@ This extension will be removed during filename assignment when unpacking an atla
 - Qt6
 - [Qx](https://github.com/oblivioncth/Qx/)
 - [libsquish](https://sourceforge.net/projects/libsquish/)
+- [etc2comp](https://github.com/google/etc2comp)
 - [OBCMake](https://github.com/oblivioncth/OBCmake)
 
 ## Pre-built Releases/Artifacts
