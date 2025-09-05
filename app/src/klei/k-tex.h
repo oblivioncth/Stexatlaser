@@ -27,7 +27,8 @@ public:
             DXT3 = 0x01,
             DXT5 = 0x02,
             RGBA = 0x04,
-            RGB = 0x05
+            RGB = 0x05,
+            ETC2EAC = 0x11
         };
         enum class TextureType : quint8{
             OneD = 0x00,
