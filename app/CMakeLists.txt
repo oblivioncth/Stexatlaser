@@ -12,6 +12,8 @@ ob_add_standard_executable(${APP_TARGET_NAME}
         command/c-compress.cpp
         command/c-decompress.h
         command/c-decompress.cpp
+        command/c-dump.h
+        command/c-dump.cpp
         command/c-pack.h
         command/c-pack.cpp
         command/c-pack.h
@@ -44,6 +46,7 @@ ob_add_standard_executable(${APP_TARGET_NAME}
             Qx::Io
             Qx::Xml
             libsquish::Squish
+            Etc::Etc
     CONFIG STANDARD
 )
 

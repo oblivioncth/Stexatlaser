@@ -1,6 +1,9 @@
 // Unit Includes
 #include "command.h"
 
+// Qt Includes
+#include <QMap>
+
 // Qx Includes
 #include <qx/utility/qx-helpers.h>
 
@@ -63,7 +66,7 @@ std::unique_ptr<Command> Command::acquire(const QString& name, Stex& coreRef) { 
 CommandError Command::parse(const QStringList& commandLine)
 {
     // Add command options
-    for(const QCommandLineOption* clOption : options())
+    for(const QCommandLineOption* clOption : qxAsConst(options()))
         mParser.addOption(*clOption);
 
     // Parse
@@ -113,7 +116,7 @@ void Command::showHelp()
     {
         // Help options
         QString optStr;
-        for(const QCommandLineOption* clOption : options())
+        for(const QCommandLineOption* clOption : qxAsConst(options()))
         {
             // Handle names
             QStringList dashedNames;

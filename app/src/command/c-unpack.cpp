@@ -109,23 +109,18 @@ Qx::Error CUnpack::perform()
 
     // Read TEX atlas
     KTex tex;
-    bool supported;
     QString atlasPath = texFileInfo.absoluteFilePath();
-    if(auto res = readTex(tex, supported, atlasPath); res.isFailure())
+    if(auto res = readTex(tex, atlasPath); res.isFailure())
     {
         CUnpackError err(CUnpackError::CantReadAtlas, atlasPath, res.outcomeInfo());
         mCore.printError(NAME, err);
         return err;
     }
-    else if(!supported)
-    {
-        CUnpackError err(CUnpackError::AtlasUnsupported, texFileInfo.fileName());
-        mCore.printError(NAME, err);
-        return err;
-    }
 
     // Extract atlas image from TEX
-    QImage atlasImage = extractImage(tex, atlasKey.straightAlpha());
+    QImage atlasImage;
+    if(auto err = extractImage(atlasImage, tex, atlasKey.straightAlpha()); err.isValid())
+        return err;
 
     // Create atlas
     mCore.printMessage(NAME, MSG_FORM_ATLAS);

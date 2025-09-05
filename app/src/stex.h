@@ -126,9 +126,9 @@ public:
     QStringList imageFormatFilter() const;
     QStringList supportedImageFormats() const;
 
-    void printError(QString src, Qx::Error error);
-    void printMessage(QString src, QString message);
-    void printVerbatim(QString text);
+    void printError(const QString& src, const Qx::Error& error);
+    void printMessage(const QString& src, const QString& message);
+    void printVerbatim(const QString& text);
 };
 
 

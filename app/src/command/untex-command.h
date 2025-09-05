@@ -15,6 +15,7 @@ public:
     enum Type
     {
         NoError,
+        TexEmpty,
         CantWriteImage
     };
 
@@ -22,6 +23,7 @@ public:
 private:
     static inline const QHash<Type, QString> ERR_STRINGS{
         {NoError, u""_s},
+        {TexEmpty, u"The TEX contained no mip-maps."_s},
         {CantWriteImage, u"Failed to write output image."_s}
     };
 
@@ -92,8 +94,8 @@ public:
 //-Instance Functions------------------------------------------------------------------------------------------------------
 protected:
     virtual QList<const QCommandLineOption*> options() const override;
-    Qx::IoOpReport readTex(KTex& tex, bool& supported, const QString& path) const;
-    QImage extractImage(const KTex& tex, bool forceStraight = false) const;
+    Qx::IoOpReport readTex(KTex& tex, const QString& path) const;
+    UntexCommandError extractImage(QImage& mainImage, const KTex& tex, bool forceStraight = false) const;
     UntexCommandError writeImage(const QImage& image, const QString& path) const;
 };
 

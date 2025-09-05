@@ -27,7 +27,8 @@ public:
             DXT3 = 0x01,
             DXT5 = 0x02,
             RGBA = 0x04,
-            RGB = 0x05
+            RGB = 0x05,
+            ETC2EAC = 0x11
         };
         enum class TextureType : quint8{
             OneD = 0x00,
@@ -106,6 +107,7 @@ public:
         quint32 imageDataSize() const;
         QByteArray& imageData();
         const QByteArray& imageData() const;
+        QByteArray jsonMetadata() const;
 
         void setWidth(quint16 width);
         void setHeight(quint16 height);
@@ -156,6 +158,7 @@ public:
     Header& header();
     const Header& header() const;
     quint8 mipMapCount() const;
+    bool hasMipMaps() const;
     QVector<MipMapImage>& mipMaps();
     const QVector<MipMapImage>& mipMaps() const;
 

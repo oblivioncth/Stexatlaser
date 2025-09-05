@@ -112,22 +112,22 @@ Qx::IoOpReport KTexWriter::write()
 //===============================================================================================================
 
 //-Constructor-------------------------------------------------------------------------------------------------
-KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex) :
+KTexReader::KTexReader(const QString& sourceFilePath, KTex& targetTex, bool anyPixelFormat) :
     mStreamReader(sourceFilePath),
     mTargetTex(targetTex),
-    mMipMapCount(0),
-    mSupported()
+    mAnyPixelFormat(anyPixelFormat),
+    mMipMapCount(0)
 {
     mStreamReader.setByteOrder(QDataStream::LittleEndian);
 }
 
 //-Instance Functions--------------------------------------------------------------------------------------------
 //Private:
-Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
+Qx::IoOpReport KTexReader::checkFileSupport(QByteArrayView magicNumberRaw)
 {
     if(QString::fromUtf8(magicNumberRaw) != KTex::Header::MAGIC_NUM)
     {
-        *mSupported = false;
+        qWarning("Incorrect magic number.");
         return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
@@ -137,17 +137,17 @@ Qx::IoOpReport KTexReader::checkFileSupport(QByteArray magicNumberRaw)
 Qx::IoOpReport KTexReader::checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw)
 {
     if(!KTex::supportedPlatform(platformRaw) ||
-       !KTex::supportedPixelFormat(pixelFormatRaw)  ||
+       (!mAnyPixelFormat &&!KTex::supportedPixelFormat(pixelFormatRaw)) ||
        !KTex::supportedTextureType(textureTypeRaw))
     {
-        *mSupported = false;
+        qWarning("TEX is unsupported.");
         return Qx::IoOpReport(Qx::IO_OP_READ, Qx::IO_ERR_READ, mStreamReader.file());
     }
 
     return mStreamReader.status();
 }
 
-Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePreCavesSpecs(const Qx::BitArray& specifcationBits)
 {
     // Split specifications
     int startBit = 0;
@@ -179,9 +179,9 @@ Qx::IoOpReport KTexReader::parsePreCavesSpecs(Qx::BitArray specifcationBits)
     return mStreamReader.status();
 }
 
-Qx::IoOpReport KTexReader::parsePostCavesSpecs(Qx::BitArray specifcationBits)
+Qx::IoOpReport KTexReader::parsePostCavesSpecs(const Qx::BitArray& specifcationBits)
 {
-    // Split specificatons
+    // Split specifications
     int startBit = 0;
 
     quint8 platformRaw = specifcationBits.subArray(startBit, KTex::Header::BL_PLATFORM_AC).toInteger<quint8>();
@@ -229,15 +229,15 @@ Qx::IoOpReport KTexReader::readHeader()
     mStreamReader >> specifications;
 
     // Parse specifications based on their version
-    Qx::BitArray specifcationBits = Qx::BitArray::fromInteger<quint32>(specifications);
+    Qx::BitArray specificationBits = Qx::BitArray::fromInteger<quint32>(specifications);
 
     // This test has a false positive (for pre-caves update) if the input TEX is of the post-caves update variety,
     // has both flags set to high, and has at least 30 mipmaps. This is considered unlikely enough to be reasonable
     // (as it would likely result from an image with an initial size of 73,728 x 73,728) since there is no other way to check
-    if(specifcationBits.subArray(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC)
-        parsePreCavesSpecs(specifcationBits);
-    else
-        parsePostCavesSpecs(specifcationBits);
+    bool preCaves = specificationBits.subArray(14, KTex::Header::BL_PADDING_BC).count(true) == KTex::Header::BL_PADDING_BC;
+
+    if(auto specCheck = preCaves ? parsePreCavesSpecs(specificationBits) : parsePostCavesSpecs(specificationBits); specCheck.isFailure())
+        return specCheck;
 
     // Reserve space for known mipmap count
     mTargetTex.mipMaps().reserve(mMipMapCount);
@@ -300,12 +300,8 @@ Qx::IoOpReport KTexReader::readMipMapData(int i)
 }
 
 //Public:
-Qx::IoOpReport KTexReader::read(bool& supported)
+Qx::IoOpReport KTexReader::read()
 {
-    // Initialize supported status flag
-    mSupported = &supported;
-    *mSupported = true;
-
     // Track status
     Qx::IoOpReport status;
 
@@ -331,8 +327,8 @@ Qx::IoOpReport KTexReader::read(bool& supported)
             return status;
     }
 
-    // TODO: Implement check/warning for if after reading known data, there is still data leftover
-    // i.e. mStreamReader.atEnd(), may need to advance one byte first
+    if(!mStreamReader.atEnd())
+        qWarning("There was still data left in the file after reading all mipmaps!");
 
     // Close file
     mStreamReader.closeFile();

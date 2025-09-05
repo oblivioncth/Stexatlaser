@@ -46,30 +46,31 @@ private:
 private:
     Qx::FileStreamReader mStreamReader;
     KTex& mTargetTex;
+    bool mAnyPixelFormat;
 
     // Mipmap helper members
     quint8 mMipMapCount;
 
     // Status
-    bool* mSupported;
+    //bool* mSupported;
 
 //-Constructor-------------------------------------------------------------------------------------------------------
 public:
-    KTexReader(const QString& sourceFilePath, KTex& targetTex);
+    KTexReader(const QString& sourceFilePath, KTex& targetTex, bool anyPixelFormat = false);
 
 //-Instance Functions----------------------------------------------------------------------------------------------
 private:
-    Qx::IoOpReport checkFileSupport(QByteArray magicNumberRaw);
+    Qx::IoOpReport checkFileSupport(QByteArrayView magicNumberRaw);
     Qx::IoOpReport checkFileSupport(quint8 platformRaw, quint8 pixelFormatRaw, quint8 textureTypeRaw);
 
-    Qx::IoOpReport parsePreCavesSpecs(Qx::BitArray specifcationBits);
-    Qx::IoOpReport parsePostCavesSpecs(Qx::BitArray specifcationBits);
+    Qx::IoOpReport parsePreCavesSpecs(const Qx::BitArray& specifcationBits);
+    Qx::IoOpReport parsePostCavesSpecs(const Qx::BitArray& specifcationBits);
     Qx::IoOpReport readHeader();
     Qx::IoOpReport readMipMapMetadata();
     Qx::IoOpReport readMipMapData(int i);
 
 public:
-    Qx::IoOpReport read(bool& supported);
+    Qx::IoOpReport read();
 };
 
 #endif // K_TEX_IO_H

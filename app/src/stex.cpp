@@ -1,9 +1,6 @@
 // Unit Includes
 #include "stex.h"
 
-// Standard Library Includes
-#include <iostream>
-
 // Qt Includes
 #include <QImageReader>
 
@@ -143,7 +140,7 @@ Qx::Error Stex::initialize(QStringList& commandLine)
 QStringList Stex::imageFormatFilter() const { return mImageFormatFilter; }
 QStringList Stex::supportedImageFormats() const { return mImageFormats; }
 
-void Stex::printError(QString src, Qx::Error error)
+void Stex::printError(const QString& src, const Qx::Error& error)
 {
     QString message = u"("_s + error.severityString() + u") "_s + error.primary();
 
@@ -156,13 +153,13 @@ void Stex::printError(QString src, Qx::Error error)
     printMessage(src, message);
 }
 
-void Stex::printMessage(QString src, QString message)
+void Stex::printMessage(const QString& src, const QString& message)
 {
     QString text =  u"["_s + src + u"] "_s + message + u"\n"_s;
     printVerbatim(text);
 }
 
-void Stex::printVerbatim(QString text)
+void Stex::printVerbatim(const QString& text)
 {
     Qx::cout << text;
     Qx::cout.flush();

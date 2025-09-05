@@ -75,23 +75,18 @@ Qx::Error CDecompress::perform()
 
     // Read TEX
     KTex tex;
-    bool supported;
     QString texPath = input.absoluteFilePath();
-    if(auto res = readTex(tex, supported, texPath); res.isFailure())
+    if(auto res = readTex(tex, texPath); res.isFailure())
     {
         CDecompressError err(CDecompressError::CantReadTex, texPath, res.outcomeInfo());
         mCore.printError(NAME, err);
         return err;
     }
-    else if(!supported)
-    {
-        CDecompressError err(CDecompressError::TexUnsupported, input.fileName());
-        mCore.printError(NAME, err);
-        return err;
-    }
 
     // Extract main image from TEX
-    QImage image = extractImage(tex);
+    QImage image;
+    if(auto err = extractImage(image, tex); err.isValid())
+        return err;
 
     // Write
     if(auto err = writeImage(image, output.absoluteFilePath()); err.isValid())
