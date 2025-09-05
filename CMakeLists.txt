@@ -1,19 +1,19 @@
 #================= Project Setup ==========================
 
 # CMake
-cmake_minimum_required(VERSION 3.23.0...3.25.0)
+cmake_minimum_required(VERSION 3.23.0...3.31.0)
 
 # Project
 # NOTE: DON'T USE TRAILING ZEROS IN VERSIONS
 project(Stex
-    VERSION 0.5.0.1
+    VERSION 0.6
     LANGUAGES CXX
     DESCRIPTION "A tool to pack/unpack Klei TEX format atlases"
 )
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("4640fe55c5ececb736331d5c379a2113760e9236")
+fetch_ob_cmake("v0.3.10")
 
 # Initialize project according to standard rules
 include(OB/Project)
@@ -61,18 +61,18 @@ set(STEX_QX_COMPONENTS
 # Fetch Qx
 include(OB/FetchQx)
 ob_fetch_qx(
-    REF "3f9a0d6f46b5c56e29d31d6e19939c407006adf0"
+    REF "v0.6.3"
     COMPONENTS
         ${STEX_QX_COMPONENTS}
 )
 
 # Fetch libsquish
 include(OB/FetchLibSquish)
-ob_fetch_modern_libsquish("8a6aad970285a536170de9b3fc63735a72674561")
+ob_fetch_modern_libsquish("v1.15.1.3")
 
 # Fetch etc2comp
 include(OB/FetchEtc2Comp)
-ob_fetch_etc2comp("afe20238f7c8033a98128a76d513b482f5ebce94")
+ob_fetch_etc2comp("v1.0.1")
 
 # Process Targets
 set(APP_TARGET_NAME ${PROJECT_NAMESPACE_LC}_${PROJECT_NAMESPACE_LC})
