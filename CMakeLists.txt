@@ -13,7 +13,7 @@ project(Stex
 
 # Get helper scripts
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchOBCMake.cmake)
-fetch_ob_cmake("v0.3.10")
+fetch_ob_cmake("v0.4.0.2")
 
 # Initialize project according to standard rules
 include(OB/Project)
@@ -25,6 +25,7 @@ set(PROJECT_FORMAL_NAME "Stexatlaser")
 # Configuration options
 # Handled by fetched libs, but set this here formally since they aren't part of the main project
 option(BUILD_SHARED_LIBS "Build Stex with shared libraries" OFF)
+option(STEX_INSTALL_MISC "Enable installation of misc components (e.g README.md/LICENSE)" ON)
 
 # C++
 set(CMAKE_CXX_STANDARD 20)
@@ -90,7 +91,9 @@ ob_standard_project_package_config(
 
 #================= Install ==========================
 
-ob_standard_project_misc_install()
+if(STEX_INSTALL_MISC)
+    ob_standard_project_misc_install()
+endif()
 
 #====================== CPack ==============================
 
